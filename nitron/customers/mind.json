@@ -1,0 +1,181 @@
+{
+  "name": "customers",
+  "ideas": [
+    {
+      "name": "Customer",
+      "keys": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "nextKey": 5,
+      "intensions": {
+        "Thing": {
+          "idea": "Thing",
+          "links": {
+            "0": 0,
+            "1": 1,
+            "2": 2,
+            "3": 3,
+            "4": 4
+          },
+          "~@CLASSIFIER": "Nitron.Intension"
+        }
+      },
+      "properties": {
+        "country": {
+          "name": "country",
+          "type": "STRING@Nitron.Type.Primitive",
+          "defaultValue": null,
+          "values": {
+            "0": "Germany",
+            "1": "Mexico",
+            "2": "Mexico",
+            "3": "UK",
+            "4": "Sweden"
+          },
+          "~@CLASSIFIER": "Nitron.Property"
+        },
+        "address": {
+          "name": "address",
+          "type": "STRING@Nitron.Type.Primitive",
+          "defaultValue": null,
+          "values": {
+            "0": "Obere Str. 57",
+            "1": "Avda. de la Constitución 2222",
+            "2": "Mataderos 2312",
+            "3": "120 Hanover Sq.",
+            "4": "Berguvsvägen 8"
+          },
+          "~@CLASSIFIER": "Nitron.Property"
+        },
+        "city": {
+          "name": "city",
+          "type": "STRING@Nitron.Type.Primitive",
+          "defaultValue": null,
+          "values": {
+            "0": "Berlin",
+            "1": "México D.F.",
+            "2": "México D.F.",
+            "3": "London",
+            "4": "Luleå"
+          },
+          "~@CLASSIFIER": "Nitron.Property"
+        },
+        "contact": {
+          "name": "contact",
+          "type": "STRING@Nitron.Type.Primitive",
+          "defaultValue": null,
+          "values": {
+            "0": "Maria Anders",
+            "1": "Ana Trujillo",
+            "2": "Antonio Moreno",
+            "3": "Thomas Hardy",
+            "4": "Christina Berglund"
+          },
+          "~@CLASSIFIER": "Nitron.Property"
+        },
+        "postalCode": {
+          "name": "postalCode",
+          "type": "STRING@Nitron.Type.Primitive",
+          "defaultValue": null,
+          "values": {
+            "0": "12209",
+            "1": "05021",
+            "2": "05023",
+            "3": "WA1 1DP",
+            "4": "S-958 22"
+          },
+          "~@CLASSIFIER": "Nitron.Property"
+        },
+        "name": {
+          "name": "name",
+          "type": "STRING@Nitron.Type.Primitive",
+          "defaultValue": null,
+          "values": {
+            "0": "Alfreds Futterkiste",
+            "1": "Ana Trujillo Emparedados y helados",
+            "2": "Antonio Moreno Taquería",
+            "3": "Around the Horn",
+            "4": "Berglunds snabbköp"
+          },
+          "~@CLASSIFIER": "Nitron.Property"
+        }
+      },
+      "reifiedValues": {},
+      "reifications": {
+        "0": {
+          "index": 0,
+          "idea": "Customer",
+          "~@CLASSIFIER": "Nitron.Instance"
+        },
+        "1": {
+          "index": 1,
+          "idea": "Customer",
+          "~@CLASSIFIER": "Nitron.Instance"
+        },
+        "2": {
+          "index": 2,
+          "idea": "Customer",
+          "~@CLASSIFIER": "Nitron.Instance"
+        },
+        "3": {
+          "index": 3,
+          "idea": "Customer",
+          "~@CLASSIFIER": "Nitron.Instance"
+        },
+        "4": {
+          "index": 4,
+          "idea": "Customer",
+          "~@CLASSIFIER": "Nitron.Instance"
+        }
+      },
+      "~@CLASSIFIER": "Nitron.Idea"
+    },
+    {
+      "name": "Thing",
+      "keys": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "nextKey": 5,
+      "intensions": {},
+      "properties": {},
+      "reifiedValues": {},
+      "reifications": {
+        "0": {
+          "index": 0,
+          "idea": "Customer",
+          "~@CLASSIFIER": "Nitron.Instance"
+        },
+        "1": {
+          "index": 1,
+          "idea": "Customer",
+          "~@CLASSIFIER": "Nitron.Instance"
+        },
+        "2": {
+          "index": 2,
+          "idea": "Customer",
+          "~@CLASSIFIER": "Nitron.Instance"
+        },
+        "3": {
+          "index": 3,
+          "idea": "Customer",
+          "~@CLASSIFIER": "Nitron.Instance"
+        },
+        "4": {
+          "index": 4,
+          "idea": "Customer",
+          "~@CLASSIFIER": "Nitron.Instance"
+        }
+      },
+      "~@CLASSIFIER": "Nitron.Idea"
+    }
+  ],
+  "~@CLASSIFIER": "Nitron.Mind"
+}

@@ -1,0 +1,5 @@
+root = true
+
+[DocsGen.kt]
+max_line_length = 10000
+ij_visual_guides = none

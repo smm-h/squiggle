@@ -1,0 +1,1052 @@
+[
+  {
+    "country": "Afghanistan",
+    "compulsoryMilitary": false,
+    "note": "18 is the legal minimum age for voluntary military service; no conscription (2017)",
+    "pop2021": "39835.4280"
+  },
+  {
+    "country": "Albania",
+    "compulsoryMilitary": true,
+    "note": "19 is the legal minimum age for voluntary military service; 18 is the legal minimum age in case of general/partial compulsory mobilization (2012)",
+    "pop2021": "2872.9330"
+  },
+  {
+    "country": "Algeria",
+    "compulsoryMilitary": true,
+    "note": "18 is the legal minimum age for voluntary military service; 19-30 years of age for compulsory service; conscript service obligation is 18 months (6 months basic training, 12 months civil projects) (2018)",
+    "pop2021": "44616.6240"
+  },
+  {
+    "country": "Angola",
+    "compulsoryMilitary": true,
+    "note": "20-45 years of age for compulsory male and 18-45 years for voluntary male military service (registration at age 18 is mandatory); 20-45 years of age for voluntary female service; 2-year conscript service obligation; Angolan citizenship required; the Navy (MGA) is entirely staffed with volunteers (2013)",
+    "pop2021": "33933.6100"
+  },
+  {
+    "country": "Antigua and Barbuda",
+    "compulsoryMilitary": false,
+    "note": "18 years of age for voluntary military service; no conscription; Governor-General has powers to call up men for national service and set the age at which they could be called up (2012)",
+    "pop2021": "98.7310"
+  },
+  {
+    "country": "Argentina",
+    "compulsoryMilitary": false,
+    "note": "18-24 years of age for voluntary military service (18-21 requires parental consent); no conscription; if the number of volunteers fails to meet the quota of recruits for a particular year, Congress can authorize the conscription of citizens turning 18 that year for a period not exceeding one year (2012)",
+    "pop2021": "45605.8260"
+  },
+  {
+    "country": "Armenia",
+    "compulsoryMilitary": true,
+    "note": "18-27 years of age for voluntary or compulsory military service; 2-year conscript service obligation, which can be served as an officer upon deferment for university studies if enrolled in officer-producing program; 17 year olds are eligible to become cadets at military higher education institutes, where they are classified as military personnel (2019)",
+    "pop2021": "2968.1270"
+  },
+  {
+    "country": "Australia",
+    "compulsoryMilitary": false,
+    "note": "17 years of age for voluntary military service (with parental consent); no conscription; women allowed to serve in most combat roles (2018)",
+    "pop2021": "25788.2150"
+  },
+  {
+    "country": "Austria",
+    "compulsoryMilitary": true,
+    "note": "registration requirement at age 17, the legal minimum age for voluntary military service; 18 is the legal minimum age for compulsory military service (6 months), or optionally, alternative civil/community service (9 months); males 18 to 50 years old in the militia or inactive reserve are subject to compulsory service; in a January 2012 referendum, a majority of Austrians voted in favor of retaining the system of compulsory military service (with the option of alternative/non-military service) instead of switching to a professional army system (2015)",
+    "pop2021": "9043.0700"
+  },
+  {
+    "country": "Azerbaijan",
+    "compulsoryMilitary": true,
+    "note": "18-35 years of age for compulsory military service; service obligation 18 months or 12 months for university graduates; 17 years of age for voluntary service; 17 year olds are considered to be on active service at cadet military schools (2012)",
+    "pop2021": "10223.3420"
+  },
+  {
+    "country": "Bahamas",
+    "compulsoryMilitary": false,
+    "note": "18 years of age for voluntary male and female service; no conscription (2012)",
+    "pop2021": "396.9130"
+  },
+  {
+    "country": "Bahrain",
+    "compulsoryMilitary": false,
+    "note": "18 years of age for voluntary military service; 15 years of age for NCOs, technicians, and cadets; no conscription (2012)",
+    "pop2021": "1748.2960"
+  },
+  {
+    "country": "Bangladesh",
+    "compulsoryMilitary": false,
+    "note": "16-21 years of age for voluntary military service; Bangladeshi nationality and 10th grade education required; officers: 17-21 years of age, Bangladeshi nationality, and 12th grade education required (2018)",
+    "pop2021": "166303.4980"
+  },
+  {
+    "country": "Barbados",
+    "compulsoryMilitary": false,
+    "note": "18 years of age for voluntary military service, or earlier with parental consent; no conscription (2013)",
+    "pop2021": "287.7110"
+  },
+  {
+    "country": "Belarus",
+    "compulsoryMilitary": true,
+    "note": "18-27 years of age for compulsory military or alternative service; conscript service obligation is 12-18 months, depending on academic qualifications, and 24-36 months for alternative service, depending on academic qualifications; 17 year olds are eligible to become cadets at military higher education institutes, where they are classified as military personnel (2016)",
+    "pop2021": "9442.8620"
+  },
+  {
+    "country": "Belgium",
+    "compulsoryMilitary": false,
+    "note": "18 years of age for male and female voluntary military service; conscription abolished in 1994 (2012)",
+    "pop2021": "11632.3260"
+  },
+  {
+    "country": "Belize",
+    "compulsoryMilitary": false,
+    "note": "18 years of age for voluntary military service; laws allow for conscription only if volunteers are insufficient; conscription has never been implemented; volunteers typically outnumber available positions by 3:1; initial service obligation 12 years (2012)",
+    "pop2021": "404.9140"
+  },
+  {
+    "country": "Benin",
+    "compulsoryMilitary": true,
+    "note": "18-35 years of age for selective compulsory and voluntary military service; a higher education diploma is required; both sexes are eligible for military service; conscript tour of duty - 18 months (2013)",
+    "pop2021": "12451.0400"
+  },
+  {
+    "country": "Bermuda",
+    "compulsoryMilitary": false,
+    "note": "18-45 years of age for voluntary male or female enlistment in the Bermuda Regiment; males must register at age 18 and may be subject to conscription; term of service is 38 months for volunteers or conscripts (2012)",
+    "pop2021": "62.0900"
+  },
+  {
+    "country": "Bhutan",
+    "compulsoryMilitary": false,
+    "note": "18 years of age for voluntary military service; no conscription; militia training is compulsory for males aged 20-25, over a 3-year period (2012)",
+    "pop2021": "779.8980"
+  },
+  {
+    "country": "Bolivia",
+    "compulsoryMilitary": true,
+    "note": "16-49 years of age for 12-month voluntary male and female military service; Bolivian citizenship required; minimum age for combat duty is 18; when annual number of volunteers falls short of goal, compulsory recruitment is effected, including conscription of boys as young as 14; 15-19 years of age for voluntary premilitary service, provides exemption from further military service (2017)",
+    "pop2021": "11832.9400"
+  },
+  {
+    "country": "Bosnia and Herzegovina",
+    "compulsoryMilitary": false,
+    "note": "18 years of age for voluntary military service; mandatory retirement at age 35 or after 15 years of service for E-1 through E-4, mandatory retirement at age 50 and 30 years of service for E-5 through E-9, mandatory retirement at age 55 and 30 years of service for all officers (2014)",
+    "pop2021": "3263.4660"
+  },
+  {
+    "country": "Botswana",
+    "compulsoryMilitary": false,
+    "note": "18 is the legal minimum age for voluntary military service; no conscription (2012)",
+    "pop2021": "2397.2410"
+  },
+  {
+    "country": "Brazil",
+    "compulsoryMilitary": true,
+    "note": "18-45 years of age for compulsory military service; conscript service obligation is 10-12 months; 17-45 years of age for voluntary service; an increasing percentage of the ranks are \"long-service\" volunteer professionals; women were allowed to serve in the armed forces beginning in early 1980s, when the Brazilian Army became the first army in South America to accept women into career ranks; women serve in Navy and Air Force only in Women's Reserve Corps (2012)",
+    "pop2021": "213993.4370"
+  },
+  {
+    "country": "Brunei",
+    "compulsoryMilitary": false,
+    "note": "17 years of age for voluntary military service; non-Malays are ineligible to serve; recruits from the army, navy, and air force all undergo 43-week initial training (2013)",
+    "pop2021": "441.5320"
+  },
+  {
+    "country": "Bulgaria",
+    "compulsoryMilitary": false,
+    "note": "18-27 years of age for voluntary military service; conscription ended in January 2008; service obligation 6-9 months (2012)",
+    "pop2021": "6896.6630"
+  },
+  {
+    "country": "Burkina Faso",
+    "compulsoryMilitary": false,
+    "note": "18 years of age for voluntary military service; no conscription; women may serve in supporting roles (2013)",
+    "pop2021": "21497.0960"
+  },
+  {
+    "country": "Burundi",
+    "compulsoryMilitary": false,
+    "note": "18 years of age for voluntary military service; the armed forces law of 31 December 2004 did not specify a minimum age for enlistment, but the government claimed that no one younger than 18 was being recruited; mandatory retirement ages: 45 (enlisted), 50 (NCOs), 55 (officers), and 60 (officers with the rank of general) (2017)",
+    "pop2021": "12255.4330"
+  },
+  {
+    "country": "Cambodia",
+    "compulsoryMilitary": true,
+    "note": "18 is the legal minimum age for compulsory and voluntary military service (2012)",
+    "pop2021": "16946.4380"
+  },
+  {
+    "country": "Cameroon",
+    "compulsoryMilitary": false,
+    "note": "18-23 years of age for male and female voluntary military service; no conscription; high school graduation required; service obligation 4 years; periodic government calls for volunteers (2012)",
+    "pop2021": "27224.2650"
+  },
+  {
+    "country": "Canada",
+    "compulsoryMilitary": false,
+    "note": "17 years of age for voluntary male and female military service (with parental consent); 16 years of age for Reserve and Military College applicants; Canadian citizenship or permanent residence status required; maximum 34 years of age; service obligation 3-9 years (2012)",
+    "pop2021": "38067.9030"
+  },
+  {
+    "country": "Cape Verde",
+    "compulsoryMilitary": true,
+    "note": "18-35 years of age for male and female selective compulsory military service; 2-years conscript service obligation; 17 years of age for voluntary service (with parental consent) (2013)",
+    "pop2021": "561.8980"
+  },
+  {
+    "country": "Central African Republic",
+    "compulsoryMilitary": false,
+    "note": "18 years of age for military service; no conscription (2017)",
+    "pop2021": "4919.9810"
+  },
+  {
+    "country": "Chad",
+    "compulsoryMilitary": true,
+    "note": "20 is the legal minimum age for compulsory military service, with a 3-year service obligation; 18 is the legal minimum age for voluntary service; no minimum age restriction for volunteers with consent from a parent or guardian; women are subject to 1 year of compulsory military or civic service at age 21; while provisions for military service have not been repealed, they have never been fully implemented (2015)",
+    "pop2021": "16914.9850"
+  },
+  {
+    "country": "Chile",
+    "compulsoryMilitary": true,
+    "note": "18-45 years of age for voluntary male and female military service, although the right to compulsory recruitment of males 18-45 is retained; service obligation is 12 months for Army and 22 months for Navy and Air Force (2015)",
+    "pop2021": "19212.3610"
+  },
+  {
+    "country": "China",
+    "compulsoryMilitary": true,
+    "note": "18-22 years of age for selective compulsory military service, with a 2-year service obligation; no minimum age for voluntary service (all officers are volunteers); 18-19 years of age for women high school graduates who meet requirements for specific military jobs (2018)",
+    "pop2021": "1444216.1070"
+  },
+  {
+    "country": "Colombia",
+    "compulsoryMilitary": true,
+    "note": "18-24 years of age for compulsory and voluntary military service; service obligation is 18 months (2012)",
+    "pop2021": "51265.8440"
+  },
+  {
+    "country": "Comoros",
+    "compulsoryMilitary": false,
+    "note": "18 years of age for 2-year voluntary male and female military service; no conscription (2015)",
+    "pop2021": "888.4510"
+  },
+  {
+    "country": "Croatia",
+    "compulsoryMilitary": false,
+    "note": "18-27 years of age for voluntary military service; conscription abolished in 2008 (2017)",
+    "pop2021": "4081.6510"
+  },
+  {
+    "country": "Cuba",
+    "compulsoryMilitary": true,
+    "note": "17-28 years of age for compulsory military service; 2-year service obligation for males, optional for females (2017)",
+    "pop2021": "11317.5050"
+  },
+  {
+    "country": "Curacao",
+    "compulsoryMilitary": false,
+    "note": "no conscription (2010)",
+    "pop2021": "164.7980"
+  },
+  {
+    "country": "Cyprus",
+    "compulsoryMilitary": true,
+    "note": "Cypriot National Guard (CNG): 18-50 years of age for compulsory military service for all Greek Cypriot males; 17 years of age for voluntary service; 14-month service obligation (2016)",
+    "pop2021": "1215.5840"
+  },
+  {
+    "country": "Denmark",
+    "compulsoryMilitary": true,
+    "note": "18 years of age for compulsory and voluntary military service; conscripts serve an initial training period that varies from 4 to 12 months according to specialization; former conscripts are assigned to mobilization units; women eligible to volunteer for military service; in addition to full time employment, the Danish Military offers reserve contracts in all three branches (2016)",
+    "pop2021": "5813.2980"
+  },
+  {
+    "country": "Djibouti",
+    "compulsoryMilitary": false,
+    "note": "18 years of age for voluntary military service; 16-25 years of age for voluntary military training; no conscription (2012)",
+    "pop2021": "1002.1870"
+  },
+  {
+    "country": "Dominican Republic",
+    "compulsoryMilitary": false,
+    "note": "17-21 years of age for voluntary military service; recruits must have completed primary school and be Dominican Republic citizens; women may volunteer (2012)",
+    "pop2021": "10953.7030"
+  },
+  {
+    "country": "DR Congo",
+    "compulsoryMilitary": true,
+    "note": "18-45 years of age for voluntary and compulsory military service (2012)",
+    "pop2021": "92377.9930"
+  },
+  {
+    "country": "Ecuador",
+    "compulsoryMilitary": false,
+    "note": "18 years of age for selective conscript military service; conscription has been suspended; 18 years of age for voluntary military service; Air Force 18-22 years of age, Ecuadorian birth requirement; 1-year service obligation (2012)",
+    "pop2021": "17888.4750"
+  },
+  {
+    "country": "Egypt",
+    "compulsoryMilitary": false,
+    "note": "18-30 years of age for male conscript military service; service obligation - 18-36 months, followed by a 9-year reserve obligation; voluntary enlistment possible from age 15 (2017)",
+    "pop2021": "104258.3270"
+  },
+  {
+    "country": "El Salvador",
+    "compulsoryMilitary": true,
+    "note": "18 years of age for selective compulsory military service; 16-22 years of age for voluntary male or female service; service obligation is 12 months, with 11 months for officers and NCOs (2012)",
+    "pop2021": "6518.4990"
+  },
+  {
+    "country": "Equatorial Guinea",
+    "compulsoryMilitary": true,
+    "note": "18 years of age for selective compulsory military service, although conscription is rare in practice; 2-year service obligation; women hold only administrative positions in the Navy (2013)",
+    "pop2021": "1449.8960"
+  },
+  {
+    "country": "Eritrea",
+    "compulsoryMilitary": true,
+    "note": "18-40 years of age for male and female voluntary and compulsory military service; 18-month conscript service obligation (2019)",
+    "pop2021": "3601.4670"
+  },
+  {
+    "country": "Estonia",
+    "compulsoryMilitary": true,
+    "note": "18-27 for compulsory military or governmental service, conscript service requirement 8-11 months depending on education; NCOs, reserve officers, and specialists serve 11 months (2016)",
+    "pop2021": "1325.1850"
+  },
+  {
+    "country": "Eswatini",
+    "compulsoryMilitary": false,
+    "note": "18-30 years of age for male and female voluntary military service; no conscription; compulsory HIV testing required, only HIV-negative applicants accepted (2012)",
+    "pop2021": "1172.3620"
+  },
+  {
+    "country": "Ethiopia",
+    "compulsoryMilitary": true,
+    "note": "18 years of age for voluntary military service; no compulsory military service, but the military can conduct callups when necessary and compliance is compulsory (2012)",
+    "pop2021": "117876.2270"
+  },
+  {
+    "country": "Fiji",
+    "compulsoryMilitary": false,
+    "note": "18 years of age for voluntary military service; mandatory retirement at age 55 (2013)",
+    "pop2021": "902.9060"
+  },
+  {
+    "country": "Finland",
+    "compulsoryMilitary": false,
+    "note": "all Finnish men are called-up for military service the year they turn 18; at 18, women may volunteer for military service; service obligation 6-12 months; individuals enter the reserve upon completing their initial obligation; military obligation to age 60 (2016)",
+    "pop2021": "5548.3600"
+  },
+  {
+    "country": "France",
+    "compulsoryMilitary": false,
+    "note": "18-25 years of age for male and female voluntary military service; no conscription; 1-year service obligation; women serve in noncombat posts (2013)",
+    "pop2021": "65426.1790"
+  },
+  {
+    "country": "Gabon",
+    "compulsoryMilitary": false,
+    "note": "20 years of age for voluntary military service; no conscription (2012)",
+    "pop2021": "2278.8250"
+  },
+  {
+    "country": "Gambia",
+    "compulsoryMilitary": false,
+    "note": "18 years of age for male and female voluntary military service; no conscription; service obligation 6 months (2012)",
+    "pop2021": "2486.9450"
+  },
+  {
+    "country": "Georgia",
+    "compulsoryMilitary": true,
+    "note": "18 to 27 years of age for compulsory and voluntary active duty military service; conscript service obligation is 12 months (2017)",
+    "pop2021": "3979.7650"
+  },
+  {
+    "country": "Germany",
+    "compulsoryMilitary": false,
+    "note": "17-23 years of age for male and female voluntary military service; conscription ended 1 July 2011; service obligation 8-23 months or 12 years; women have been eligible for voluntary service in all military branches and positions since 2001 (2013)",
+    "pop2021": "83900.4730"
+  },
+  {
+    "country": "Ghana",
+    "compulsoryMilitary": false,
+    "note": "18-26 years of age for voluntary military service, with basic education certificate; no conscription; must be HIV/AIDS negative (2012)",
+    "pop2021": "31732.1290"
+  },
+  {
+    "country": "Greece",
+    "compulsoryMilitary": true,
+    "note": "19-45 years of age for compulsory military service; during wartime the law allows for recruitment beginning January of the year of inductee's 18th birthday, thus including 17 year olds; 18 years of age for volunteers; conscript service obligation is 1 year for the Army and 9 months for the Air Force and Navy; women are eligible for voluntary military service (2014)",
+    "pop2021": "10370.7440"
+  },
+  {
+    "country": "Guatemala",
+    "compulsoryMilitary": false,
+    "note": "all male citizens between the ages of 18 and 50 are eligible for military service; in practice, most of the force is volunteer, however, a selective draft system is employed, resulting in a small portion of 17-21 year-olds conscripted; conscript service obligation varies from 1 to 2 years; women can serve as officers (2013)",
+    "pop2021": "18249.8600"
+  },
+  {
+    "country": "Guinea",
+    "compulsoryMilitary": true,
+    "note": "no compulsory military service (2017)",
+    "pop2021": "13497.2440"
+  },
+  {
+    "country": "Guinea-Bissau",
+    "compulsoryMilitary": true,
+    "note": "18-25 years of age for selective compulsory military service (Air Force service is voluntary); 16 years of age or younger, with parental consent, for voluntary service (2013)",
+    "pop2021": "2015.4940"
+  },
+  {
+    "country": "Guyana",
+    "compulsoryMilitary": false,
+    "note": "18 years of age or older for voluntary military service; no conscription (2014)",
+    "pop2021": "790.3260"
+  },
+  {
+    "country": "Honduras",
+    "compulsoryMilitary": false,
+    "note": "18 years of age for voluntary 2- to 3-year military service; no conscription (2018)",
+    "pop2021": "10062.9910"
+  },
+  {
+    "country": "Hungary",
+    "compulsoryMilitary": false,
+    "note": "18-25 years of age for voluntary military service; no conscription; 6-month service obligation (2012)",
+    "pop2021": "9634.1640"
+  },
+  {
+    "country": "India",
+    "compulsoryMilitary": false,
+    "note": "16-18 years of age for voluntary military service (Army 17 1/2, Air Force 17, Navy 16 1/2); no conscription; women may join as officers, currently serve in combat roles as pilots, and under consideration for Army combat roles (2019)",
+    "pop2021": "1393409.0380"
+  },
+  {
+    "country": "Indonesia",
+    "compulsoryMilitary": false,
+    "note": "18-45 years of age for voluntary military service, with selective conscription authorized; 2-year service obligation, with reserve obligation to age 45 (officers); Indonesian citizens only (2013)",
+    "pop2021": "276361.7830"
+  },
+  {
+    "country": "Iran",
+    "compulsoryMilitary": true,
+    "note": "18 years of age for compulsory military service; 16 years of age for volunteers; 17 years of age for Law Enforcement Forces; 15 years of age for Basij Forces (Popular Mobilization Army); conscript military service obligation is 18-24 months; women exempt from military service (2019)",
+    "pop2021": "85028.7590"
+  },
+  {
+    "country": "Iraq",
+    "compulsoryMilitary": false,
+    "note": "18-40 years of age for voluntary military service; no conscription (2017)",
+    "pop2021": "41179.3500"
+  },
+  {
+    "country": "Ireland",
+    "compulsoryMilitary": false,
+    "note": "18-25 years of age for male and female voluntary military service recruits to the Permanent Defence Forces (PDF; 18-27 years of age for the Naval Service); 18-28 for cadetship (officer) applicants; 18-35 years of age for the Reserve Defence Forces (RDF); maximum obligation 12 years (PDF officers), 5 years (PDF enlisted), 3 years RDF (4 years for Naval Service Reserves); EU citizenship, refugee status, or 5-year residence in Ireland required (2014)",
+    "pop2021": "4982.9070"
+  },
+  {
+    "country": "Israel",
+    "compulsoryMilitary": true,
+    "note": "18 years of age for compulsory (Jews, Druze) military service; 17 years of age for voluntary (Christians, Muslims, Circassians) military service; both sexes are obligated to military service; conscript service obligation - 32 months for enlisted men and 24 months for enlisted women (varies based on military occupation), 48 months for officers; pilots commit to 9-year service; reserve obligation to age 41-51 (men), age 24 (women) (2015)",
+    "pop2021": "8789.7740"
+  },
+  {
+    "country": "Italy",
+    "compulsoryMilitary": false,
+    "note": "18-25 years of age for voluntary military service; women may serve in any military branch; Italian citizenship required; 1-year service obligation (2013)",
+    "pop2021": "60367.4770"
+  },
+  {
+    "country": "Ivory Coast",
+    "compulsoryMilitary": true,
+    "note": "18-25 years of age for compulsory and voluntary male and female military service; conscription is not enforced; voluntary recruitment of former rebels into the new national army is restricted to ages 22-29 (2012)",
+    "pop2021": "27053.6290"
+  },
+  {
+    "country": "Jamaica",
+    "compulsoryMilitary": false,
+    "note": "17 1/2 is the legal minimum age for voluntary military service; no conscription (2012)",
+    "pop2021": "2973.4630"
+  },
+  {
+    "country": "Japan",
+    "compulsoryMilitary": false,
+    "note": "18 years of age for voluntary military service; no conscription; mandatory retirement at age 53 for senior enlisted personnel and at 62 years for senior service officers (2012)",
+    "pop2021": "126050.8040"
+  },
+  {
+    "country": "Jordan",
+    "compulsoryMilitary": false,
+    "note": "17 years of age for voluntary male military service; initial service term 2 years, with option to reenlist for 18 years; conscription at age 18 suspended in 1999; women are not conscripted, but can volunteer to serve in noncombat military positions in the Royal Jordanian Arab Army Women's Corps and RJAF (2013)",
+    "pop2021": "10269.0210"
+  },
+  {
+    "country": "Kazakhstan",
+    "compulsoryMilitary": true,
+    "note": "18 is the legal minimum age for compulsory military service; conscript service obligation is 2 years, but Kazakhstan is transitioning to a largely contract force; military cadets in intermediate (ages 15-17) and higher (ages 17-21) education institutes are classified as military service personnel (2017)",
+    "pop2021": "18994.9620"
+  },
+  {
+    "country": "Kenya",
+    "compulsoryMilitary": false,
+    "note": "18-26 years of age for male and female voluntary service (under 18 with parental consent), with a 9-year obligation (7 years for Kenyan Navy) and subsequent 3-year reenlistments; applicants must be Kenyan citizens and provide a national identity card (obtained at age 18) and a school-leaving certificate, and undergo a series of mental and physical examinations; women serve under the same terms and conditions as men; mandatory retirement at age 55 but personnel leaving before this age remain in a reserve status until they reach age 55 unless they were removed for disciplinary reasons; there is no active military reserve, although the Ministry of Defence has stated its desire to create one as recently as 2017 (2019)",
+    "pop2021": "54985.6980"
+  },
+  {
+    "country": "Kuwait",
+    "compulsoryMilitary": false,
+    "note": "17-21 years of age for voluntary military service; conscription suspended (2012)",
+    "pop2021": "4328.5500"
+  },
+  {
+    "country": "Kyrgyzstan",
+    "compulsoryMilitary": true,
+    "note": "18-27 years of age for compulsory or voluntary male military service in the Armed Forces or Interior Ministry; 1-year service obligation, with optional fee-based 3-year service in the call-up mobilization reserve; women may volunteer at age 19; 16-17 years of age for military cadets, who cannot take part in military operations (2013)",
+    "pop2021": "6628.3560"
+  },
+  {
+    "country": "Laos",
+    "compulsoryMilitary": true,
+    "note": "18 years of age for compulsory or voluntary military service; conscript service obligation - minimum 18-months (2012)",
+    "pop2021": "7379.3580"
+  },
+  {
+    "country": "Latvia",
+    "compulsoryMilitary": false,
+    "note": "18 years of age for voluntary male and female military service; no conscription; under current law, every citizen is entitled to serve in the armed forces for life (2016)",
+    "pop2021": "1866.9420"
+  },
+  {
+    "country": "Lebanon",
+    "compulsoryMilitary": false,
+    "note": "17-30 years of age for voluntary military service; 18-24 years of age for officer candidates; no conscription (2013)",
+    "pop2021": "6769.1460"
+  },
+  {
+    "country": "Lesotho",
+    "compulsoryMilitary": false,
+    "note": "18-24 years of age for voluntary military service; no conscription; women serve as commissioned officers (2012)",
+    "pop2021": "2159.0790"
+  },
+  {
+    "country": "Liberia",
+    "compulsoryMilitary": false,
+    "note": "18 years of age for voluntary military service; no conscription (2012)",
+    "pop2021": "5180.2030"
+  },
+  {
+    "country": "Libya",
+    "compulsoryMilitary": false,
+    "note": "18 years of age for mandatory or voluntary service (2012)",
+    "pop2021": "6958.5320"
+  },
+  {
+    "country": "Lithuania",
+    "compulsoryMilitary": false,
+    "note": "18 years of age for military service; 9-month service obligation; in 2015, Lithuania reinstated conscription after having converted to a professional military in 2008 (2019)",
+    "pop2021": "2689.8620"
+  },
+  {
+    "country": "Luxembourg",
+    "compulsoryMilitary": false,
+    "note": "18-24 years of age for male and female voluntary military service; no conscription; Luxembourg citizen or EU citizen with 3-year residence in Luxembourg (2017)",
+    "pop2021": "634.8140"
+  },
+  {
+    "country": "Madagascar",
+    "compulsoryMilitary": false,
+    "note": "Madagascar has an all-volunteer military; 18-25 years of age for males; service obligation 18 months; women are permitted to serve in all branches (2018)",
+    "pop2021": "28427.3280"
+  },
+  {
+    "country": "Malawi",
+    "compulsoryMilitary": false,
+    "note": "18 years of age for voluntary military service; high school equivalent required for enlisted recruits and college equivalent for officer recruits; initial engagement is 7 years for enlisted personnel and 10 years for officers (2014)",
+    "pop2021": "19647.6840"
+  },
+  {
+    "country": "Malaysia",
+    "compulsoryMilitary": false,
+    "note": "17 years 6 months of age for voluntary military service (younger with parental consent and proof of age); mandatory retirement age 60; women serve in the Malaysian Armed Forces; no conscription (2013)",
+    "pop2021": "32776.1940"
+  },
+  {
+    "country": "Maldives",
+    "compulsoryMilitary": false,
+    "note": "18-28 years of age for voluntary service; no conscription; 10th grade or equivalent education required; must not be a member of a political party",
+    "pop2021": "543.6170"
+  },
+  {
+    "country": "Mali",
+    "compulsoryMilitary": true,
+    "note": "18 years of age for selective compulsory and voluntary military service; 2-year conscript service obligation (2012)",
+    "pop2021": "20855.7350"
+  },
+  {
+    "country": "Malta",
+    "compulsoryMilitary": false,
+    "note": "18 years of age for voluntary military service; no conscription (2017)",
+    "pop2021": "442.7840"
+  },
+  {
+    "country": "Mauritania",
+    "compulsoryMilitary": false,
+    "note": "18 is the legal minimum age for voluntary military service; no conscription (2012)",
+    "pop2021": "4775.1190"
+  },
+  {
+    "country": "Mexico",
+    "compulsoryMilitary": true,
+    "note": "18 years of age for compulsory military service, conscript service obligation is 12 months; 16 years of age with consent for voluntary enlistment; conscripts serve only in the Army; Navy and Air Force service is all voluntary; women are eligible for voluntary military service; cadets enrolled in military schools from the age of 15 are considered members of the armed forces (2012)",
+    "pop2021": "130262.2160"
+  },
+  {
+    "country": "Moldova",
+    "compulsoryMilitary": true,
+    "note": "18 years of age for compulsory or voluntary military service; male registration required at age 16; 1-year service obligation; note - the ultimate abolition of military conscription has been announced (2018)",
+    "pop2021": "4024.0190"
+  },
+  {
+    "country": "Mongolia",
+    "compulsoryMilitary": true,
+    "note": "18-27 years of age for compulsory and voluntary military service; 1-year conscript service obligation in army or air forces or police for males only; after conscription, soldiers can contract into military service for 2 or 4 years; citizens can also voluntarily join the armed forces (2017)",
+    "pop2021": "3329.2890"
+  },
+  {
+    "country": "Montenegro",
+    "compulsoryMilitary": false,
+    "note": "18 is the legal minimum age for voluntary military service; no conscription (2012)",
+    "pop2021": "628.0530"
+  },
+  {
+    "country": "Morocco",
+    "compulsoryMilitary": true,
+    "note": "19 years of age for compulsory military service; both sexes are obligated to military service; conscript service obligation - 12 months (2019)",
+    "pop2021": "37344.7950"
+  },
+  {
+    "country": "Mozambique",
+    "compulsoryMilitary": true,
+    "note": "registration for military service is mandatory for all males and females at 18 years of age; 18-35 years of age for selective compulsory military service; 18 years of age for voluntary service; 2-year service obligation; women may serve as officers or enlisted (2012)",
+    "pop2021": "32163.0470"
+  },
+  {
+    "country": "Myanmar",
+    "compulsoryMilitary": false,
+    "note": "18-35 years of age (men) and 18-27 years of age (women) for voluntary military service; no conscription (a 2010 law reintroducing conscription has not yet entered into force); 2-year service obligation; male (ages 18-45) and female (ages 18-35) professionals (including doctors, engineers, mechanics) serve up to 3 years; service terms may be stretched to 5 years in an officially declared emergency; Burma signed the Convention on the Rights of the Child on 15 August 1991; on 27 June 2012, the regime signed a Joint Action Plan on prevention of child recruitment; in February 2013, the military formed a new task force to address forced child conscription; since that time, approximately 880 children have been released from military service (2015)",
+    "pop2021": "54806.0120"
+  },
+  {
+    "country": "Namibia",
+    "compulsoryMilitary": false,
+    "note": "18 years of age for voluntary military service; no conscription (2012)",
+    "pop2021": "2587.3440"
+  },
+  {
+    "country": "Nepal",
+    "compulsoryMilitary": false,
+    "note": "18 years of age for voluntary military service; no conscription (2018)",
+    "pop2021": "29674.9200"
+  },
+  {
+    "country": "Netherlands",
+    "compulsoryMilitary": false,
+    "note": "17 years of age for an all-volunteer force (2014)",
+    "pop2021": "17173.0990"
+  },
+  {
+    "country": "New Zealand",
+    "compulsoryMilitary": false,
+    "note": "17 years of age for voluntary military service; soldiers cannot be deployed until the age of 18; no conscription; 3 years of secondary education required; must be a citizen of NZ, the UK, Australia, Canada, or the US, and resident of NZ for the previous 5 years (2018)",
+    "pop2021": "4860.6430"
+  },
+  {
+    "country": "Nicaragua",
+    "compulsoryMilitary": false,
+    "note": "18-30 years of age for voluntary military service; no conscription; tour of duty 18-36 months; requires Nicaraguan nationality and 6th-grade education (2012)",
+    "pop2021": "6702.3850"
+  },
+  {
+    "country": "Niger",
+    "compulsoryMilitary": true,
+    "note": "18 is the legal minimum age for compulsory or voluntary military service; enlistees must be Nigerien citizens and unmarried; 2-year service term; women may serve in health care (2017)",
+    "pop2021": "25130.8170"
+  },
+  {
+    "country": "Nigeria",
+    "compulsoryMilitary": false,
+    "note": "18 years of age for voluntary military service; no conscription (2012)",
+    "pop2021": "211400.7080"
+  },
+  {
+    "country": "North Korea",
+    "compulsoryMilitary": true,
+    "note": "17 years of age for compulsory male and female military service; service obligation 10 years for men, to age 23 for women (2017)",
+    "pop2021": "25887.0410"
+  },
+  {
+    "country": "Norway",
+    "compulsoryMilitary": true,
+    "note": "19-35 years of age for male and female compulsory military service; 16 years of age in wartime; 17 years of age for male volunteers; 18 years of age for women; 19-month service obligation (2017)",
+    "pop2021": "5465.6300"
+  },
+  {
+    "country": "Oman",
+    "compulsoryMilitary": false,
+    "note": "18-30 years of age for voluntary military service; no conscription (2012)",
+    "pop2021": "5223.3750"
+  },
+  {
+    "country": "Pakistan",
+    "compulsoryMilitary": false,
+    "note": "16-23 years of age for voluntary military service; soldiers cannot be deployed for combat until age 18; women serve in all three armed forces; reserve obligation to age 45 for enlisted men, age 50 for officers (2019)",
+    "pop2021": "225199.9370"
+  },
+  {
+    "country": "Papua New Guinea",
+    "compulsoryMilitary": false,
+    "note": "16 years of age for voluntary military service (with parental consent); no conscription; graduation from grade 12 required (2013)",
+    "pop2021": "9119.0100"
+  },
+  {
+    "country": "Paraguay",
+    "compulsoryMilitary": true,
+    "note": "18 years of age for compulsory and voluntary military service; conscript service obligation is 12 months for Army, 24 months for Navy; volunteers for the Air Force must be younger than 22 years of age with a secondary school diploma (2012)",
+    "pop2021": "7219.6380"
+  },
+  {
+    "country": "Peru",
+    "compulsoryMilitary": false,
+    "note": "18-50 years of age for male and 18-45 years of age for female voluntary military service; no conscription (2012)",
+    "pop2021": "33359.4180"
+  },
+  {
+    "country": "Philippines",
+    "compulsoryMilitary": false,
+    "note": "17-23 years of age (officers 20-24) for voluntary military service; no conscription; applicants must be single male or female Philippine citizens with either 72 college credit hours (enlisted) or a baccalaureate degree (officers) (2013)",
+    "pop2021": "111046.9130"
+  },
+  {
+    "country": "Poland",
+    "compulsoryMilitary": false,
+    "note": "18-28 years of age for male and female voluntary military service; conscription phased out in 2009-12; professional soldiers serve on a permanent basis (for an unspecified period of time) or on a contract basis (for a specified period of time); initial contract period is 24 months; women serve in the military on the same terms as men (2019)",
+    "pop2021": "37797.0050"
+  },
+  {
+    "country": "Portugal",
+    "compulsoryMilitary": true,
+    "note": "18-30 years of age for voluntary military service; no compulsory military service, but conscription possible if insufficient volunteers available; women serve in the armed forces, on naval ships since 1993, but are prohibited from serving in some combatant specialties; reserve obligation to age 35 (2012)",
+    "pop2021": "10167.9250"
+  },
+  {
+    "country": "Qatar",
+    "compulsoryMilitary": true,
+    "note": "conscription for males aged 18-35; compulsory service times range from 4 months to up to a year, depending on the cadets educational and professional circumstances; women are permitted to serve in the armed forces, including as uniformed officers and pilots (2019)",
+    "pop2021": "2930.5280"
+  },
+  {
+    "country": "Republic of the Congo",
+    "compulsoryMilitary": false,
+    "note": "18 years of age for voluntary military service; women may serve in the Armed Forces (2012)",
+    "pop2021": "5657.0130"
+  },
+  {
+    "country": "Romania",
+    "compulsoryMilitary": false,
+    "note": "conscription ended 2006; 18 years of age for male and female voluntary service; all military inductees (including women) contract for an initial 5-year term of service, with subsequent successive 3-year terms until age 36 (2015)",
+    "pop2021": "19127.7740"
+  },
+  {
+    "country": "Russia",
+    "compulsoryMilitary": true,
+    "note": "18-27 years of age for compulsory or voluntary military service; males are registered for the draft at 17 years of age; 1-year service obligation (conscripts can only be sent to combat zones after 6 months of training); reserve obligation for non-officers to age 50; enrollment in military schools from the age of 16, cadets classified as members of the armed forces (2018). From 2016 to 2018, Russian officials assessed that about 76-79% of draft age males were sufficiently fit for military service",
+    "pop2021": "145912.0250"
+  },
+  {
+    "country": "Rwanda",
+    "compulsoryMilitary": false,
+    "note": "18 years of age for voluntary military service; no conscription; Rwandan citizenship is required, as is a 9th-grade education for enlisted recruits and an A-level certificate for officer candidates; enlistment is either as contract (5-years, renewable twice) or career; retirement (for officers and senior NCOs) after 20 years of service or at 40-60 years of age (2012)",
+    "pop2021": "13276.5130"
+  },
+  {
+    "country": "Saint Kitts and Nevis",
+    "compulsoryMilitary": false,
+    "note": "18 years of age for voluntary military service; no conscription (2012)",
+    "pop2021": "53.5440"
+  },
+  {
+    "country": "Saint Lucia",
+    "compulsoryMilitary": false,
+    "note": "18 years of age for voluntary security service; no national army (2012)",
+    "pop2021": "184.4000"
+  },
+  {
+    "country": "San Marino",
+    "compulsoryMilitary": false,
+    "note": "18 is the legal minimum age for voluntary military service; no conscription; government has the authority to call up all San Marino citizens from 16-60 years of age to service in the military (2012)",
+    "pop2021": "34.0170"
+  },
+  {
+    "country": "Sao Tome and Principe",
+    "compulsoryMilitary": true,
+    "note": "18 is the legal minimum age for compulsory military service; 17 is the legal minimum age for voluntary service (2012)",
+    "pop2021": "223.3680"
+  },
+  {
+    "country": "Saudi Arabia",
+    "compulsoryMilitary": false,
+    "note": "17 is the legal minimum age for voluntary military service; no conscription (2012)",
+    "pop2021": "35340.6830"
+  },
+  {
+    "country": "Senegal",
+    "compulsoryMilitary": false,
+    "note": "18 years of age for voluntary military service; 20 years of age for selective conscript service; 2-year service obligation; women have been accepted into military service since 2008 (2013)",
+    "pop2021": "17196.3010"
+  },
+  {
+    "country": "Serbia",
+    "compulsoryMilitary": false,
+    "note": "18 years of age for voluntary military service; conscription abolished December 2010; reserve obligation to age 60 for men and age 50 for women (2013)",
+    "pop2021": "8697.5500"
+  },
+  {
+    "country": "Seychelles",
+    "compulsoryMilitary": false,
+    "note": "18 years of age for voluntary military service (younger with parental consent); no conscription (2012)",
+    "pop2021": "98.9080"
+  },
+  {
+    "country": "Sierra Leone",
+    "compulsoryMilitary": false,
+    "note": "18 is the legal minimum age for voluntary military service (younger with parental consent); women are eligible to serve; no conscription; candidates must be HIV negative (2012)",
+    "pop2021": "8141.3430"
+  },
+  {
+    "country": "Singapore",
+    "compulsoryMilitary": true,
+    "note": "18-21 years of age for male compulsory military service; 16 1/2 years of age for volunteers; 2-year conscript service obligation, with a reserve obligation to age 40 (enlisted) or age 50 (officers)",
+    "pop2021": "5896.6860"
+  },
+  {
+    "country": "Slovakia",
+    "compulsoryMilitary": false,
+    "note": "18-30 years of age for voluntary military service; conscription in peacetime suspended in 2006; women are eligible to serve (2012)",
+    "pop2021": "5460.7210"
+  },
+  {
+    "country": "Slovenia",
+    "compulsoryMilitary": false,
+    "note": "18-25 years of age for voluntary military service; conscription abolished in 2003 (2012)",
+    "pop2021": "2078.7240"
+  },
+  {
+    "country": "Somalia",
+    "compulsoryMilitary": true,
+    "note": "18 is the legal minimum age for compulsory and voluntary military service (2012)",
+    "pop2021": "16359.5040"
+  },
+  {
+    "country": "South Africa",
+    "compulsoryMilitary": false,
+    "note": "18 years of age for voluntary military service; women are eligible to serve in noncombat roles; 2-year service obligation (2012)",
+    "pop2021": "60041.9940"
+  },
+  {
+    "country": "South Korea",
+    "compulsoryMilitary": true,
+    "note": "18-35 years of age for compulsory military service, with middle school education required; minimum conscript service obligation - 21 months (Army, Marines), 23 months (Navy), 24 months (Air Force); 18-26 years of age for voluntary military service; women, in service since 1950, admitted to 7 service branches, including infantry, but excluded from artillery, armor, anti-air, and chaplaincy corps; HIV-positive individuals are exempt from military service (2017)",
+    "pop2021": "51305.1860"
+  },
+  {
+    "country": "South Sudan",
+    "compulsoryMilitary": true,
+    "note": "18 is the legal minimum age for compulsory and voluntary military service; the Government of South Sudan signed agreements in March 2012 and August 2015 that included the demobilization of all child soldiers within the armed forces and opposition, but the recruitment of child soldiers by the warring parties continues; as of the end of 2018, UNICEF estimates that more than 19,000 child soldiers had been used in the country's civil war since it began in December 2013 (2018)",
+    "pop2021": "11381.3780"
+  },
+  {
+    "country": "Spain",
+    "compulsoryMilitary": false,
+    "note": "18-26 years of age for voluntary military service by a Spanish citizen or legal immigrant, 2-3 year obligation; women allowed to serve in all SAF branches, including combat units; no conscription, but Spanish Government retains right to mobilize citizens 19-25 years of age in a national emergency; mandatory retirement of non-NCO enlisted personnel at age 45 or 58, depending on service length (2013)",
+    "pop2021": "46745.2160"
+  },
+  {
+    "country": "Sri Lanka",
+    "compulsoryMilitary": false,
+    "note": "18-22 years of age for voluntary military service; no conscription; 12-year service obligation (2018)",
+    "pop2021": "21497.3100"
+  },
+  {
+    "country": "Sudan",
+    "compulsoryMilitary": true,
+    "note": "18-33 years of age for male and female compulsory or voluntary military service; 1-2 year service obligation; a requirement that completion of national service was mandatory before entering public or private sector employment has been cancelled (2012)",
+    "pop2021": "44909.3530"
+  },
+  {
+    "country": "Suriname",
+    "compulsoryMilitary": false,
+    "note": "18 is the legal minimum age for voluntary military service; no conscription (2019)",
+    "pop2021": "591.8000"
+  },
+  {
+    "country": "Sweden",
+    "compulsoryMilitary": true,
+    "note": "18-47 years of age for male and female voluntary military service; Swedish citizenship required; service obligation: 7.5 months (Army), 7-15 months (Navy), 8-12 months (Air Force); after completing initial service, soldiers have a reserve commitment until age 47; compulsory military service, abolished in 2010, was reinstated in 2018 (2018)",
+    "pop2021": "10160.1690"
+  },
+  {
+    "country": "Switzerland",
+    "compulsoryMilitary": true,
+    "note": "18-30 years of age generally for male compulsory military service; 18 years of age for voluntary male and female military service; every Swiss male has to serve at least 245 days in the armed forces; conscripts receive 18 weeks of mandatory training, followed by six 19-day intermittent recalls for training during the next 10 years (2019)",
+    "pop2021": "8715.4940"
+  },
+  {
+    "country": "Syria",
+    "compulsoryMilitary": true,
+    "note": "18 years of age for compulsory and voluntary military service; conscript service obligation is 18 months; women are not conscripted but may volunteer to serve (2017)",
+    "pop2021": "18275.7020"
+  },
+  {
+    "country": "Taiwan",
+    "compulsoryMilitary": true,
+    "note": "starting with those born in 1994, males 18-36 years of age may volunteer for military service or must complete 4 months of compulsory military training (or substitute civil service in some cases); men born before December 1993 are required to complete compulsory service for 1 year (military or civil); men are subject to training recalls up to four times for periods not to exceed 20 days for 8 years after discharge; women may enlist, but are restricted to noncombat roles in most cases; as part of its transition to an all-volunteer military in December 2018, the last cohort of one-year military conscripts completed their service obligations (2019)",
+    "pop2021": "23855.0100"
+  },
+  {
+    "country": "Tajikistan",
+    "compulsoryMilitary": true,
+    "note": "18-27 years of age for compulsory or voluntary military service; 2-year conscript service obligation; males required to undergo compulsory military training between ages 16 and 55; males can enroll in military schools from at least age 15 (2012)",
+    "pop2021": "9749.6270"
+  },
+  {
+    "country": "Tanzania",
+    "compulsoryMilitary": false,
+    "note": "18 years of age for voluntary military service; no conscription (2012)",
+    "pop2021": "61498.4370"
+  },
+  {
+    "country": "Thailand",
+    "compulsoryMilitary": true,
+    "note": "21 years of age for compulsory military service; 18 years of age for voluntary military service; males register at 18 years of age; 2-year conscript service obligation based on lottery (2018)",
+    "pop2021": "69950.8500"
+  },
+  {
+    "country": "Timor-Leste",
+    "compulsoryMilitary": false,
+    "note": "18 years of age for voluntary military service; 18-month service obligation (2019)",
+    "pop2021": "1343.8730"
+  },
+  {
+    "country": "Togo",
+    "compulsoryMilitary": false,
+    "note": "18 years of age for military service; 2-year service obligation; currently the military is only an all-volunteer force (2017)",
+    "pop2021": "8478.2500"
+  },
+  {
+    "country": "Tonga",
+    "compulsoryMilitary": false,
+    "note": "16 years of age for voluntary enlistment (with parental consent); no conscription; the king retains the right to call up \"all those capable of bearing arms\" in wartime (2012)",
+    "pop2021": "106.7600"
+  },
+  {
+    "country": "Trinidad and Tobago",
+    "compulsoryMilitary": false,
+    "note": "18-25 years of age for voluntary military service (16 years of age with parental consent); no conscription; Trinidad and Tobago citizenship and completion of secondary school required (2012)",
+    "pop2021": "1403.3750"
+  },
+  {
+    "country": "Tunisia",
+    "compulsoryMilitary": true,
+    "note": "20-23 years of age for compulsory service, 1-year service obligation; 18-23 years of age for voluntary service; Tunisian nationality required (2012)",
+    "pop2021": "11935.7660"
+  },
+  {
+    "country": "Turkey",
+    "compulsoryMilitary": true,
+    "note": "Turkey has a system of male compulsory military service from 21-41 years of age (in case of mobilization, up to 65 years of age) and is expected to implement a new five-tier conscription model in May 2019; Tier 1: Six-months of obligatory service with possible exemption (subject to a lottery system), following 21-day basic training, in exchange for a one-time payment of 31,343 Turkish Lira; Tier 2: Following initial six-month conscription period, an additional six months paid service and possibility to convert to \"Specialized Sergeant\" category with full pay and benefits; Tier 3: Aimed at vocational school graduates, consists of 12-month service with possibility to convert to non-commissioned officer status; Tier 4: Aimed at university graduates, consists of 12-month service with possibility to convert to officer status (First Lieutenant); Tier 5: Turkish citizens with a residence or work permit who have worked abroad for at least 3 years (1095 days) can be exempt from military service in exchange for 5,000 EUR or its equivalent in foreign currencies (2019)",
+    "pop2021": "85042.7380"
+  },
+  {
+    "country": "Turkmenistan",
+    "compulsoryMilitary": true,
+    "note": "18-27 years of age for compulsory male military service; 2-year conscript service obligation; 20 years of age for voluntary service; males may enroll in military schools from age 15 (2015)",
+    "pop2021": "6117.9240"
+  },
+  {
+    "country": "Uganda",
+    "compulsoryMilitary": false,
+    "note": "18-26 years of age for voluntary military duty; 18-30 years of age for professionals; no conscription; 9-year service obligation; the government has stated that while recruitment under 18 years of age could occur with proper consent, \"no person under the apparent age of 18 years shall be enrolled in the armed forces\"; Ugandan citizenship and secondary education required (2012)",
+    "pop2021": "47123.5310"
+  },
+  {
+    "country": "Ukraine",
+    "compulsoryMilitary": true,
+    "note": "20-27 years of age for compulsory military service; conscript service obligation is 12 months (2019)",
+    "pop2021": "43466.8190"
+  },
+  {
+    "country": "United Arab Emirates",
+    "compulsoryMilitary": true,
+    "note": "18-30 years of age for compulsory military service for men, optional service for women; 17 years of age for male volunteers with parental approval; 2-year general obligation, 12 months for secondary school graduates; women may train for 9 months regardless of education (2016)",
+    "pop2021": "9991.0890"
+  },
+  {
+    "country": "United Kingdom",
+    "compulsoryMilitary": false,
+    "note": "16-33 years of age (officers 17-28) for voluntary military service (with parental consent under 18); no conscription; women serve in military services including ground combat roles; must be citizen of the UK, Commonwealth, or Republic of Ireland; reservists serve a minimum of 3 years, to age 45 or 55; 17 years 6 months of age for voluntary military service by Nepalese citizens in the Brigade of Gurkhas; 16-34 years of age for voluntary military service by Papua New Guinean citizens (2016)",
+    "pop2021": "68207.1160"
+  },
+  {
+    "country": "United States",
+    "compulsoryMilitary": false,
+    "note": "18 years of age (17 years of age with parental consent) for male and female voluntary service; no conscription; maximum enlistment age 42 (Army), 27 (Air Force), 34 (Navy), 28 (Marines); 8-year service obligation, including 2-5 years active duty (Army), 2 years active (Navy), 4 years active (Air Force, Marines); all military occupations and positions open to women (2016)",
+    "pop2021": "332915.0730"
+  },
+  {
+    "country": "Uruguay",
+    "compulsoryMilitary": false,
+    "note": "18-30 years of age (18-22 years of age for navy) for male or female voluntary military service; up to 40 years of age for specialists; enlistment is voluntary in peacetime, but the government has the authority to conscript in emergencies; minimum 6-year education (2013)",
+    "pop2021": "3485.1510"
+  },
+  {
+    "country": "Uzbekistan",
+    "compulsoryMilitary": true,
+    "note": "18 years of age for compulsory military service; 1-month or 1-year conscript service obligation for males; moving toward a professional military, but conscription in some form will continue; the military cannot accommodate everyone who wishes to enlist, and competition for entrance into the military is similar to the competition for admission to universities; note - widely considered to have one of the strongest militaries in Central Asia, although it is untested (2019)",
+    "pop2021": "33935.7630"
+  },
+  {
+    "country": "Vatican City",
+    "compulsoryMilitary": false,
+    "note": "Pontifical Swiss Guard Corps (Corpo della Guardia Svizzera Pontificia): 19-30 years of age for voluntary military service; no conscription; must be Roman Catholic, a single male, and a Swiss citizen, with a secondary education (2019)",
+    "pop2021": "0.8000"
+  },
+  {
+    "country": "Venezuela",
+    "compulsoryMilitary": false,
+    "note": "all citizens of military service age (18-60 years old) are obligated to register for military service, though mandatory recruitment is forbidden; the minimum service obligation is 12 months (2016)",
+    "pop2021": "28704.9540"
+  },
+  {
+    "country": "Vietnam",
+    "compulsoryMilitary": true,
+    "note": "18-25 years of age for male compulsory and voluntary military service; females may volunteer for active duty military service; conscription typically takes place twice annually and service obligation is 18 months (Army, Air Defense), 2 years (Navy and Air Force); 18-45 years of age (male) or 18-40 years of age (female) for Militia Force or Self Defense Force service; males may enroll in military schools at age 17 (2013)",
+    "pop2021": "98168.8330"
+  },
+  {
+    "country": "Yemen",
+    "compulsoryMilitary": false,
+    "note": "18 is the legal minimum age for voluntary military service; no conscription; 2-year service obligation (2018)",
+    "pop2021": "30490.6400"
+  },
+  {
+    "country": "Zambia",
+    "compulsoryMilitary": false,
+    "note": "national registration required at age 16; 18-25 years of age for male and female voluntary military service (16 years of age with parental consent); no conscription; Zambian citizenship required; grade 12 certification required; mandatory HIV testing on enlistment; mandatory retirement for officers at age 65 (Army, Air Force) (2012)",
+    "pop2021": "18920.6510"
+  },
+  {
+    "country": "Zimbabwe",
+    "compulsoryMilitary": false,
+    "note": "18-24 years of age for voluntary military service; no conscription; women are eligible to serve (2012)",
+    "pop2021": "15092.1710"
+  }
+]

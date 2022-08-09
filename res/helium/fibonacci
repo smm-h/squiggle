@@ -1,0 +1,10 @@
+
+f = function {
+    if (i isLessThan 2) {
+        f {i minus 1} plus f {i minus 2}
+    } else 1
+}
+
+main = function {
+    f {}
+}

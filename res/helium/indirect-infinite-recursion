@@ -1,0 +1,12 @@
+
+f = function {
+    g {}
+}
+
+g = function {
+    f {}
+}
+
+main = function {
+    f {}
+}

@@ -1,0 +1,8 @@
+
+f = function {
+    f {}
+}
+
+main = function {
+    f {}
+}

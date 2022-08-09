@@ -1,0 +1,126 @@
+/*@font-face {*/
+/*    font-family: "Noto Sans Arabic";*/
+/*    !*unicode-range: U+0600-06FF; !* Persian *!*!*/
+/*    src: url('https://fonts.googleapis.com/css?family=Noto+Sans+Arabic');*/
+/*}*/
+
+body {
+    padding: 2%;
+    font-family: Helvetica, Verdana, sans-serif;
+    line-height: 200%;
+    font-size: large;
+    background-color: ghostwhite;
+}
+
+code, pre {
+    font-family: Consolas, monospace;
+}
+
+th {
+    color: silver;
+    font-style: italic;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+}
+
+a {
+    color: #025;
+    text-decoration: none;
+    border-bottom: 1px dotted #025;
+    letter-spacing: 0;
+    text-transform: none;
+    font-style: normal;
+}
+
+table, th, td {
+    border-collapse: collapse;
+    border: 1px dashed silver;
+    padding: 16px;
+    /*white-space: nowrap;*/
+}
+
+th:nth-child(even),
+td:nth-child(even) {
+    background-color: rgb(0, 0, 0, 2%);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    /*text-align: center;*/
+    color: #025;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+}
+
+.heading1 {
+    font-weight: normal;
+    padding: 8px;
+    color: white;
+    background-color: #025;
+    /*border-radius: 8px;*/
+    /*border: white dashed 1px;*/
+}
+
+h2, h4, h6 {
+    font-style: italic;
+}
+
+pre {
+    border: 1px dashed silver;
+    padding: 24px;
+    background-color: rgb(255, 255, 255, 40%);
+    font-size: medium;
+    line-height: 160%;
+}
+
+.json_constant, .json_structure {
+    font-weight: bold;
+    color: indigo;
+}
+
+.json_object_key {
+    font-style: italic;
+    color: seagreen;
+}
+
+.code_line_numbers {
+    font-style: italic;
+    color: silver;
+}
+
+.json_literal {
+    color: chocolate;
+}
+
+.json_enum_name {
+    font-weight: bold;
+}
+
+.json_enum_id, .json_enum_name {
+    color: darkviolet;
+}
+
+.json_null {
+    border: 1px dashed red;
+    border-radius: 50%;
+    color: transparent;
+}
+
+.json_true {
+    color: green
+}
+
+.json_false {
+    color: red
+}
+
+.json_number {
+    color: darkslategray
+}
+
+/*
+constant true false null
+literal number string enum_name enum_id
+structure array_brackets array_comma object_braces object_comma comma
+object_key object_colon
+whitespace
+ */
