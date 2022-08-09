@@ -57,7 +57,7 @@ object DocsGen {
     }
 
     private fun Markup.InlineHelpers.pkg(text: String, name: String = text, pkg: String = packageStack.last(), module: String = "main") =
-        src(text, name, pkg, module)
+        src(text, name, pkg, module, ext = "")
 
     private fun Markup.InlineHelpers.src(text: String, name: String = text, pkg: String = packageStack.last(), module: String = "main", lang: String = "kotlin", ext: String = "kt", bookmark: String = "") =
         link(text, "src/$module/$lang/${"$pkg.$name".replace('.', '/')}.$ext", bookmark)
