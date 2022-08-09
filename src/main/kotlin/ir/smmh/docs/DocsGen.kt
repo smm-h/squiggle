@@ -11,10 +11,12 @@ import ir.smmh.util.FileUtil.writeTo
 /**
  * See [Links]
  */
-object DocsGen {
-    val lang: Language.Markup = Markdown // Html
-    private val fileExt = if (lang is Language.HasFileExt) lang.fileExt else "txt"
-    private val metadata: String? = null
+class DocsGen(
+    val markupLanguage: Language.Markup,
+    private val metadata: String? = null,
+) {
+
+    private val fileExt = if (markupLanguage is Language.HasFileExt) markupLanguage.fileExt else "txt"
     private val docs: MutableMap<String, Markup.Document> = HashMap()
     private val packageStack = ArrayDeque<String>()
 
@@ -56,8 +58,8 @@ object DocsGen {
         }
     }
 
-    private fun Markup.InlineHelpers.pkg(text: String, name: String = text, pkg: String = packageStack.last(), module: String = "main") =
-        src(text, name, pkg, module, ext = "")
+    private fun Markup.InlineHelpers.pkg(text: String, name: String = text, pkg: String = packageStack.last(), module: String = "main", lang: String = "kotlin") =
+        link(text, "src/$module/$lang/${"$pkg.$name".replace('.', '/')}")
 
     private fun Markup.InlineHelpers.src(text: String, name: String = text, pkg: String = packageStack.last(), module: String = "main", lang: String = "kotlin", ext: String = "kt", bookmark: String = "") =
         link(text, "src/$module/$lang/${"$pkg.$name".replace('.', '/')}.$ext", bookmark)
@@ -67,14 +69,16 @@ object DocsGen {
 
     fun generate() {
         docs.forEach { url, doc ->
-            val contents = bindFileExt(lang.compile(doc, metadata), fileExt)
+            val contents = bindFileExt(markupLanguage.compile(doc, metadata), fileExt)
             val filename = bindFileExt(url + "." + lateFileExt, fileExt)
             contents writeTo touch(filename)
         }
     }
 
-    @JvmStatic
-    fun main(args: Array<String>) {
-        generate()
+    companion object {
+        @JvmStatic
+        fun main(args: Array<String>) {
+            DocsGen(Markdown).generate() // Html
+        }
     }
 }
