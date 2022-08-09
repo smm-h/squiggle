@@ -57,10 +57,10 @@ object DocsGen {
     }
 
     private fun Markup.InlineHelpers.pkg(text: String, name: String = text, pkg: String = packageStack.last(), module: String = "main") =
-        src(text, name, pkg, "", module, "")
+        src(text, name, pkg, module)
 
-    private fun Markup.InlineHelpers.src(text: String, name: String = text, pkg: String = packageStack.last(), ext: String = "kt", module: String = "main", bookmark: String = "") =
-        link(text, "src/$module/${"$pkg.$name".replace('.', '/')}.$ext", bookmark)
+    private fun Markup.InlineHelpers.src(text: String, name: String = text, pkg: String = packageStack.last(), module: String = "main", lang: String = "kotlin", ext: String = "kt", bookmark: String = "") =
+        link(text, "src/$module/$lang/${"$pkg.$name".replace('.', '/')}.$ext", bookmark)
 
     private fun Markup.InlineHelpers.wikipedia(text: String, query: String = text, lang: String = "en", bookmark: String = "") =
         link(text, "https://$lang.wikipedia.org/wiki/${query.replace(" ", "%20")}", bookmark)
