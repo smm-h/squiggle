@@ -1,6 +1,6 @@
 package ir.smmh.lingu
 
-import ir.smmh.lingu.Tokenizer.Companion.tokens
+import ir.smmh.lingu.Tokenizer.Companion.Tokens
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
@@ -18,10 +18,10 @@ class CodeProcessListTest {
     @Test
     fun testSplitter() {
         val tokenCount = Code.Aspect<Int>("token-count")
-        val process = Splitter.Predefined.splitter + { it[tokenCount] = it[tokens]!!.size }
+        val process = Splitter.Predefined.splitter + { it[tokenCount] = it[Tokens]!!.size }
         val code = Code("Hi, it's nice to finally meet you!", null)
         process(code)
-        println(tokens of code)
+        println(Tokens of code)
         assertEquals(7, tokenCount of code)
     }
 }

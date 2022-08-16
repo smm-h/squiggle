@@ -289,16 +289,8 @@ interface NodedSpecificTree<DataType, NodeType : NodedSpecificTree.Node<DataType
         ): NodedSpecificTreeImpl<DataType>.Node? {
             val otherChild: NodedSpecificTreeImpl<DataType>.Node = otherTree.Node(data, parent)
             for (child in children) {
-                if (child != null) {
-                    if (toTest(child)) {
-                        (otherChild.children as Sequential.Mutable.VariableSize).append(
-                            child.pruneOutOfPlace(
-                                otherTree,
-                                otherChild,
-                                toTest
-                            )
-                        )
-                    }
+                if (child != null && toTest(child)) {
+                    (otherChild.children).append(child.pruneOutOfPlace(otherTree, otherChild, toTest))
                 }
             }
             return otherChild
@@ -311,13 +303,7 @@ interface NodedSpecificTree<DataType, NodeType : NodedSpecificTree.Node<DataType
         ): NodedSpecificTreeImpl<OtherDataType>.Node? {
             val otherChild: NodedSpecificTreeImpl<OtherDataType>.Node = otherTree.Node(toApply(data), parent)
             for (child in children) {
-                (otherChild.children as Sequential.Mutable.VariableSize).append(
-                    child?.applyOutOfPlace(
-                        otherTree,
-                        otherChild,
-                        toApply
-                    )
-                )
+                (otherChild.children).append(child?.applyOutOfPlace(otherTree, otherChild, toApply))
             }
             return otherChild
         }
@@ -334,13 +320,7 @@ interface NodedSpecificTree<DataType, NodeType : NodedSpecificTree.Node<DataType
             }
             val otherChild: NodedSpecificTreeImpl<DataType>.Node = otherTree.Node(data, parent)
             for (child in children) {
-                (otherChild.children as Sequential.Mutable.VariableSize).append(
-                    child!!.clone(
-                        otherTree,
-                        otherChild,
-                        deep
-                    )
-                )
+                (otherChild.children).append(child!!.clone(otherTree, otherChild, deep))
             }
             return otherChild
         }

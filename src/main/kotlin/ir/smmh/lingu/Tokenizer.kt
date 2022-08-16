@@ -4,10 +4,10 @@ fun interface Tokenizer : Code.Process {
     fun tokenize(code: Code): List<Token>
 
     override fun invoke(code: Code) {
-        code[tokens] = tokenize(code)
+        code[Tokens] = tokenize(code)
     }
 
     companion object {
-        val tokens = Code.Aspect<List<Token>>("tokens")
+        val Tokens = Code.Aspect<List<Token>>("tokens")
     }
 }

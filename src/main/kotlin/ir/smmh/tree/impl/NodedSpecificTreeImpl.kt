@@ -42,40 +42,34 @@ class NodedSpecificTreeImpl<DataType>(override val mut: Mut = Mut()) :
         return false
     }
 
-    override fun isEmpty(): Boolean {
-        return rootNode == null
-    }
+    override fun isEmpty(): Boolean = rootNode == null
 
-    override fun nodes(): CanContainValue<Node> {
-        return nodeContainer
-    }
+    override fun nodes(): CanContainValue<Node> = nodeContainer
 
-    override fun getRootData(): DataType? {
-        return rootNode?.data
-    }
-
-    override fun setRootData(data: DataType) {
-        rootNode = Node(data, null)
-    }
+    override var rootData: DataType?
+        get() = rootNode?.data
+        set(value) {
+            rootNode = if (value == null) null else Node(value, null)
+        }
 
     override fun specificThis(): NodedSpecificTreeImpl<DataType> = this
 
     override fun toString() = rootNode?.nodeToString() ?: "{empty}"
 
-    inner class Node(override var data: DataType, parent: Node?) :
+    inner class Node internal constructor(override var data: DataType, parent: Node?) :
         NodedSpecificTree.Mutable.Node<DataType, Node, NodedSpecificTreeImpl<DataType>> {
         // TODO Tree.VariableDegree
-        private val _children: Sequential.Mutable.VariableSize<Node?> = SequentialImpl()
+        override val children: Sequential.Mutable.VariableSize<Node?> = SequentialImpl()
         override var parent: Node? = parent
         override fun toString(): String {
-            return "<$data>" + if (_children.isEmpty()) "" else _children.toString()
+            return "<$data>" + if (this.children.isEmpty()) "" else this.children.toString()
         }
 
         internal fun nodeToString(): String {
             var childrenString = ""
-            if (!_children.isEmpty()) {
+            if (!this.children.isEmpty()) {
                 val joiner = StringJoiner(", ", ":(", ")")
-                for (child in _children) {
+                for (child in this.children) {
                     joiner.add(child?.nodeToString() ?: "-")
                 }
                 childrenString = joiner.toString()
@@ -83,9 +77,8 @@ class NodedSpecificTreeImpl<DataType>(override val mut: Mut = Mut()) :
             return (data?.toString() ?: "~") + childrenString
         }
 
-        private fun makeNode(data: DataType): Node {
-            return Node(data, this)
-        }
+        private fun makeNode(data: DataType): Node =
+            Node(data, this)
 
         override fun asTree(): NodedSpecificTreeImpl<DataType> {
             val subtree = NodedSpecificTreeImpl<DataType>()
@@ -94,20 +87,13 @@ class NodedSpecificTreeImpl<DataType>(override val mut: Mut = Mut()) :
             return subtree
         }
 
-        override val children: Sequential<Node?> = _children
+        override val indexInParent: Int =
+            this.parent?.children?.findFirst(this) ?: -1
 
-        override val indexInParent: Int
-            get() {
-                return this.parent?._children?.findFirst(this) ?: -1
-            }
+        override val tree: NodedSpecificTreeImpl<DataType> =
+            this@NodedSpecificTreeImpl
 
-        override val tree: NodedSpecificTreeImpl<DataType>
-            get() {
-                return this@NodedSpecificTreeImpl
-            }
-
-        override fun specificThis(): Node {
-            return this
-        }
+        override fun specificThis(): Node =
+            this
     }
 }

@@ -69,14 +69,15 @@ class Code private constructor(
     fun beDeserialized(): Any? {
         val it = language
         if (it is Language.Serialization) it.deserialize(this)
-        return this[Language.Serialization.deserialization]
+        return this[Language.Serialization.Deserialization]
     }
 
     private val aspects: MutableMap<Aspect<*>, Any> = HashMap()
 
     fun interface Process : (Code) -> Unit {
-        abstract class Named(override val name: String) : ir.smmh.nile.Named, Process {
-            override fun toString() = name
+
+        interface HasRequirements : Process {
+            fun checkRequirements(code: Code): Boolean
         }
 
         operator fun plus(that: Process): Process {
@@ -94,9 +95,18 @@ class Code private constructor(
         /**
          * Immutable list of processes
          */
-        private class List(val processes: kotlin.collections.List<Process>) : Process, Iterable<Process> {
+        private class List(val processes: kotlin.collections.List<Process>) : Process.HasRequirements,
+            Iterable<Process> {
             override fun iterator(): Iterator<Process> =
                 processes.iterator()
+
+            override fun checkRequirements(code: Code): Boolean {
+                for (process in processes)
+                    if (process is HasRequirements)
+                        if (!process.checkRequirements(code))
+                            return false
+                return true
+            }
 
             override fun invoke(code: Code) {
                 reset(code)
@@ -108,7 +118,7 @@ class Code private constructor(
                     }
                     if (code.processFailed) break
                 }
-                (mishaps of code)?.joinToString("\n")?.let { println(it) }
+                (Mishaps of code)?.joinToString("\n")?.let { println(it) }
             }
         }
     }
@@ -149,8 +159,8 @@ class Code private constructor(
     ) = issue(Mishap.Impl(token, message, level, fatal))
 
     fun issue(mishap: Mishap) {
-        if (mishaps !in aspects) aspects[mishaps] = ArrayList<Mishap>()
-        (mishaps of this)!!.add(mishap)
+        if (Mishaps !in aspects) aspects[Mishaps] = ArrayList<Mishap>()
+        (Mishaps of this)!!.add(mishap)
         if (mishap.fatal) processFailed = true
     }
 
@@ -168,11 +178,11 @@ class Code private constructor(
 
     companion object {
 
-        val mishaps = Aspect<MutableList<Mishap>>("mishaps")
-        val links = Aspect<Map<IntRange, URI>>("links")
-        val references = Aspect<Map<IntRange, Defined>>("references")
+        val Mishaps = Aspect<MutableList<Mishap>>("mishaps")
+        val Links = Aspect<Map<IntRange, URI>>("links")
+        val References = Aspect<Map<IntRange, Defined>>("references")
 
-        val reset = object : Code.Process.Named("CODE-RESET") {
+        val reset = object : Code.Process {
             override fun invoke(code: Code) {
                 code.processFailed = false
                 code.aspects.clear()

@@ -55,11 +55,11 @@ class NodedBinarySpecificTreeImpl<DataType>(override val mut: Mut = Mut()) :
         return nodeContainer
     }
 
-    override fun getRootData(): DataType? = this.rootNode?.data
-
-    override fun setRootData(data: DataType) {
-        rootNode = Node(data, null)
-    }
+    override var rootData: DataType?
+        get() = this.rootNode?.data
+        set(value) {
+            rootNode = if (value == null) null else Node(value, null)
+        }
 
     override fun specificThis(): NodedBinarySpecificTreeImpl<DataType> {
         return this

@@ -3,7 +3,7 @@ package ir.smmh.helium
 import ir.smmh.lingu.Code
 import ir.smmh.lingu.Language
 import ir.smmh.lingu.Tokenizer
-import ir.smmh.lingu.Tokenizer.Companion.tokens
+import ir.smmh.lingu.Tokenizer.Companion.Tokens
 import ir.smmh.nilex.NiLexLanguage
 import ir.smmh.nilex.NiLexTokenizerFactory
 import java.io.File
@@ -18,7 +18,7 @@ object Helium : Language.Processable {
 
 
     override val process: Code.Process = tokenizer + { code ->
-        println(tokens of code)
+        println(Tokens of code)
     }
 }
 

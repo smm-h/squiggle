@@ -166,7 +166,7 @@ object TokenizationUtil {
             '\n' -> "\\n"
             '\t' -> "\\t"
             '\r' -> "\\r"
-            ' ' -> "-"
+            ' ' -> " "
             else -> "?"
         }
     }

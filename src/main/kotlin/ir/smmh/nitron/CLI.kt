@@ -5,7 +5,7 @@ import ir.smmh.lingu.Language.Companion.lateFileExt
 import ir.smmh.lingu.Splitter
 import ir.smmh.lingu.TokenizationUtil.Exception
 import ir.smmh.lingu.Tokenizer
-import ir.smmh.lingu.Tokenizer.Companion.tokens
+import ir.smmh.lingu.Tokenizer.Companion.Tokens
 import ir.smmh.markup.Html
 import ir.smmh.markup.toOnOff
 import ir.smmh.markup.toYesNo
@@ -317,7 +317,7 @@ object CLI {
                     print(" ~> ")
                     val code = Code(it.nextLine(), null)
                     tokenizer.tokenize(code)
-                    val tokens = (tokens of code)!!
+                    val tokens = (Tokens of code)!!
                     val command = tokens[0].data
                     var notDoneYet = true
                     @Suppress("KotlinConstantConditions") // this way is more stylish

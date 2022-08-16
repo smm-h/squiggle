@@ -2,10 +2,10 @@ package ir.smmh.nilex
 
 import ir.smmh.lingu.Code
 import ir.smmh.lingu.Token
-import ir.smmh.lingu.TokenizationUtil.toCharSet
 import ir.smmh.lingu.Tokenizer
 import ir.smmh.nile.Order
 import ir.smmh.serialization.json.Json
+import ir.smmh.util.StringReplacer
 
 
 class NiLexTokenizer() : Tokenizer {
@@ -23,31 +23,49 @@ class NiLexTokenizer() : Tokenizer {
         private val openerLength: (Kept) -> Int = { +it.opener.length }
     }
 
+    private val escape = StringReplacer().apply {
+        add("\\t", "\t")
+        add("\\n", "\n")
+        add("\\r", "\r")
+        add("\\\'", "\'")
+    }
+
     fun define(definition: Json.Object) {
         if (sealed) throw Exception("cannot redefine sealed")
         else when (val kind = definition["kind"] as String?) {
-            "verbatim" -> {
-                // TODO repeated verbatims should be idempotent
-                when (val it = definition["data"]) {
-                    is String -> Verbatim(it)
-                    is List<*> -> for (i in it) Verbatim(i as String)
-                }
-            }
+            // TODO repeated verbatims should be idempotent
+            "verbatim" -> Verbatim(escape(definition["data"] as String))
             "streak" -> {
                 val name = definition["name"] as String
-                val charSet: Set<Char> = when (val it = definition["char-set"]) {
-                    is String -> it.toCharSet()
-                    is List<*> -> {
-                        val s: MutableSet<Char> = HashSet()
-                        for (i in it) when (i as String) {
-                            "[0-9]" -> "0123456789"
-                            "[A-Z]" -> "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                            "[a-z]" -> "abcdefghijklmnopqrstuvwxyz"
-                            else -> i
-                        }.forEach { s.add(it) }
-                        s
+                val charSet: MutableSet<Char> = HashSet()
+                val add: (Char) -> Unit = { charSet.add(it) }
+                val addMany: (String) -> Unit = { it.forEach(add) }
+                val string = escape(definition["char-set"] as String)
+                var i = 0
+                while (i < string.length) {
+                    when (val c = string[i]) {
+                        '\\' -> {
+                            i++
+                            when (val e = string[i]) {
+                                '\'' -> add('\'')
+                                else -> throw Exception("invalid escape: \\$e")
+                            }
+                        }
+                        '[' -> {
+                            when (string.substring(i, i + 5)) {
+                                "[1-9]" -> addMany("123456789")
+                                "[0-9]" -> addMany("0123456789")
+                                "[A-Z]" -> addMany("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+                                "[a-z]" -> addMany("abcdefghijklmnopqrstuvwxyz")
+                                "[0-F]" -> addMany("0123456789ABCDEF")
+                                "[0-Z]" -> addMany("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+                                else -> throw Exception("invalid character group")
+                            }
+                            i += 4
+                        }
+                        else -> add(c)
                     }
-                    else -> throw Exception("wrong type")
+                    i++
                 }
                 val type = Streak(name, charSet)
                 charSet.forEach {
@@ -56,8 +74,8 @@ class NiLexTokenizer() : Tokenizer {
             }
             "kept" -> {
                 val name = definition["name"] as String?
-                val opener = definition["opener"] as String
-                val closer = definition["closer"] as String
+                val opener = escape(definition["opener"] as String)
+                val closer = escape(definition["closer"] as String)
                 val type = Kept(opener, closer, name)
                 keptOpenersThatStartWithChar.computeIfAbsent(opener[0]) { Order.by(openerLength) }.enter(type)
             }
@@ -71,7 +89,7 @@ class NiLexTokenizer() : Tokenizer {
     }
 
     private fun canMake(tokens: List<Token>, index: Int, pattern: List<String>): Boolean {
-        if (index + pattern.size >= tokens.size) return false
+        if (index + pattern.size > tokens.size) return false
         pattern.forEachIndexed { i, s -> if (tokens[index + i].data != s) return false }
         return true
     }
@@ -138,7 +156,7 @@ class NiLexTokenizer() : Tokenizer {
                     where = toEnter
 
                     // add the opener to this kept
-                    tokens.add(Token(where.opener, where.keeper, fwFlag))
+                    tokens.add(Token(where.opener, where.openerType, fwFlag))
 
                     // move the flag forward
                     fwFlag += where.opener.length - 1
@@ -161,7 +179,7 @@ class NiLexTokenizer() : Tokenizer {
                     tokens.add(Token(string.substring(bwFlag, fwFlag), where, bwFlag))
 
                     // also add its closer
-                    tokens.add(Token(where.closer, where.keeper, bwFlag))
+                    tokens.add(Token(where.closer, where.closerType, bwFlag))
 
                     // TODO test a kept with an at least 3 characters long closer
 
@@ -270,13 +288,9 @@ class NiLexTokenizer() : Tokenizer {
         return output
     }
 
-    sealed class TokenType : ir.smmh.lingu.Token.Type {
-        override fun toString() = name
-    }
+    sealed class TokenType(name: String) : ir.smmh.lingu.Token.Type.Atomic(name)
 
-    object UnknownChar : TokenType() {
-        override val name = "unknown-character"
-
+    object UnknownChar : TokenType("?") {
         class Mishap(override val token: Token) : Code.Mishap() {
             override val message = "unknown character ${token.data}"
             override val level = Level.ERROR
@@ -284,28 +298,29 @@ class NiLexTokenizer() : Tokenizer {
         }
     }
 
-    inner class Verbatim(val data: String) : TokenType() {
-        override val name = "<$data>" // "verbatim"
-        val pattern: List<String> = makeupStreaks(0, data).map { it.data }
+    inner class Verbatim(val data: String) : TokenType("«$data»") { // «»
+        val pattern: List<String>
 
         init {
 //            for (token in pattern) if (token.type is UnknownChar) charsThatStartVerbatims.add(token.data[0])
+            pattern = makeupStreaks(0, data).map { it.data }
             verbatimsByWhichTokenTheyStart.computeIfAbsent(pattern[0]) { Order.by(dataLength) }.enter(this)
         }
     }
 
-    class Streak(override val name: String, val charSet: Set<Char>) : TokenType()
+    class Streak(name: String, val charSet: Set<Char>) : TokenType(name)
 //        init { println(charSet.map { it.code }) }
 
     class Kept(
         val opener: String,
         val closer: String,
         name: String? = null
-    ) : TokenType() {
-        override val name: String = name ?: "$opener...$closer"
-        val keeper = Keeper("$name-keeper")
+    ) : TokenType(name ?: "$opener...$closer") {
+        val openerType = Opener(this.name)
+        val closerType = Closer(this.name)
 
-        class Keeper(override val name: String) : TokenType()
+        class Opener(name: String) : TokenType("$name-opener")
+        class Closer(name: String) : TokenType("$name-closer")
 
         class Unclosed(override val token: Token) : Code.Mishap() {
             override val message = "opened but not closed ${token.data}"
@@ -313,7 +328,7 @@ class NiLexTokenizer() : Tokenizer {
             override val fatal = false
 
             init {
-                assert(token.type is Keeper)
+                assert(token.type is Opener)
             }
         }
     }

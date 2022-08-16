@@ -52,7 +52,7 @@ class Splitter(private val delimiters: Set<Char> = "\t\n\r ".toCharSet()) : Toke
         types.remove(OTHER)
     }
 
-    fun getTokenTypeOf(string: String): Token.Type {
+    fun getTokenTypeOf(string: String): Token.Type.Atomic {
         for (t in types) if (t.predicate(string)) return t
         return OTHER
     }
@@ -72,8 +72,8 @@ class Splitter(private val delimiters: Set<Char> = "\t\n\r ".toCharSet()) : Toke
         return tokens
     }
 
-    inner class TokenType(override val name: String, val predicate: (String) -> Boolean) :
-        ir.smmh.lingu.Token.Type {
+    inner class TokenType(name: String, val predicate: (String) -> Boolean) :
+        ir.smmh.lingu.Token.Type.Atomic(name) {
         init {
             types.add(this)
         }

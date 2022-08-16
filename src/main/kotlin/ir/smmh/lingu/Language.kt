@@ -79,11 +79,11 @@ interface Language {
 
         fun serializeToCode(it: Any?): Code = Code(serialize(it), this)
         fun deserialize(code: Code) {
-            code[deserialization] = deserialize(code.string)
+            code[Deserialization] = deserialize(code.string)
         }
 
         companion object {
-            val deserialization = Code.Aspect<Any?>("deserialization")
+            val Deserialization = Code.Aspect<Any?>("deserialization")
         }
         // TODO intermediate representation?
     }
