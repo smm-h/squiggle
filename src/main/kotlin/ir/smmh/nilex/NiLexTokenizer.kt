@@ -4,41 +4,20 @@ import ir.smmh.lingu.Code
 import ir.smmh.lingu.Token
 import ir.smmh.lingu.TokenizationUtil.toCharSet
 import ir.smmh.lingu.Tokenizer
-import ir.smmh.lingu.Tokenizer.Companion.tokens
 import ir.smmh.nile.Order
 import ir.smmh.serialization.json.Json
 
 
-class NiLexTokenizer(name: String) : Tokenizer.Named(name) {
+class NiLexTokenizer() : Tokenizer {
 
-    private val charsThatStartVerbatims: MutableSet<Char> = HashSet()
-    private val verbatimsThatStartWithToken: MutableMap<String, Order<Verbatim>> = HashMap()
+//    private val charsThatStartVerbatims: MutableSet<Char> = HashSet()
+    private val verbatimsByWhichTokenTheyStart: MutableMap<String, Order<Verbatim>> = HashMap()
     private val keptOpenersThatStartWithChar: MutableMap<Char, Order<Kept>> = HashMap()
     private val streaksThatContainChar: MutableMap<Char, Order<Streak>> = HashMap()
 
-    private val ignorable: MutableSet<String> = HashSet()
-    private val ignored: MutableList<String> = ArrayList()
-
     private var sealed: Boolean = false
 
-    private fun ignore(name: String): Boolean {
-        return if (ignorable.contains(name)) {
-            ignored.add(name)
-            ignorable.remove(name)
-            true
-        } else false
-    }
-
-    override fun invoke(code: Code) {
-        super.invoke(code)
-        code[strippedTokens] = code[tokens].filter {
-            it.type.name !in ignored
-        }
-    }
-
     companion object {
-        val strippedTokens = Code.Aspect<List<Token>>("stripped-tokens")
-
         private val dataLength: (Verbatim) -> Int = { -it.data.length }
         private val charSetSize: (Streak) -> Int = { +it.charSet.size }
         private val openerLength: (Kept) -> Int = { +it.opener.length }
@@ -56,8 +35,6 @@ class NiLexTokenizer(name: String) : Tokenizer.Named(name) {
             }
             "streak" -> {
                 val name = definition["name"] as String
-                ignorable.add(name)
-                if (definition["ignore"] as Boolean? == true) ignore(name)
                 val charSet: Set<Char> = when (val it = definition["char-set"]) {
                     is String -> it.toCharSet()
                     is List<*> -> {
@@ -79,16 +56,11 @@ class NiLexTokenizer(name: String) : Tokenizer.Named(name) {
             }
             "kept" -> {
                 val name = definition["name"] as String?
-                name?.let {
-                    ignorable.add(it)
-                    if (definition["ignore"] as Boolean? == true) ignore(it)
-                }
                 val opener = definition["opener"] as String
                 val closer = definition["closer"] as String
                 val type = Kept(opener, closer, name)
                 keptOpenersThatStartWithChar.computeIfAbsent(opener[0]) { Order.by(openerLength) }.enter(type)
             }
-            "ignore" -> ignore(definition["name"] as String)
             "seal" -> {
                 sealed = true
 //                println(streaksThatContainChar.entries.map { "${it.key.code}:${it.value}" })
@@ -98,11 +70,9 @@ class NiLexTokenizer(name: String) : Tokenizer.Named(name) {
         }
     }
 
-    private fun canMake(tokens: List<Token>, index: Int, pattern: List<Token>): Boolean {
-        pattern.forEachIndexed { i, token ->
-            if (index + i >= tokens.size) return false
-            if (token != tokens[index + i]) return false
-        }
+    private fun canMake(tokens: List<Token>, index: Int, pattern: List<String>): Boolean {
+        if (index + pattern.size >= tokens.size) return false
+        pattern.forEachIndexed { i, s -> if (tokens[index + i].data != s) return false }
         return true
     }
 
@@ -238,38 +208,34 @@ class NiLexTokenizer(name: String) : Tokenizer.Named(name) {
         return tokens
     }
 
-    private fun makeupVerbatims(tokens: MutableList<Token>): MutableList<Token> {
-        var index = 0
-        while (index < tokens.size) {
-
-            // get t[i]
-            val token = tokens[index]
-
-            // V = all verbatims that start with t[i], sorted by length
-            val verbatims = verbatimsThatStartWithToken[token.data]
-
-            if (verbatims != null) {
-
-                // do v = V.pop() while v cannot be made and V is not empty
-                for (longestPossible in verbatims) {
-                    // if v can be made, make it, and i += len(v)
-                    if (canMake(tokens, index, longestPossible.pattern)) {
-                        val length = longestPossible.pattern.size - 1
-                        for (i in 0..length) {
-                            tokens.removeAt(index)
-                        }
-                        tokens.add(index, Token(longestPossible.data, longestPossible, token.position))
-                        index += length
-                        break
-                    }
-                }
-            }
-            index++
-        }
-        return tokens
+    private fun getLongestPossible(verbatims: Order<Verbatim>, tokens: List<Token>, index: Int): Verbatim? {
+        for (v in verbatims) if (canMake(tokens, index, v.pattern)) return v
+        return null
     }
 
-    private fun makeupStreaks(offset: Int, string: String): MutableList<Token> {
+    private fun makeupVerbatims(tokens: List<Token>): List<Token> {
+        val done = ArrayList<Token>()
+        var index = 0
+        while (index < tokens.size) {
+            val token = tokens[index]
+            val verbatimsThatStartWithToken = verbatimsByWhichTokenTheyStart[token.data]
+            if (verbatimsThatStartWithToken != null) {
+                val longestPossible = getLongestPossible(verbatimsThatStartWithToken, tokens, index)
+                if (longestPossible != null) {
+                    val length = longestPossible.pattern.size
+                    // for (i in 0..length -1) tokens.removeAt(index)
+                    done.add(index, Token(longestPossible.data, longestPossible, token.position))
+                    index += length
+                    continue
+                }
+            }
+            done.add(token)
+            index++
+        }
+        return done
+    }
+
+    private fun makeupStreaks(offset: Int, string: String): List<Token> {
         val nullTerminatedString = string + 0.toChar()
         val output: MutableList<Token> = ArrayList()
         val builder = StringBuilder()
@@ -308,7 +274,7 @@ class NiLexTokenizer(name: String) : Tokenizer.Named(name) {
         override fun toString() = name
     }
 
-    private object UnknownChar : TokenType() {
+    object UnknownChar : TokenType() {
         override val name = "unknown-character"
 
         class Mishap(override val token: Token) : Code.Mishap() {
@@ -318,23 +284,20 @@ class NiLexTokenizer(name: String) : Tokenizer.Named(name) {
         }
     }
 
-    private inner class Verbatim(val data: String) : TokenType() {
-        override val name = "verbatim" // "<$data>"
-        val pattern: List<Token> = makeupStreaks(0, data)
+    inner class Verbatim(val data: String) : TokenType() {
+        override val name = "<$data>" // "verbatim"
+        val pattern: List<String> = makeupStreaks(0, data).map { it.data }
 
         init {
-            for (token in pattern) if (token.type is UnknownChar) charsThatStartVerbatims.add(token.data[0])
-            verbatimsThatStartWithToken.computeIfAbsent(pattern[0].data) { Order.by(dataLength) }.enter(this)
+//            for (token in pattern) if (token.type is UnknownChar) charsThatStartVerbatims.add(token.data[0])
+            verbatimsByWhichTokenTheyStart.computeIfAbsent(pattern[0]) { Order.by(dataLength) }.enter(this)
         }
     }
 
-    private class Streak(override val name: String, val charSet: Set<Char>) : TokenType() {
-//        init {
-//            println(charSet.map { it.code })
-//        }
-    }
+    class Streak(override val name: String, val charSet: Set<Char>) : TokenType()
+//        init { println(charSet.map { it.code }) }
 
-    private class Kept(
+    class Kept(
         val opener: String,
         val closer: String,
         name: String? = null
@@ -342,7 +305,7 @@ class NiLexTokenizer(name: String) : Tokenizer.Named(name) {
         override val name: String = name ?: "$opener...$closer"
         val keeper = Keeper("$name-keeper")
 
-        private class Keeper(override val name: String) : TokenType()
+        class Keeper(override val name: String) : TokenType()
 
         class Unclosed(override val token: Token) : Code.Mishap() {
             override val message = "opened but not closed ${token.data}"

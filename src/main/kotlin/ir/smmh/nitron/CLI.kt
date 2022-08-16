@@ -317,7 +317,7 @@ object CLI {
                     print(" ~> ")
                     val code = Code(it.nextLine(), null)
                     tokenizer.tokenize(code)
-                    val tokens = tokens of code
+                    val tokens = (tokens of code)!!
                     val command = tokens[0].data
                     var notDoneYet = true
                     @Suppress("KotlinConstantConditions") // this way is more stylish

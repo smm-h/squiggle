@@ -52,7 +52,7 @@ interface Language {
         private const val lateFileExtUpper = "%EXT%"
         private val languages: MutableMap<String, Language> = HashMap()
         fun of(langExt: String): Language =
-            languages[langExt] ?: throw Language.Exception("no language for ext: $langExt")
+            languages[langExt] ?: throw Language.Exception("no language for '$langExt'")
     }
 
     fun code(string: String) =
@@ -69,7 +69,7 @@ interface Language {
         val construction: Code.Aspect<T>
         operator fun get(code: Code): T {
             process.invoke(code)
-            return code[construction]
+            return code[construction]!!
         }
     }
 

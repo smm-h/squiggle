@@ -8,7 +8,7 @@ import ir.smmh.lingu.TokenizationUtil.toCharSet
 import ir.smmh.lingu.TokenizationUtil.toStringSet
 
 
-class Splitter(name: String, private val delimiters: Set<Char> = "\t\n\r ".toCharSet()) : Tokenizer.Named(name) {
+class Splitter(private val delimiters: Set<Char> = "\t\n\r ".toCharSet()) : Tokenizer {
 
     private inner class TokenBuilder {
         private var data: String = ""
@@ -35,7 +35,7 @@ class Splitter(name: String, private val delimiters: Set<Char> = "\t\n\r ".toCha
     fun defineExactSet(title: String, exacts: Set<String>) = TokenType(title) { it in exacts }
 
     object Predefined {
-        val splitter = Splitter("PREDEFINED-SPLITTER")
+        val splitter = Splitter()
         val NUMBER = splitter.defineCharSetOnly("NUMBER", DIGITS + '.')
         val WORD = splitter.defineCharSetOnly("WORD", LETTERS.union(DIGITS) + '_' + '-')
         val OP = splitter.defineExactSet(
@@ -80,6 +80,4 @@ class Splitter(name: String, private val delimiters: Set<Char> = "\t\n\r ".toCha
 
         override fun toString() = name
     }
-
-    override val name = "SPLITTER"
 }

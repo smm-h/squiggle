@@ -47,6 +47,10 @@ interface Associative<K, V> : CanContainPlace<K>, CanContainValue<V> {
             fun addAllFrom(map: MultiValue<K, V>) {
                 for (key in map.overKeys()) addAllAtPlace(key, map.getAtPlace(key))
             }
+
+            companion object {
+                fun <K, V> empty(): Mutable<K, V> = MultiValueMutableImpl<K, V>()
+            }
         }
     }
 

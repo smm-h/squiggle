@@ -1,3 +1,17 @@
 
 
-ext heyooo
+// import 'file name'
+
+verbatim '='
+verbatim '{'
+verbatim '}'
+
+streak '\t\n\r ' as whitespace
+
+streak '0123456789abcdefABCDEF' as hexDigits
+
+streak 'abcdefghijklmnopqrstuvwxyz' as id
+
+keep '//' ... '\n' as comment
+
+keep '"' ... '"' as string

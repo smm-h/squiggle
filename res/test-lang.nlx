@@ -1,37 +1,23 @@
-ext 'testlang'
 
-streak identifier
-streak digits
-streak whitespace
-ignore whitespace
+// TODO demonstrate streak conflict resolution using sets
 
-verbatim '+'
-verbatim '-'
-verbatim '*'
-verbatim '/'
-
-# to demonstrate streak conflict resolution using sets
-
-streak letters
-
-# to demonstrate conflicting verbatims
+// conflicting verbatims:
 
 verbatim '='
 verbatim '=='
 verbatim '+='
 verbatim '==='
 
-keep '"' ... '"' as node
-
-# comments
-keep '//' ... '\n' as single_line_comment
-keep '/*' ... '*/' as multi_line_comment
-ignore single_line_comment
-ignore multi_line_comment
-
-# to test enclosures
-
-enclose '[' ... ']' as square_brackets
+// enclose '[' ... ']' as square_brackets
 
 // separator ',' in square_brackets as list_literal
 // separator ':' in square_brackets count 1 as slicer
+
+combine '#' hexDigits as hexNumber
+// gives us compound tokens which are made up of primitive tokens but
+// still act like singular tokens in areas like syntax highlighting
+// also they are gapless
+
+define 'if' '(' expr ')' block 'else' block as ifElse
+// gives us syntax trees which are made up of singular tokens, either
+// primitive or compound

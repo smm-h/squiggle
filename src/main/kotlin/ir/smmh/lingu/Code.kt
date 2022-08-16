@@ -13,7 +13,11 @@ class Code private constructor(
 ) : Mut.Able {
 
     constructor(string: String, language: Language?) : this(string, language, null)
-    constructor(file: File, language: Language? = Language.of(file.extension)) : this(file.readText(), language, file)
+
+    constructor(file: File, language: Language? = Language.of(file.extension)) : this(
+        if (file.exists()) file.readText()
+        else throw Language.Exception("file not found: '$file'"), language, file
+    )
 
     // constructor(string: String, langExt: String) : this(string, Language.of(langExt))
     // constructor(file: File) : this(file.readText(), Language.of(file.extension), file)
@@ -104,12 +108,13 @@ class Code private constructor(
                     }
                     if (code.processFailed) break
                 }
+                (mishaps of code)?.joinToString("\n")?.let { println(it) }
             }
         }
     }
 
     class Aspect<T>(override val name: String) : Named {
-        infix fun of(code: Code): T = code[this]
+        infix fun of(code: Code): T? = code[this]
         override fun toString() = name
     }
 
@@ -140,12 +145,12 @@ class Code private constructor(
         token: Token,
         message: String,
         level: Mishap.Level = Mishap.Level.ERROR,
-        fatal: Boolean = false
+        fatal: Boolean = true
     ) = issue(Mishap.Impl(token, message, level, fatal))
 
     fun issue(mishap: Mishap) {
         if (mishaps !in aspects) aspects[mishaps] = ArrayList<Mishap>()
-        (mishaps of this).add(mishap)
+        (mishaps of this)!!.add(mishap)
         if (mishap.fatal) processFailed = true
     }
 
@@ -178,8 +183,8 @@ class Code private constructor(
     operator fun contains(aspect: Aspect<*>): Boolean = aspect in aspects
 
     @Suppress("UNCHECKED_CAST")
-    operator fun <T> get(aspect: Aspect<T>): T {
-        return (aspects[aspect] ?: throw Language.Exception("aspect $aspect not in $this")) as T
+    operator fun <T> get(aspect: Aspect<T>): T? {
+        return aspects[aspect] as T
     }
 
     operator fun <T> set(aspect: Aspect<T>, value: T?) {

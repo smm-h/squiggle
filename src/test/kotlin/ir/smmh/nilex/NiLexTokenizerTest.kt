@@ -2,6 +2,7 @@ package ir.smmh.nilex
 
 import ir.smmh.lingu.Code
 import ir.smmh.lingu.Tokenizer
+import ir.smmh.lingu.Tokenizer.Companion.tokens
 import ir.smmh.nilex.NiLexTokenizer
 import ir.smmh.nilex.NiLexLanguage
 import org.junit.jupiter.api.Test
@@ -12,10 +13,9 @@ class NiLexTokenizerTest {
     @Test
     fun testExample() {
         val process = NiLexLanguage.process +
-                { println(it[NiLexTokenizer.strippedTokens].joinToString(separator = "\n")) } +
-                { println(it[Tokenizer.tokens].size) }
+                { println(it[tokens]!!.joinToString(separator = "\n")) } +
+                { println(it[tokens]!!.size) }
 
-        val code = Code(File("res/test-lang.nlx"))
-        process(code)
+        process(Code(File("res/test-lang.nlx")))
     }
 }

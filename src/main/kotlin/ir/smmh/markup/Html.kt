@@ -155,8 +155,9 @@ object Html : Language.HasFileExt.Impl("html"), Language.Markup {
             tagLn("blockquote", compile(it.contents) + by)
         }
         is Markup.Section.CodeBlock -> {
-            if (syntaxHighlighting in it.code) (syntaxHighlighting of it.code).compile()
-            else tagLn("pre", it.code.string)
+            val sh = syntaxHighlighting of it.code
+            if (sh == null) tagLn("pre", it.code.string)
+            else sh.compile()
         }
         is Markup.Section.List -> StringBuilder().run {
             val l = if (it.numbered) "ol" else "ul"

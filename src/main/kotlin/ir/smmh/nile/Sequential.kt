@@ -10,6 +10,7 @@ import java.util.Collections.max
 
 interface Sequential<T> : Iterable<T>, ReverseIterable<T>, CanClone<Sequential<T>>, CanGetAtIndex<T>,
     CanContainValue<T> {
+
     fun toBooleanArray(toBoolean: (T) -> Boolean): BooleanArray {
         val array = BooleanArray(size)
         for (i in array.indices) {
@@ -186,6 +187,8 @@ interface Sequential<T> : Iterable<T>, ReverseIterable<T>, CanClone<Sequential<T
         Mut.Able {
         override fun clone(deepIfPossible: Boolean): Mutable<T>
         override fun clone(deepIfPossible: Boolean, mut: Mut): Mutable<T>
+
+        fun reverseInplace()
 
         /**
          * Do not call this directly because it does not call preMutate/mutate
@@ -463,7 +466,7 @@ interface Sequential<T> : Iterable<T>, ReverseIterable<T>, CanClone<Sequential<T
         }
     }
 
-//    interface View<T> : ir.smmh.nile.View<Sequential<T>>, Sequential<T> {
+//    interface View<T> : Sequential<T> { // ir.smmh.nile.View<Sequential<T>>,
 ////        fun addExpirationHandler(handler: (Sequential<T>) -> Unit) {
 ////            val core: Sequential<T> = core
 ////            if (core is Mutable<*>) {
@@ -476,7 +479,7 @@ interface Sequential<T> : Iterable<T>, ReverseIterable<T>, CanClone<Sequential<T
 ////            }
 ////        }
 //
-//        @Throws(ir.smmh.nile.View.CoreExpiredException::class)
+//        //        @Throws(ir.smmh.nile.View.CoreExpiredException::class)
 //        override fun getAtIndex(index: Int): T {
 //            return core.getAtIndex(transformIndex(index))
 //        }
@@ -576,27 +579,42 @@ interface Sequential<T> : Iterable<T>, ReverseIterable<T>, CanClone<Sequential<T
 //        }
 //
 //        companion object {
-//            fun <T> allButOne(sequential: Sequential<T>, except: Int, onExpire: (() -> Unit)? = null): View<T> {
-//                return AllButOne(sequential, onExpire, except)
-//            }
+//            fun <T> allButOne(sequential: Sequential<T>, except: Int, onExpire: (() -> Unit)? = null): View<T> =
+//                AllButOne(sequential, onExpire, except)
 //
-//            fun <T> ranged(sequential: Sequential<T>, start: Int, onExpire: (() -> Unit)? = null): View<T> {
-//                return Ranged(sequential, onExpire, start)
-//            }
+//            fun <T> ranged(sequential: Sequential<T>, start: Int, onExpire: (() -> Unit)? = null): View<T> =
+//                Ranged(sequential, onExpire, start)
 //
-//            fun <T> ranged(sequential: Sequential<T>, start: Int, end: Int, onExpire: (() -> Unit)? = null): View<T> {
-//                return Ranged(sequential, onExpire, start, end)
-//            }
+//            fun <T> ranged(sequential: Sequential<T>, start: Int, end: Int, onExpire: (() -> Unit)? = null): View<T> =
+//                Ranged(sequential, onExpire, start, end)
 //
-//            fun <T> reversed(sequential: Sequential<T>, onExpire: (() -> Unit)? = null): View<T> {
-//                return Reversed(sequential, onExpire)
-//            }
+//            fun <T> reversed(sequential: Sequential<T>, onExpire: (() -> Unit)? = null): View<T> =
+//                Reversed(sequential, onExpire)
 //        }
+//    }
+//
+//    /**
+//     * A read-only partial view on another sequential.
+//     *
+//     * @param <T> Type of data
+//     * @see View.Ranged
+//     * @see View.Reversed
+//     * @see View.Referential
+//     * @see View.Conditional
+//     */
+//    abstract class AbstractView<T> protected constructor(sequential: Sequential<T>, onExpire: (() -> Unit)?) :
+//        AbstractSequential<T>(),
+//        View<T> { // , ir.smmh.nile.View.Injected<Sequential<T>> {
+////        override val injected = ir.smmh.nile.View.Impl(sequential, onExpire)
 //    }
 
     abstract class AbstractMutableSequential<T> protected constructor(override var mut: Mut) :
         AbstractSequential<T>(), Mutable<T>,
         Mut.Able {
+
+        override fun reverseInplace() {
+            TODO("Not yet implemented")
+        }
 
         override fun clone(deepIfPossible: Boolean) = clone(deepIfPossible, Mut())
         override fun clone(deepIfPossible: Boolean, mut: Mut): Mutable<T> {
@@ -677,21 +695,6 @@ interface Sequential<T> : Iterable<T>, ReverseIterable<T>, CanClone<Sequential<T
             }
         }
     }
-
-//    /**
-//     * A read-only partial view on another sequential.
-//     *
-//     * @param <T> Type of data
-//     * @see View.Ranged
-//     * @see View.Reversed
-//     * @see View.Referential
-//     * @see View.Conditional
-//     */
-//    abstract class AbstractView<T> protected constructor(sequential: Sequential<T>, onExpire: (() -> Unit)?) :
-//        AbstractSequential<T>(),
-//        View<T>, ir.smmh.nile.View.Injected<Sequential<T>> {
-//        override val injected = ir.smmh.nile.View.Impl(sequential, onExpire)
-//    }
 
     companion object {
         fun <T> ofArguments(vararg arguments: T): Sequential<T> {
