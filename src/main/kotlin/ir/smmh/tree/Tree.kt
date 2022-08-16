@@ -8,9 +8,9 @@ import ir.smmh.tree.impl.PostOrderConstructor
 import ir.smmh.tree.impl.PreOrderConstructor
 
 interface Tree<DataType> : CanContainValue<DataType> { // , CanSerialize
-    fun getImmediateSubtrees(): Sequential<*>
-    fun getDegree(): Int
-    fun getHeight(): Int
+    fun getImmediateSubtrees(): Sequential<out Tree<DataType>>
+    val degree: Int
+    val height: Int
 
     /**
      * @return the number of leaves
@@ -37,9 +37,10 @@ interface Tree<DataType> : CanContainValue<DataType> { // , CanSerialize
         fun traverseDataPreOrder(): Sequential<DataType?>
         fun traverseDataInOrder(): Sequential<DataType?>
         fun traverseDataPostOrder(): Sequential<DataType?>
-        override fun getDegree(): Int {
-            return 2
-        }
+        override val degree: Int
+            get() {
+                return 2
+            }
 
         interface Mutable<DataType> : Binary<DataType>, Tree.Mutable<DataType>
 

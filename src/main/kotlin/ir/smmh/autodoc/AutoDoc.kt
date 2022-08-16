@@ -12,7 +12,6 @@ import ir.smmh.util.FileUtil.writeTo
 import ir.smmh.util.ReflectUtil.intendedName
 import ir.smmh.util.StringReplacer
 import java.io.File
-import java.nio.file.Files
 import java.nio.file.Path
 import java.util.*
 import kotlin.concurrent.thread

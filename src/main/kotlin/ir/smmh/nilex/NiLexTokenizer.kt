@@ -10,7 +10,7 @@ import ir.smmh.serialization.json.Json
 
 class NiLexTokenizer() : Tokenizer {
 
-//    private val charsThatStartVerbatims: MutableSet<Char> = HashSet()
+    //    private val charsThatStartVerbatims: MutableSet<Char> = HashSet()
     private val verbatimsByWhichTokenTheyStart: MutableMap<String, Order<Verbatim>> = HashMap()
     private val keptOpenersThatStartWithChar: MutableMap<Char, Order<Kept>> = HashMap()
     private val streaksThatContainChar: MutableMap<Char, Order<Streak>> = HashMap()

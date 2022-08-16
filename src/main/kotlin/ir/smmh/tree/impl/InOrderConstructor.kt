@@ -7,7 +7,7 @@ class InOrderConstructor<DataType>(
     private val preOrder: Sequential<DataType>,
     private val postOrder: Sequential<DataType>
 ) : OrderConstructor<DataType> {
-    private var tree: NodedBinaryTreeImpl<DataType>? = null
+    private var tree: NodedBinarySpecificTreeImpl<DataType>? = null
     private var size = 0
     private var preOrderIndex = 0
     override fun getFirstSource(): Sequential<DataType> {
@@ -22,13 +22,13 @@ class InOrderConstructor<DataType>(
         return getTree().traverseDataInOrder()
     }
 
-    override fun getTree(): NodedBinaryTreeImpl<DataType> {
+    override fun getTree(): NodedBinarySpecificTreeImpl<DataType> {
         if (tree == null) {
-            tree = NodedBinaryTreeImpl()
+            tree = NodedBinarySpecificTreeImpl()
             size = preOrder.size
             assert(size == postOrder.size)
             preOrderIndex = 0
-            tree!!.setRootNode(makeNode(0, size - 1, null))
+            tree!!.rootNode = makeNode(0, size - 1, null)
         }
         return tree!!
     }
@@ -36,10 +36,11 @@ class InOrderConstructor<DataType>(
     private fun makeNode(
         start: Int,
         end: Int,
-        parent: NodedBinaryTreeImpl<DataType>.Node?
-    ): NodedBinaryTreeImpl<DataType>.Node? {
+        parent: NodedBinarySpecificTreeImpl<DataType>.Node?
+    ): NodedBinarySpecificTreeImpl<DataType>.Node? {
         return if (preOrderIndex < size && start <= end) {
-            val node: NodedBinaryTreeImpl<DataType>.Node = tree!!.Node(preOrder.getAtIndex(preOrderIndex++), parent)
+            val node: NodedBinarySpecificTreeImpl<DataType>.Node =
+                tree!!.Node(preOrder.getAtIndex(preOrderIndex++), parent)
             if (preOrderIndex < size && start != end) {
                 var m: Int = start
                 while (m <= end) {
@@ -47,8 +48,8 @@ class InOrderConstructor<DataType>(
                     m++
                 }
                 if (m <= end) {
-                    node.setLeftChild(makeNode(start, m, node))
-                    node.setRightChild(makeNode(m + 1, end - 1, node))
+                    node.leftChild = makeNode(start, m, node)
+                    node.rightChild = makeNode(m + 1, end - 1, node)
                 }
             }
             node

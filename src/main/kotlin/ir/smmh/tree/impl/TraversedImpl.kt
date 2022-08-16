@@ -1,14 +1,14 @@
 package ir.smmh.tree.impl
 
 import ir.smmh.nile.Sequential
-import ir.smmh.tree.NodedTree
-import ir.smmh.tree.NodedTree.Traversal
-import ir.smmh.tree.NodedTree.Traversed
+import ir.smmh.tree.NodedSpecificTree
+import ir.smmh.tree.NodedSpecificTree.Traversal
+import ir.smmh.tree.NodedSpecificTree.Traversed
 
-class TraversedImpl<DataType, NodeType : NodedTree.Node<DataType, NodeType, TreeType>, TreeType : NodedTree<DataType, NodeType, TreeType>>(
+class TraversedImpl<DataType, NodeType : NodedSpecificTree.Node<DataType, NodeType, TreeType>, TreeType : NodedSpecificTree<DataType, NodeType, TreeType>>(
     override val nodes: Sequential<NodeType?>,
     override val type: Traversal<DataType, NodeType, TreeType>
 ) : Traversed<DataType, NodeType, TreeType> {
-    override val data: Sequential<DataType?> = nodes.applyOutOfPlace { it?.getData() }
+    override val data: Sequential<DataType?> = nodes.applyOutOfPlace { it?.data }
     override fun toString() = nodes.toString()
 }

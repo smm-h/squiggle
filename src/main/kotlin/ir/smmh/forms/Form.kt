@@ -2,13 +2,9 @@
 
 package ir.smmh.forms
 
-import ir.smmh.nile.Associative
-import ir.smmh.nile.Mut
-import ir.smmh.nile.Sequential
-import ir.smmh.nile.DoubleSequence
-import ir.smmh.nile.SingleSequence
-import ir.smmh.nile.verbs.CanClone
+import ir.smmh.nile.*
 import ir.smmh.nile.or.Or
+import ir.smmh.nile.verbs.CanClone
 import org.jetbrains.annotations.Contract
 import java.io.File
 import java.io.IOException

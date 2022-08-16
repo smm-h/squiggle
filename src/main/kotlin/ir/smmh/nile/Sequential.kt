@@ -188,8 +188,6 @@ interface Sequential<T> : Iterable<T>, ReverseIterable<T>, CanClone<Sequential<T
         override fun clone(deepIfPossible: Boolean): Mutable<T>
         override fun clone(deepIfPossible: Boolean, mut: Mut): Mutable<T>
 
-        fun reverseInplace()
-
         /**
          * Do not call this directly because it does not call preMutate/mutate
          */
@@ -611,10 +609,6 @@ interface Sequential<T> : Iterable<T>, ReverseIterable<T>, CanClone<Sequential<T
     abstract class AbstractMutableSequential<T> protected constructor(override var mut: Mut) :
         AbstractSequential<T>(), Mutable<T>,
         Mut.Able {
-
-        override fun reverseInplace() {
-            TODO("Not yet implemented")
-        }
 
         override fun clone(deepIfPossible: Boolean) = clone(deepIfPossible, Mut())
         override fun clone(deepIfPossible: Boolean, mut: Mut): Mutable<T> {

@@ -1,10 +1,7 @@
 package ir.smmh.nilex
 
 import ir.smmh.lingu.Code
-import ir.smmh.lingu.Tokenizer
 import ir.smmh.lingu.Tokenizer.Companion.tokens
-import ir.smmh.nilex.NiLexTokenizer
-import ir.smmh.nilex.NiLexLanguage
 import org.junit.jupiter.api.Test
 import java.io.File
 

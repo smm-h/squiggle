@@ -11,7 +11,7 @@ class SequentialImpl<T>(initialCapacity: Int = 10, mut: Mut = Mut()) :
         list.addAll(collection)
     }
 
-//    @JvmOverloads
+    //    @JvmOverloads
     constructor(iterable: Iterable<T>, initialCapacity: Int = 20, mut: Mut = Mut()) : this(initialCapacity, mut) {
         for (element in iterable) list.add(element)
     }

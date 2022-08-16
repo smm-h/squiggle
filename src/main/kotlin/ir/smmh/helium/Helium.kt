@@ -4,8 +4,8 @@ import ir.smmh.lingu.Code
 import ir.smmh.lingu.Language
 import ir.smmh.lingu.Tokenizer
 import ir.smmh.lingu.Tokenizer.Companion.tokens
-import ir.smmh.nilex.NiLexTokenizerFactory
 import ir.smmh.nilex.NiLexLanguage
+import ir.smmh.nilex.NiLexTokenizerFactory
 import java.io.File
 
 // TODO testing and debugging
