@@ -1,12 +1,4 @@
 
-// TODO demonstrate streak conflict resolution using sets
-
-// conflicting verbatims:
-
-verbatim '='
-verbatim '=='
-verbatim '+='
-verbatim '==='
 
 // enclose '[' ... ']' as square_brackets
 
@@ -14,10 +6,5 @@ verbatim '==='
 // separator ':' in square_brackets count 1 as slicer
 
 combine '#' hexDigits as hexNumber
-// gives us compound tokens which are made up of primitive tokens but
-// still act like singular tokens in areas like syntax highlighting
-// also they are gapless
 
 define 'if' '(' expr ')' block 'else' block as ifElse
-// gives us syntax trees which are made up of singular tokens, either
-// primitive or compound

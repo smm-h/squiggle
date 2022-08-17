@@ -15,3 +15,12 @@ streak 'abcdefghijklmnopqrstuvwxyz' as id
 keep '//' ... '\n' as comment
 
 keep '"' ... '"' as string
+
+
+// TODO demonstrate streak conflict resolution using sets
+
+// conflicting verbatims:
+// verbatim '='
+// verbatim '=='
+// verbatim '+='
+// verbatim '==='
