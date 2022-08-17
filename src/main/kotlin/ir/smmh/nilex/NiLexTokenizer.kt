@@ -288,9 +288,9 @@ class NiLexTokenizer() : Tokenizer {
         return output
     }
 
-    sealed class TokenType(name: String) : ir.smmh.lingu.Token.Type.Atomic(name)
+    private sealed class TokenType(name: String) : ir.smmh.lingu.Token.Type.Atomic(name)
 
-    object UnknownChar : TokenType("?") {
+    private object UnknownChar : TokenType("?") {
         class Mishap(override val token: Token) : Code.Mishap() {
             override val message = "unknown character ${token.data}"
             override val level = Level.ERROR
@@ -298,20 +298,25 @@ class NiLexTokenizer() : Tokenizer {
         }
     }
 
-    inner class Verbatim(val data: String) : TokenType("«$data»") { // «»
+    private inner class Verbatim(val data: String) : TokenType("«$data»") { // «»
         val pattern: List<String>
 
         init {
 //            for (token in pattern) if (token.type is UnknownChar) charsThatStartVerbatims.add(token.data[0])
             pattern = makeupStreaks(0, data).map { it.data }
             verbatimsByWhichTokenTheyStart.computeIfAbsent(pattern[0]) { Order.by(dataLength) }.enter(this)
+            this += "verbatim"
         }
     }
 
-    class Streak(name: String, val charSet: Set<Char>) : TokenType(name)
-//        init { println(charSet.map { it.code }) }
+    private class Streak(name: String, val charSet: Set<Char>) : TokenType(name) {
+        init {
+            this += "streak"
+//            println(charSet.map { it.code })
+        }
+    }
 
-    class Kept(
+    private class Kept(
         val opener: String,
         val closer: String,
         name: String? = null
@@ -319,8 +324,21 @@ class NiLexTokenizer() : Tokenizer {
         val openerType = Opener(this.name)
         val closerType = Closer(this.name)
 
-        class Opener(name: String) : TokenType("$name-opener")
-        class Closer(name: String) : TokenType("$name-closer")
+        init {
+            this += "kept"
+        }
+
+        private class Opener(name: String) : TokenType("$name-opener") {
+            init {
+                this += "opener"
+            }
+        }
+
+        private class Closer(name: String) : TokenType("$name-closer") {
+            init {
+                this += "closer"
+            }
+        }
 
         class Unclosed(override val token: Token) : Code.Mishap() {
             override val message = "opened but not closed ${token.data}"

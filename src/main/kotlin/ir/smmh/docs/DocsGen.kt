@@ -17,10 +17,30 @@ class DocsGen(
 ) {
 
     private val fileExt = if (markupLanguage is Language.HasFileExt) markupLanguage.fileExt else "txt"
-    private val docs: MutableMap<String, Markup.Document> = HashMap()
+    private val documents: MutableMap<String, Markup.Document> = HashMap()
+
+    operator fun plusAssign(document: Markup.Document) {
+        documents += "$cd${document.name}" to document
+    }
+
+    private val stack = ArrayDeque<String>()
+
+    private fun dir(d: String, block: DocsGen.() -> Unit) {
+        val s = d.split('/')
+        s.forEach { stack.addLast(it) }
+        this.block()
+        s.forEach { stack.removeLast() }
+    }
+
+    private val home: String
+        get() =
+            if (stack.isEmpty()) "" else "../".repeat(stack.size)
+    private val cd: String
+        get() =
+            if (stack.isEmpty()) "" else stack.joinToString("/", postfix = "/")
 
     init {
-        docs += "readme" to Markup.Document {
+        this += Markup.Document("readme") {
             heading("Squiggle") {
                 paragraph("Squiggle is an aggregation of my old Java projects converted into Kotlin and my new Kotlin projects. These projects include:")
                 list {
@@ -37,60 +57,62 @@ class DocsGen(
                 }
             }
         }
-        docs += "docs/lingu" to Markup.Document {
-            heading("A guide to Lingu") {
-                heading("What is Lingu?") {
-                    paragraph(
-                        line() +
-                                "Lingu is short for " + wikt("linguistics") +
-                                ". As a package, Lingu provides the most basic means to create and use " +
-                                wiki("computer languages") + "."
-                    )
-                }
-                heading("How it works") {
-                    paragraph("")
-                }
-                heading(line() + "Creating your own " + code("Language")) {
-                    paragraph("")
+        dir("docs") {
+            this += Markup.Document("lingu") {
+                heading("A guide to Lingu") {
+                    heading("What is Lingu?") {
+                        paragraph(
+                            line() +
+                                    "Lingu is short for " + wikt("linguistics") +
+                                    ". As a package, Lingu provides the most basic means to create and use " +
+                                    wiki("computer languages") + "."
+                        )
+                    }
+                    heading("How it works") {
+                        paragraph("")
+                    }
+                    heading(line() + "Creating your own " + code("Language")) {
+                        paragraph("")
+                    }
                 }
             }
-        }
-        docs += "docs/nilex" to Markup.Document {
-            heading("A guide to NiLex") {
-                paragraph(italic(line() + "You may benefit from learning about " + doc("Lingu", "lingu") + " before reading this."))
-                heading("What is NiLex?") {
-                    paragraph(
-                        line() +
-                                "NiLex is a combination of the words Nile and " + wikt("Lex") +
-                                ". It is a collection of tools that generate " +
-                                src("Tokenizer", "ir.smmh.lingu.Tokenizer") + "s and " +
-                                src("Parser", "ir.smmh.lingu.Parser") + "s from instructions written in NiLex DSL."
-                    )
-                }
-                heading("How it works") {
-                    paragraph("")
-                }
-                heading("NiLex DSL") {
-                    paragraph("")
-                }
-                heading(line() + "Creating your own " + code("Tokenizer")) {
-                    paragraph("")
-                }
-                heading(line() + "Creating your own " + code("Parser")) {
-                    paragraph("")
+            this += Markup.Document("nilex") {
+                heading("A guide to NiLex") {
+                    paragraph(italic(line() + "You may benefit from learning about " + doc("Lingu", "docs/lingu") + " before reading this."))
+                    heading("What is NiLex?") {
+                        paragraph(
+                            line() +
+                                    "NiLex is a combination of the words Nile and " + wikt("Lex") +
+                                    ". It is a collection of tools that generate " +
+                                    src("Tokenizer", "ir.smmh.lingu.Tokenizer") + "s and " +
+                                    src("Parser", "ir.smmh.lingu.Parser") + "s from instructions written in NiLex DSL."
+                        )
+                    }
+                    heading("How it works") {
+                        paragraph("")
+                    }
+                    heading("NiLex DSL") {
+                        paragraph("")
+                    }
+                    heading(line() + "Creating your own " + code("Tokenizer")) {
+                        paragraph("")
+                    }
+                    heading(line() + "Creating your own " + code("Parser")) {
+                        paragraph("")
+                    }
                 }
             }
         }
     }
 
     private fun Markup.InlineHelpers.doc(text: String, address: String, bookmark: String = "") =
-        link(text, address + "." + lateFileExt, bookmark)
+        link(text, "$home$address.$lateFileExt", bookmark)
 
     private fun Markup.InlineHelpers.pkg(text: String, name: String, module: String = "main", lang: String = "kotlin") =
-        link(text, "src/$module/$lang/${name.replace('.', '/')}")
+        link(text, "${home}src/$module/$lang/${name.replace('.', '/').replace("^", "../")}")
 
     private fun Markup.InlineHelpers.src(text: String, name: String, module: String = "main", lang: String = "kotlin", ext: String = "kt", bookmark: String = "") =
-        link(text, "src/$module/$lang/${name.replace('.', '/')}.$ext", bookmark)
+        link(text, "${home}src/$module/$lang/${name.replace('.', '/').replace("^", "../")}.$ext", bookmark)
 
     private fun Markup.InlineHelpers.wiki(text: String, query: String = text, lang: String = "en", bookmark: String = "") =
         link(text, "https://$lang.wikipedia.org/wiki/${query.replace(" ", "%20")}", bookmark)
@@ -99,7 +121,7 @@ class DocsGen(
         link(text, "https://$lang.wiktionary.org/wiki/${query.replace(" ", "%20")}", bookmark)
 
     fun generate() {
-        docs.forEach { url, doc ->
+        documents.forEach { url, doc ->
             val contents = bindFileExt(markupLanguage.compile(doc, metadata), fileExt)
             val filename = bindFileExt(url + "." + lateFileExt, fileExt)
             contents writeTo touch(filename)

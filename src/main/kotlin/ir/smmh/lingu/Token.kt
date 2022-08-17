@@ -19,7 +19,23 @@ data class Token(
 
     sealed class Type(override val name: String) : Named {
         override fun toString() = name
+
+        private val tags: MutableSet<String> = HashSet()
+        operator fun contains(tag: String) = tag in tags
+        operator fun plusAssign(tag: String) {
+            tags.add(tag)
+        }
+
+        init {
+            this += name
+        }
+
         open class Atomic(name: String) : Type(name)
         open class Compound(name: String, val pattern: List<Type>) : Type(name)
+    }
+
+    companion object {
+        val ROOT_TYPE = Token.Type.Atomic("root")
+        val ROOT = Token("", ROOT_TYPE, 0)
     }
 }
