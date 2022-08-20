@@ -4,10 +4,9 @@ import ir.smmh.lingu.Code
 import ir.smmh.lingu.Language
 import ir.smmh.lingu.Token
 import ir.smmh.lingu.Tokenizer
-import ir.smmh.lingu.Tokenizer.Companion.Tokens
-import ir.smmh.nilex.NiLexLanguage
+import ir.smmh.nilex.NiLexLanguage.FilteredTokens
+import ir.smmh.nilex.NiLexLanguage.filterOut
 import ir.smmh.nilex.NiLexTokenizerFactory
-import ir.smmh.tree.impl.NodedSpecificTreeImpl
 import java.io.File
 
 // TODO testing and debugging
@@ -15,24 +14,13 @@ import java.io.File
  * Homoiconic I/O Language
  */
 object Helium : Language.Processable {
-    private val tokenizer: Tokenizer =
-        NiLexTokenizerFactory().apply { load(NiLexLanguage.code(File("res/helium/helium.nlx"))) }()
+    private val tokenize: Tokenizer =
+        NiLexTokenizerFactory.create(File("res/helium/helium.nlx"))
 
-    private val ignore = setOf("whitespace", "opener", "closer")
-
-    private fun filter(token: Token): Boolean {
-        for (tag in ignore)
-            if (tag in token.type)
-                return false
-        return true
-    }
-
-    override val process: Code.Process = tokenizer + { code ->
-        val tree = NodedSpecificTreeImpl<Token>()
-        tree.rootData = Token.ROOT
-        val topLevelTokens = tree.rootNode!!.children
-        val tokens = (Tokens of code)!!.filter(::filter)
-
+    override val process: Code.Process = tokenize +
+            filterOut("opener", "closer", "whitespace", "comment", "multiLineComment") + { code ->
+        val statements = ArrayList<Token.Structure>()
+        val tokens = (FilteredTokens of code)!!
     }
 }
 

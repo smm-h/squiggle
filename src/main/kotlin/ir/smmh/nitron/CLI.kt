@@ -316,8 +316,7 @@ object CLI {
                     print(getAddress())
                     print(" ~> ")
                     val code = Code(it.nextLine(), null)
-                    tokenizer.tokenize(code)
-                    val tokens = (Tokens of code)!!
+                    val tokens = tokenizer.tokenize(code)
                     val command = tokens[0].data
                     var notDoneYet = true
                     @Suppress("KotlinConstantConditions") // this way is more stylish

@@ -21,6 +21,8 @@ class NiLexTokenizer() : Tokenizer {
         private val dataLength: (Verbatim) -> Int = { -it.data.length }
         private val charSetSize: (Streak) -> Int = { +it.charSet.size }
         private val openerLength: (Kept) -> Int = { +it.opener.length }
+
+        fun v(data: String) = "«$data»"
     }
 
     private val escape = StringReplacer().apply {
@@ -298,7 +300,7 @@ class NiLexTokenizer() : Tokenizer {
         }
     }
 
-    private inner class Verbatim(val data: String) : TokenType("«$data»") { // «»
+    private inner class Verbatim(val data: String) : TokenType(v(data)) {
         val pattern: List<String>
 
         init {

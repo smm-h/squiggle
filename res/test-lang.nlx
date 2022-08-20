@@ -1,10 +1,13 @@
 
 
-// enclose '[' ... ']' as square_brackets
+// enclose '[' ... ']' as squareBrackets
 
-// separator ',' in square_brackets as list_literal
-// separator ':' in square_brackets count 1 as slicer
+// separator ',' in squareBrackets as list_literal
+// separator ':' in squareBrackets count 1 as slicer
 
 combine '#' hexDigits as hexNumber
 
-define 'if' '(' expr ')' block 'else' block as ifElse
+define
+    'if' '(' expression as condition')'
+    block as ifTrueBlock 'else' block as ifFalseBlock
+    as ifElse

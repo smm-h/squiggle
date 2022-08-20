@@ -3,6 +3,7 @@ package ir.smmh.nilex
 import ir.smmh.lingu.Code
 import ir.smmh.nile.Order
 import ir.smmh.serialization.json.Json
+import java.io.File
 
 class NiLexTokenizerFactory : () -> NiLexTokenizer {
 
@@ -20,7 +21,7 @@ class NiLexTokenizerFactory : () -> NiLexTokenizer {
     }
 
     fun load(code: Code) {
-        NiLexLanguage[code].overSubValues().forEach { plus(it as Json.Object) }
+        NiLexLanguage[code]?.overSubValues()?.forEach { plus(it as Json.Object) }
     }
 
     override fun invoke() = NiLexTokenizer().apply {
@@ -36,5 +37,12 @@ class NiLexTokenizerFactory : () -> NiLexTokenizer {
 
     companion object {
         private val seal = Json.Object.of("kind" to "seal")
+
+        fun create(string: String): NiLexTokenizer =
+            NiLexTokenizerFactory().apply { load(NiLexLanguage.code(string)) }()
+
+        fun create(file: File): NiLexTokenizer =
+            NiLexTokenizerFactory().apply { load(NiLexLanguage.code(file)) }()
+
     }
 }

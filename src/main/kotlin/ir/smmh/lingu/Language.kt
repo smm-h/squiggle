@@ -67,9 +67,9 @@ interface Language {
 
     interface Construction<T> : Processable {
         val construction: Code.Aspect<T>
-        operator fun get(code: Code): T {
+        operator fun get(code: Code): T? {
             process.invoke(code)
-            return code[construction]!!
+            return code[construction]
         }
     }
 

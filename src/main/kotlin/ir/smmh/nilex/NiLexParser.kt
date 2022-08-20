@@ -52,32 +52,32 @@ class NiLexParser() : Parser {
         return tree
     }
 
-    private fun get(code: Code, initialToken: Token, q: ArrayDeque<Token>, vararg types: String): List<String>? {
-        val dataList: MutableList<String> = ArrayList()
-        var token: Token = initialToken
-        types.forEach { expectedType ->
-            while (true) {
-                val previousToken = token
-                token = q.removeFirst()
-                when (token.type.name) {
-                    "whitespace", "multiLineComment" -> {
-                        continue
-                    }
-                    expectedType -> {
-                        dataList.add(token.data)
-                        break
-                    }
-                    "newline" -> {
-                        code.issue(previousToken, "missing token, expected: $expectedType")
-                        return null
-                    }
-                    else -> {
-                        code.issue(token, "wrong token type, expected: $expectedType, got ${token.type.name}")
-                        return null
-                    }
-                }
-            }
-        }
-        return dataList
-    }
+//    private fun get(code: Code, initialToken: Token, q: ArrayDeque<Token>, vararg types: String): List<String>? {
+//        val dataList: MutableList<String> = ArrayList()
+//        var token: Token = initialToken
+//        types.forEach { expectedType ->
+//            while (true) {
+//                val previousToken = token
+//                token = q.removeFirst()
+//                when (token.type.name) {
+//                    "whitespace", "multiLineComment" -> {
+//                        continue
+//                    }
+//                    expectedType -> {
+//                        dataList.add(token.data)
+//                        break
+//                    }
+//                    "newline" -> {
+//                        code.issue(previousToken, "missing token, expected: $expectedType")
+//                        return null
+//                    }
+//                    else -> {
+//                        code.issue(token, "wrong token type, expected: $expectedType, got ${token.type.name}")
+//                        return null
+//                    }
+//                }
+//            }
+//        }
+//        return dataList
+//    }
 }

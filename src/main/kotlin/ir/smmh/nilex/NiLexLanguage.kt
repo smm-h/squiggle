@@ -4,6 +4,7 @@ import ir.smmh.lingu.Code
 import ir.smmh.lingu.Language
 import ir.smmh.lingu.Token
 import ir.smmh.lingu.Tokenizer.Companion.Tokens
+import ir.smmh.nilex.NiLexTokenizer.Companion.v
 import ir.smmh.serialization.json.Json
 import java.io.File
 
@@ -31,32 +32,42 @@ object NiLexLanguage : Language.HasFileExt.Impl("nlx"), Language.Construction<Js
         code[construction] = array
     }
 
-    /**
-     * Types that have no participation in the interpretation of the code.
-     */
-    private val gaps: Set<String> = setOf("whitespace", "comment", "multiLineComment")
+    val FilteredTokens = Code.Aspect<List<Token>>("filtered-tokens")
+
+    fun filterOut(vararg tags: String) = Code.Process { code ->
+        code[FilteredTokens] = code[Tokens]!!.filter(createFilter(*tags))
+    }
+
+    fun createFilter(vararg tags: String): (Token) -> Boolean = { token ->
+        filterFunction(tags, token)
+    }
+
+    private fun filterFunction(tags: Array<out String>, token: Token): Boolean {
+        for (tag in tags)
+            if (tag in token.type)
+                return false
+        return true
+    }
+
+    private val filter = createFilter("opener", "closer", "whitespace")
 
     private fun addToArray(array: Json.Array.Mutable, code: Code) {
         // do combinations and then remove gaps:
-        val q = ArrayDeque((Tokens of code)!!.filter {
-            it.type.name !in gaps &&
-                    it.type !is NiLexTokenizer.Kept.Opener &&
-                    it.type !is NiLexTokenizer.Kept.Closer
-        })
+        val q = ArrayDeque((Tokens of code)!!.filter(filter))
         while (q.isNotEmpty()) {
             val token = q.removeFirst()
             when (token.type.name) {
                 "newline" -> continue
-                "«import»" -> get(code, token, q, "string")?.also {
+                v("import") -> get(code, token, q, "string")?.also {
                     addToArray(array, Code(File(it[0] + "." + fileExt)))
                 }
-                "«verbatim»" -> get(code, token, q, "string")?.also {
+                v("verbatim") -> get(code, token, q, "string")?.also {
                     array.add(verbatim(it[0]))
                 }
-                "«streak»" -> get(code, token, q, "string", "«as»", "identifier")?.also {
+                v("streak") -> get(code, token, q, "string", v("as"), "identifier")?.also {
                     array.add(streak(it[2], it[0]))
                 }
-                "«keep»" -> get(code, token, q, "string", "«...»", "string", "«as»", "identifier")?.also {
+                v("keep") -> get(code, token, q, "string", v("..."), "string", v("as"), "identifier")?.also {
                     array.add(kept(it[4], it[0], it[2]))
                 }
                 else -> code.issue(token, "unexpected token: $token")

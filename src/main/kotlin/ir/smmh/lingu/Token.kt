@@ -2,6 +2,7 @@ package ir.smmh.lingu
 
 import ir.smmh.lingu.TokenizationUtil.visualizeWhitespace
 import ir.smmh.nile.Named
+import ir.smmh.nilex.NiLexTokenizer.Companion.v
 
 data class Token(
     val data: String,
@@ -11,11 +12,11 @@ data class Token(
     val length: Int by data::length
 
     override fun toString() =
-        (if (data.isEmpty()) "()"
+        (if (v(data) == type.name) ""
+        else (if (data.isEmpty()) "()"
         else if (data.isBlank()) visualizeWhitespace(data)
-        else "($data)") + " as ${type.name} @$position" +
-                if (length > 1) "-${position + length}"
-                else ""
+        else "($data)") + " as ") + "${type.name} @$position" +
+                if (length > 1) "-${position + length}" else ""
 
     sealed class Type(override val name: String) : Named {
         override fun toString() = name
@@ -37,5 +38,13 @@ data class Token(
     companion object {
         val ROOT_TYPE = Token.Type.Atomic("root")
         val ROOT = Token("", ROOT_TYPE, 0)
+    }
+
+    sealed class Structure() {
+        data class Leaf(val data: Token) :
+            Structure()
+
+        data class Node(val list: List<Structure>) :
+            Structure()
     }
 }

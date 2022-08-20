@@ -1,4 +1,6 @@
 
-main = function {
-    print "Hello, World!"
+main = helloWorld
+
+helloWorld = procedure {
+    io.print "Hello, World!"
 }
