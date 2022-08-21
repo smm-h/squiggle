@@ -10,7 +10,41 @@ import ir.smmh.nilex.NiLexTokenizer.Companion.v
 import ir.smmh.nilex.NiLexTokenizerFactory
 import java.io.File
 
-object Lisp : Language.Construction<Runnable> {
+class Lisp(add: Brackets.() -> Unit) : Language.Construction<Runnable> {
+
+    private val brackets = BracketsImpl().apply(add)
+
+    interface Brackets {
+        fun addBrackets(opener: String, closer: String, f: Value.f)
+        fun addSquareBrackets(f: Value.f)
+        fun addCurlyBraces(f: Value.f)
+        fun addArrowBrackets(f: Value.f)
+    }
+
+    private class BracketsImpl : Brackets {
+        val openers = HashMap<String, Value.f>()
+        val closers = HashSet<String>().apply { add(v(")")) }
+        val tokenizerAppendix = StringBuilder()
+        var balances = Code.Process.empty
+
+        override fun addBrackets(opener: String, closer: String, f: Value.f) {
+            if (opener == "(" || opener == ")" || closer == "(" || closer == ")")
+                throw Exception("cannot add '(' or ')' as custom brackets")
+            openers += v(opener) to f;
+            closers += v(closer)
+            tokenizerAppendix.append("verbatim '$opener' verbatim '$closer'")
+            balances += assertBalance(v(opener), v(closer), FilteredTokens)
+        }
+
+        override fun addSquareBrackets(f: Value.f) =
+            addBrackets("[", "]", f)
+
+        override fun addCurlyBraces(f: Value.f) =
+            addBrackets("{", "}", f)
+
+        override fun addArrowBrackets(f: Value.f) =
+            addBrackets("<", ">", f)
+    }
 
     override val construction = Code.Aspect<Runnable>("root-block")
 
@@ -24,38 +58,32 @@ object Lisp : Language.Construction<Runnable> {
         keep '/*' ... '*/' as multiLineComment
         verbatim '('
         verbatim ')'
-        verbatim '{'
-        verbatim '}'
-        """
+        """ + brackets.tokenizerAppendix.toString()
     )
 
     override val process: Code.Process = tokenize +
             filterOut("opener", "closer", "whitespace", "comment", "multiLineComment") +
-            assertBalance(v("("), v(")"), FilteredTokens) +
-            assertBalance(v("{"), v("}"), FilteredTokens) + { code ->
+            brackets.balances + { code ->
         val queue = ArrayDeque((FilteredTokens of code)!!)
         var currentFrame = StackFrame(null).apply {
-
             Type.setAll(::set)
             Value.setAll(::set)
             Type._Callable.setAll(::set)
-
         }
         while (queue.isNotEmpty()) {
             val token = queue.removeFirst()
             val typeName = token.type.name
             if (typeName == v("(")) {
                 currentFrame = StackFrame(currentFrame)
-            } else if (typeName == v("{")) {
+            } else if (typeName in brackets.openers) {
                 currentFrame = StackFrame(currentFrame)
-                currentFrame.add(Type._Callable._block)
+                currentFrame.add(brackets.openers[typeName]!!)
             } else {
-                val value: Value? = when (typeName) {
-                    v(")"), v("}") -> {
-                        val previousFrame = currentFrame
-                        currentFrame = previousFrame.parent!!
-                        previousFrame.evaluate()
-                    }
+                val value: Value? = if (typeName in brackets.closers) {
+                    val previousFrame = currentFrame
+                    currentFrame = previousFrame.parent!!
+                    previousFrame.evaluate()
+                } else when (typeName) {
                     "digits" -> Value._number(token.data.toDouble())
                     "string" -> Value._string(token.data)
                     "id" -> {
@@ -63,7 +91,7 @@ object Lisp : Language.Construction<Runnable> {
                         currentFrame[id]?.value ?: Value._identifier(id)
                     }
                     else -> {
-                        code.issue(token, "unknown token type")
+                        code.issue(token, "unknown token type $typeName")
                         null
                     }
                 }
@@ -75,8 +103,14 @@ object Lisp : Language.Construction<Runnable> {
         }
     }
 
-    @JvmStatic
-    fun main(args: Array<String>) {
-        Lisp.code(File("res/lisp-test")).beConstructedInto<Runnable>().run()
+    companion object {
+        val defaultFlavor = Lisp {
+            addCurlyBraces(Type._Callable._block)
+        }
+
+        @JvmStatic
+        fun main(args: Array<String>) {
+            defaultFlavor.code(File("res/lisp-test")).beConstructedInto<Runnable>().run()
+        }
     }
 }
