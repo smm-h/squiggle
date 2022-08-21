@@ -1,8 +1,22 @@
-// (block (print "Hello, world!") (print "Bye, world!"))
+
+// block (print "A") (print "B")
 
 // (print (textualize true))
 
+/*
 
 if true
-    (print "Hey!")
-    (print "Bye!")
+    (block
+        (print "A")
+        (print "B")
+    )
+    (print "Z")
+
+*/
+
+if true {
+    (print "A")
+    (print "B")
+}
+    (print "Z")
+

@@ -32,6 +32,48 @@ object NiLexLanguage : Language.HasFileExt.Impl("nlx"), Language.Construction<Js
         code[construction] = array
     }
 
+    fun assert(assertion: (Code) -> String?) = Code.Process {
+        var message = assertion(it)
+        if (message != null) {
+            it.issue(Code.Mishap.Impl(null, message, Code.Mishap.Level.ERROR, true))
+        }
+    }
+
+    fun assertCountIsEven(type: String, aspect: Code.Aspect<List<Token>> = Tokens) = assert {
+        var count = 0
+        for (token in (aspect of it)!!) if (token.type.name == type) count++
+        if (count % 2 == 0) null
+        else "type count not even: '$type' ($count)"
+    }
+
+    fun assertCountsAreEqual(opener: String, closer: String, aspect: Code.Aspect<List<Token>> = Tokens) =
+        if (opener == closer) assertCountIsEven(opener, aspect)
+        else assert {
+            var openers = 0
+            var closers = 0
+            for (token in (aspect of it)!!) when (token.type.name) {
+                opener -> openers++
+                closer -> closers++
+            }
+            if (openers == closers) null
+            else "type counts not equal: '$opener' ($openers), '$closer' ($closers)"
+        }
+
+    fun assertBalance(opener: String, closer: String, aspect: Code.Aspect<List<Token>> = Tokens) =
+        if (opener == closer) assertCountIsEven(opener, aspect)
+        else assert {
+            var balance = 0
+            for (token in (aspect of it)!!) when (token.type.name) {
+                opener -> balance++
+                closer -> {
+                    balance--
+                    if (balance < 0) break
+                }
+            }
+            if (balance == 0) null
+            else "types unbalanced: '$opener', '$closer' ($balance)"
+        }
+
     val FilteredTokens = Code.Aspect<List<Token>>("filtered-tokens")
 
     fun filterOut(vararg tags: String) = Code.Process { code ->

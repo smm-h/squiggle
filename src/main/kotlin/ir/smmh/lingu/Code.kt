@@ -54,15 +54,11 @@ class Code private constructor(
         if (it is Language.Processable) it.process(this)
     }
 
-    val canBeConstructed: Boolean get() = language is Language.Construction<*>
-    fun <T> beConstructed(): T? {
-        val it = language
-        try {
-            @Suppress("UNCHECKED_CAST")
-            if (it is Language.Construction<*>) return it[this] as T
-        } catch (_: ClassCastException) {
-        }
-        return null
+    val canBeConstructedInto: Boolean get() = language is Language.Construction<*>
+    fun <T> beConstructedInto(): T {
+        val construct = language as Language.Construction<*>
+        @Suppress("UNCHECKED_CAST")
+        return construct[this] as T
     }
 
     val canBeDeserialized: Boolean get() = language is Language.Serialization

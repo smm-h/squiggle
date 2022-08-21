@@ -3,15 +3,16 @@ package ir.smmh.lisp
 import ir.smmh.lingu.Code
 import ir.smmh.lingu.Language
 import ir.smmh.lingu.Tokenizer
-import ir.smmh.lisp.Type.*
-import ir.smmh.lisp.Value.*
 import ir.smmh.nilex.NiLexLanguage.FilteredTokens
+import ir.smmh.nilex.NiLexLanguage.assertBalance
 import ir.smmh.nilex.NiLexLanguage.filterOut
 import ir.smmh.nilex.NiLexTokenizer.Companion.v
 import ir.smmh.nilex.NiLexTokenizerFactory
 import java.io.File
 
-object Lisp : Language.Processable {
+object Lisp : Language.Construction<Runnable> {
+
+    override val construction = Code.Aspect<Runnable>("root-block")
 
     private val tokenize: Tokenizer = NiLexTokenizerFactory.create(
         """
@@ -20,70 +21,47 @@ object Lisp : Language.Processable {
         streak '[A-Z][a-z][0-9]_' as id
         keep '"' ... '"' as string
         keep '//' ... '\n' as comment
+        keep '/*' ... '*/' as multiLineComment
         verbatim '('
         verbatim ')'
+        verbatim '{'
+        verbatim '}'
         """
     )
 
     override val process: Code.Process = tokenize +
-            filterOut("opener", "closer", "whitespace", "comment") + { code ->
+            filterOut("opener", "closer", "whitespace", "comment", "multiLineComment") +
+            assertBalance(v("("), v(")"), FilteredTokens) +
+            assertBalance(v("{"), v("}"), FilteredTokens) + { code ->
         val queue = ArrayDeque((FilteredTokens of code)!!)
         var currentFrame = StackFrame(null).apply {
 
             Type.setAll(::set)
             Value.setAll(::set)
-
-            // basics
-            this["block"] = _callable(_Callable.Statements) {
-                _statement {
-                    it.forEach { (it as _statement).runnable.run() }
-                }
-            }
-            this["if"] = _callable(_Callable.Simple(_Statement, _Boolean, _Statement, _Statement)) {
-                _statement {
-                    if (it[0] as _boolean == _boolean.TRUE)
-                        (it[1] as _statement).runnable.run()
-                    else
-                        (it[2] as _statement).runnable.run()
-                }
-            }
-            this["for"] = _callable(_Callable.Simple(_Statement, _Boolean, _Statement, _Statement)) {
-                _statement {
-                    if (it[0] as _boolean == _boolean.TRUE)
-                        (it[1] as _statement).runnable.run()
-                    else
-                        (it[2] as _statement).runnable.run()
-                }
-            }
-
-            // io
-            this["print"] = _callable(_Callable.Simple(_Statement, _String)) {
-                _statement {
-                    println((it[0] as _string).string)
-                }
-            }
+            Type._Callable.setAll(::set)
 
         }
         while (queue.isNotEmpty()) {
             val token = queue.removeFirst()
-            if (token.type.name == v("(")) {
+            val typeName = token.type.name
+            if (typeName == v("(")) {
                 currentFrame = StackFrame(currentFrame)
+            } else if (typeName == v("{")) {
+                currentFrame = StackFrame(currentFrame)
+                currentFrame.add(Type._Callable._block)
             } else {
-                val value: Value? = when (token.type.name) {
-                    v(")") -> {
-                        val frame = currentFrame
-                        val parent = frame.parent
-                        if (parent == null) {
-                            code.issue(token, "premature EOF")
-                            null
-                        } else {
-                            currentFrame = parent
-                            frame.evaluate()
-                        }
+                val value: Value? = when (typeName) {
+                    v(")"), v("}") -> {
+                        val previousFrame = currentFrame
+                        currentFrame = previousFrame.parent!!
+                        previousFrame.evaluate()
                     }
-                    "id" -> currentFrame[token.data].value
-                    "digits" -> _number(token.data.toDouble())
-                    "string" -> _string(token.data)
+                    "digits" -> Value._number(token.data.toDouble())
+                    "string" -> Value._string(token.data)
+                    "id" -> {
+                        val id = token.data
+                        currentFrame[id]?.value ?: Value._identifier(id)
+                    }
                     else -> {
                         code.issue(token, "unknown token type")
                         null
@@ -92,11 +70,13 @@ object Lisp : Language.Processable {
                 if (value != null) currentFrame.add(value)
             }
         }
-        (currentFrame.evaluate() as _statement).runnable.run()
+        code[construction] = Runnable {
+            (currentFrame.evaluate() as Value.f).callable.call(emptyList())
+        }
     }
 
     @JvmStatic
     fun main(args: Array<String>) {
-        Lisp.code(File("res/lisp-test")).beProcessed()
+        Lisp.code(File("res/lisp-test")).beConstructedInto<Runnable>().run()
     }
 }

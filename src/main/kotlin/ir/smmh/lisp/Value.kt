@@ -6,10 +6,7 @@ sealed interface Value {
 
     object _nothing : Value {
         override val type: Type = Type._Nothing
-    }
-
-    class _statement(val runnable: Statement) : Value {
-        override val type: Type = Type._Statement
+        override fun toString(): String = "nothing~"
     }
 
     enum class _boolean : Value {
@@ -20,10 +17,17 @@ sealed interface Value {
 
     class _number(val double: Double) : Value {
         override val type: Type = Type._Number
+        override fun toString(): String = "number~$double"
     }
 
     class _string(val string: String) : Value {
         override val type: Type = Type._String
+        override fun toString(): String = "string~$string"
+    }
+
+    class _identifier(val id: String) : Value {
+        override val type: Type = Type._Identifier
+        override fun toString(): String = "identifier~$id"
     }
 
     class _object() : Value {
@@ -31,11 +35,11 @@ sealed interface Value {
         val map: MutableMap<String, Variable> = HashMap()
     }
 
-    class _callable(override val type: Type._Callable, val callable: Callable) : Value
+    class f(override val type: Type._Callable = Type._Callable.Tail, val callable: Callable) : Value
 
     companion object {
         fun setAll(set: (String, Value) -> Unit) {
-            set("pass", _statement {})
+            set("pass", f { _nothing })
             set("true", _boolean.TRUE)
             set("false", _boolean.FALSE)
         }
