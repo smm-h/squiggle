@@ -1,47 +1,63 @@
 package ir.smmh.lisp
 
-sealed interface Value {
+sealed class Value {
 
-    val type: Type
+    override fun toString(): String = "some value of $type"
 
-    object _nothing : Value {
+    abstract val type: Type
+
+    object _nothing : Value() {
         override val type: Type = Type._Nothing
-        override fun toString(): String = "nothing~"
+        override fun toString(): String = "nothing"
     }
 
-    enum class _boolean : Value {
-        TRUE, FALSE;
-
+    sealed class _boolean : Value() {
         override val type: Type = Type._Boolean
     }
 
-    class _number(val double: Double) : Value {
+    object _true : _boolean() {
+        override fun toString(): String = "true"
+    }
+
+    object _false : _boolean() {
+        override fun toString(): String = "false"
+    }
+
+    class _number(val double: Double) : Value() {
         override val type: Type = Type._Number
-        override fun toString(): String = "number~$double"
+        override fun toString(): String = double.toString()
     }
 
-    class _string(val string: String) : Value {
+    class _string(val string: String) : Value() {
         override val type: Type = Type._String
-        override fun toString(): String = "string~$string"
+        override fun toString(): String = "\"$string\""
     }
 
-    class _identifier(val id: String) : Value {
-        override val type: Type = Type._Identifier
-        override fun toString(): String = "identifier~$id"
+    class _undefined(val id: String) : Value() {
+        override val type: Type = Type._Undefined
+        override fun toString(): String = "'$id'"
     }
 
-    class _object() : Value {
+    class _object() : Value() {
         override val type: Type = Type._Object
-        val map: MutableMap<String, Variable> = HashMap()
+        private val map: MutableMap<String, Value> = HashMap()
+        override fun toString(): String = map.toString()
     }
 
-    class f(override val type: Type._Callable = Type._Callable.Tail, val callable: Callable) : Value
+    class _arguments(val args: List<Pair<_undefined, Type>>) : Value() {
+        constructor (vararg pairs: Pair<_undefined, Type>) : this(pairs.toList())
+
+        override val type: Type = Type._Arguments
+        override fun toString(): String = args.joinToString(", ", "<", ">") { "${it.first.id}: ${it.second.name}" }
+    }
+
+    class f(override val type: Type._Callable = Type._Callable.Tail, val callable: Callable) : Value()
 
     companion object {
-        fun setAll(set: (String, Value) -> Unit) {
-            set("pass", f { _nothing })
-            set("true", _boolean.TRUE)
-            set("false", _boolean.FALSE)
+        val namedValues = Lisp.Customization.NamedValues { name ->
+            name("pass", f { _nothing })
+            name("true", _true)
+            name("false", _false)
         }
     }
 }

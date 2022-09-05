@@ -1,22 +1,14 @@
-
-// block (print "A") (print "B")
-
-// (print (textualize true))
-
 /*
-
-if true
-    (block
+{
+    (if true {
         (print "A")
         (print "B")
+    }
+        (print "Z")
     )
-    (print "Z")
-
+}
 */
 
-if true {
-    (print "A")
-    (print "B")
-}
-    (print "Z")
+// (for 3 (lambda <i Number> (print i)))
 
+((lambda <s String> {(print s)}) "HEY!")
