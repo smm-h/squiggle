@@ -1,5 +1,6 @@
 package ir.smmh.mage.core
 
+import ir.smmh.mage.core.Utils.sqr
 import java.util.*
 import kotlin.math.cos
 import kotlin.math.sin
@@ -236,5 +237,5 @@ sealed interface Point {
         distanceSquared(other.x, other.y)
 
     fun distanceSquared(x: Double, y: Double) =
-        Utils.sqr(x - this.x) + Utils.sqr(y - this.y)
+        sqr(x - this.x) + sqr(y - this.y)
 }

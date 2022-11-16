@@ -1,11 +1,10 @@
 package ir.smmh.mage.core
 
 import ir.smmh.mage.core.Point.Companion.line
-import ir.smmh.mage.core.Utils.angle
 import ir.smmh.mage.core.Utils.degrees
-import ir.smmh.mage.core.Utils.hypotenuse
 import kotlin.math.PI
 import kotlin.math.cos
+import kotlin.math.hypot
 import kotlin.math.sin
 
 /**
@@ -23,7 +22,7 @@ sealed interface Vector {
     val point: Point
         get() = Point.of(x, y)
     val magnitude: Double
-        get() = hypotenuse(x, y)
+        get() = hypot(x, y)
     val direction: Double
         get() = angle(x, y)
     val unit: Vector
@@ -90,6 +89,9 @@ sealed interface Vector {
 
         val Graphics.TransformationMatrix.shear: Vector
             get() = towards(scaleX, scaleY)
+
+        fun angle(x: Double, y: Double): Double =
+            -kotlin.math.atan2(y, x)
     }
 
     private data class Impl(override val x: Double, override val y: Double) : Vector
@@ -100,7 +102,7 @@ sealed interface Vector {
         override var y: Double
 
         override var magnitude: Double
-            get() = hypotenuse(x, y)
+            get() = hypot(x, y)
             set(value) {
                 set(value, direction)
             }

@@ -10,6 +10,8 @@ import java.awt.geom.NoninvertibleTransformException
 import java.awt.geom.Path2D
 import java.awt.geom.Point2D
 import java.awt.image.BufferedImage
+import java.io.File
+import javax.imageio.ImageIO
 import javax.swing.JFrame
 import javax.swing.JPanel
 import kotlin.math.abs
@@ -33,6 +35,8 @@ object SwingPlatform : Platform {
         private val panel = object : JPanel(null) {
             override fun paint(g: java.awt.Graphics) {
                 super.paint(g)
+                g.color = java.awt.Color.BLUE
+                g.fillRect(0, 0, size.width, size.height)
                 this@SwingProcess.draw(this@SwingProcess.graphics)
                 g.drawImage(SwingGraphics.image, 0, 0, null)
                 repaint()
@@ -124,6 +128,10 @@ object SwingPlatform : Platform {
             frame.isVisible = false
             exitProcess(0)
         }
+
+        override fun screenshot(address: String) {
+            ImageIO.write((graphics as SwingGraphics).image, "png", File(address))
+        }
     }
 
     private object SwingGraphics : Graphics {
@@ -148,6 +156,13 @@ object SwingPlatform : Platform {
 
         override fun createTransformationMatrix(): Graphics.TransformationMatrix =
             SwingPlatform.createTransformationMatrix()
+
+        override val identityMatrix: Graphics.TransformationMatrix = createTransformationMatrix()
+        override var transformationMatrix: Graphics.TransformationMatrix = createTransformationMatrix()
+            set(value) {
+                field = value
+                SwingGraphics.graphics.transform = (value as SwingTransformationMatrix).affineTransform
+            }
 
         override var fill: Boolean = false
         override var color: Color.Packed
@@ -174,13 +189,6 @@ object SwingPlatform : Platform {
                 graphics.draw(path.path)
         }
     }
-
-//    override fun screenshot() {
-//        val file = File("C:/tmp/screenshot.png")
-//        ImageIO.write(Canvas.image, "png", file)
-//    }
-
-//    SwingUtilities.
 
     private val MouseEvent.mousePoint: Point
         get() = Point.of(x.toDouble(), y.toDouble())

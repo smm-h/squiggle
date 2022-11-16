@@ -13,6 +13,9 @@ interface Graphics {
      */
     fun createTransformationMatrix(): TransformationMatrix
 
+    val identityMatrix: TransformationMatrix
+    var transformationMatrix: TransformationMatrix
+
     fun interface Draw : (Graphics) -> Unit
 
     // val stroke: Stroke

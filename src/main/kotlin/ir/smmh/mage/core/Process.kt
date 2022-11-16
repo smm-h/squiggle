@@ -30,4 +30,6 @@ interface Process {
      * Make it invisible and exit process.
      */
     fun stop()
+
+    fun screenshot(address: String)
 }
