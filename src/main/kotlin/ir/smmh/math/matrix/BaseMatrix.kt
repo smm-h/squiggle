@@ -4,9 +4,9 @@ abstract class BaseMatrix<T> internal constructor() : Matrix<T> {
 
     override fun equals(other: Any?): Boolean {
         if (other is Matrix<*>) {
-            if (width == other.width && height == other.height && structure == other.structure) {
-                for (i in 0 until width)
-                    for (j in 0 until height)
+            if (rows == other.rows && columns == other.columns && structure == other.structure) {
+                for (i in 0 until rows)
+                    for (j in 0 until columns)
                         if (this[i, j] != other[i, j])
                             return false
                 return true
@@ -15,17 +15,17 @@ abstract class BaseMatrix<T> internal constructor() : Matrix<T> {
     }
 
     override fun toString(): String = StringBuilder().apply {
-        for (i in 0 until width) {
+        for (i in 0 until rows) {
             if (i != 0) append('\n')
             append(
                 when (i) {
                     0 -> '┌'
-                    width - 1 -> '└'
+                    rows - 1 -> '└'
                     else -> '│'
                 }
             )
             append('\t')
-            for (j in 0 until height) {
+            for (j in 0 until columns) {
                 if (j != 0) append('\t')
                 append(this@BaseMatrix[i, j])
             }
@@ -33,7 +33,7 @@ abstract class BaseMatrix<T> internal constructor() : Matrix<T> {
             append(
                 when (i) {
                     0 -> '┐'
-                    width - 1 -> '┘'
+                    rows - 1 -> '┘'
                     else -> '│'
                 }
             )

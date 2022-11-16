@@ -1,36 +1,29 @@
 package ir.smmh.math.matrix
 
 import ir.smmh.math.abstractalgebra.RingLike
-import ir.smmh.math.abstractalgebra.Structures
 import ir.smmh.nile.Mut
 
-class ArrayMatrix(
-    override val width: Int,
-    override val height: Int,
+class ArrayMatrix<T : Any>(
+    override val rows: Int,
+    override val columns: Int,
+    override val structure: RingLike<T>,
     override val mut: Mut = Mut(),
-    initialValueFunction: (Int, Int) -> Float
-) : BaseMatrix<Float>(), Matrix.Mutable<Float> {
+    initialValueFunction: Matrix.ValueFunction<T>,
+) : BaseMatrix<T>(), Matrix.Mutable<T> {
     constructor(
         width: Int,
         height: Int,
+        structure: RingLike<T>,
         mut: Mut = Mut(),
-        initialValue: Float = 0f
-    ) : this(width, height, mut, { _, _ -> initialValue })
+        initialValue: T,
+    ) : this(width, height, structure, mut, Matrix.ValueFunction.Independent { _, _ -> initialValue })
 
-    override val structure: RingLike<Float> = Structures.RealFPField
+    private val array: Array<Array<Any>> =
+        Array<Array<Any>>(rows, { i -> Array<Any>(columns, { j -> initialValueFunction(this, i, j) }) })
 
-    private val array: Array<Array<Float>> = Array(width, { i -> Array(height, { j -> initialValueFunction(i, j) }) })
-    override fun get(i: Int, j: Int): Float = array[i][j]
-    override fun set(i: Int, j: Int, value: Float) {
+    @Suppress("UNCHECKED_CAST")
+    override fun get(i: Int, j: Int): T = array[i][j] as T
+    override fun set(i: Int, j: Int, value: T) {
         array[i][j] = value
     }
-
-//    fun MUL(other: ArrayMatrix) {
-//        val result = Array(width, { Array(other.height, { 0 }) })
-//        for (i in 0 until result.size)
-//            for (j in 0 until a.size)
-//                for (k in 0 until b.size)
-//                    result[i][j] += a[i][k] + b[k][j]
-//        return result
-//    }
 }

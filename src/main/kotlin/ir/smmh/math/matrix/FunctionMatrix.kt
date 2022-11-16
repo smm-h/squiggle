@@ -4,8 +4,8 @@ import ir.smmh.math.abstractalgebra.RingLike
 import ir.smmh.nile.Cache
 
 sealed class FunctionMatrix<T>(
-    override val width: Int,
-    override val height: Int,
+    override val rows: Int,
+    override val columns: Int,
     override val structure: RingLike<T>,
     protected val function: Matrix.ValueFunction.Independent<T>,
 ) : BaseMatrix<T>() {
