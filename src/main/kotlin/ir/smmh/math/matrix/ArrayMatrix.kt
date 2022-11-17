@@ -24,6 +24,8 @@ class ArrayMatrix<T : Any>(
     @Suppress("UNCHECKED_CAST")
     override fun get(i: Int, j: Int): T = array[i][j] as T
     override fun set(i: Int, j: Int, value: T) {
+        mut.preMutate()
         array[i][j] = value
+        mut.mutate()
     }
 }

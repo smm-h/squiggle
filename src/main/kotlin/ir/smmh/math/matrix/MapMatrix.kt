@@ -13,9 +13,11 @@ class MapMatrix<T>(
     override val mut: Mut = Mut(),
     val defaultValue: T = structure.addition.identity!!,
 ) : BaseMatrix<T>(), Matrix.Mutable<T> {
-    private val map: MutableMap<Pair<Int, Int>, T> = HashMap()
-    override fun get(i: Int, j: Int): T = map[i to j] ?: defaultValue
+    private val map: MutableMap<Int, T> = HashMap()
+    override fun get(i: Int, j: Int): T = map[pair(i, j)] ?: defaultValue
     override fun set(i: Int, j: Int, value: T) {
-        map[i to j] = value
+        mut.preMutate()
+        map[pair(i, j)] = value
+        mut.mutate()
     }
 }
