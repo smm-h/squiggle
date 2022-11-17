@@ -2,13 +2,6 @@ package ir.smmh.math.matrix
 
 import ir.smmh.math.abstractalgebra.Structures
 
-//internal class MatrixTest {
-//    @Test
-//    fun test() {
-//
-//    }
-//}
-
 fun main() {
     val i = Structures.Integer32Ring
     val r = Structures.RealFPField
@@ -50,7 +43,4 @@ fun main() {
 
     val difn = i2r(dif) / (k * 2)
     println("Their difference divided by 2k:\n$difn\n")
-
-    // transpose, matrix multiplication, scaling
-    // matrices as LaTeX in Markdown
 }

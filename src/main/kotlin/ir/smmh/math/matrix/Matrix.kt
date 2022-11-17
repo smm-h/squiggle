@@ -26,6 +26,8 @@ interface Matrix<T> {
     val columns: Int
     val structure: RingLike<T>
 
+    val transpose: Matrix<T>
+
     operator fun get(i: Int, j: Int): T
 
     fun <R> convert(structure: RingLike<R>, convertor: (T) -> R): Matrix<R> =
@@ -157,6 +159,11 @@ interface Matrix<T> {
 
     fun uniform(value: T) = UniformMatrix(rows, columns, structure, value)
 
+    fun pair(i: Int, j: Int): Int = i * rows + j
+    fun unpairI(x: Int): Int = x / rows
+    fun unpairJ(x: Int): Int = x % rows
+    fun unpair(x: Int): Pair<Int, Int> = unpairI(x) to unpairJ(x)
+
     companion object {
 
         operator fun Int.times(m: Matrix<Int>) = m.timesInverse(this)
@@ -181,7 +188,7 @@ interface Matrix<T> {
         fun identity(n: Int): Matrix<Boolean> =
             FunctionMatrix.Unmemoized(n, n, BooleanRing) { i, j -> i == j }
 
-        fun <T> of(width: Int, height: Int, structure: RingLike<T>, vararg values: T): Matrix<T> =
-            MapMatrix(width, height, structure, Mut()).setAll { _, i, j -> values[i * height + j] }
+        fun <T> of(rows: Int, columns: Int, structure: RingLike<T>, vararg values: T): Matrix<T> =
+            MapMatrix(rows, columns, structure, Mut()).setAll { _, i, j -> values[i * columns + j] }
     }
 }

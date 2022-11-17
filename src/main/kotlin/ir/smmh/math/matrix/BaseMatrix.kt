@@ -2,6 +2,10 @@ package ir.smmh.math.matrix
 
 abstract class BaseMatrix<T> internal constructor() : Matrix<T> {
 
+    override val transpose: Matrix<T> by lazy {
+        FunctionMatrix.Unmemoized(columns, rows, structure) { i, j -> this[j, i] }
+    }
+
     override fun equals(other: Any?): Boolean {
         if (other is Matrix<*>) {
             if (rows == other.rows && columns == other.columns && structure == other.structure) {

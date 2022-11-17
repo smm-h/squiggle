@@ -10,26 +10,22 @@ sealed class FunctionMatrix<T>(
     protected val function: Matrix.ValueFunction.Independent<T>,
 ) : BaseMatrix<T>() {
 
-    abstract val isMemoized: Boolean
-
     class Unmemoized<T>(
-        width: Int,
-        height: Int,
+        rows: Int,
+        columns: Int,
         structure: RingLike<T>,
         function: Matrix.ValueFunction.Independent<T>,
-    ) : FunctionMatrix<T>(width, height, structure, function) {
+    ) : FunctionMatrix<T>(rows, columns, structure, function) {
         override fun get(i: Int, j: Int): T = function(i, j)
-        override val isMemoized: Boolean = false
     }
 
     class Memoized<T>(
-        width: Int,
-        height: Int,
+        rows: Int,
+        columns: Int,
         structure: RingLike<T>,
         function: Matrix.ValueFunction.Independent<T>,
-    ) : FunctionMatrix<T>(width, height, structure, function) {
-        private val cache = Cache<Pair<Int, Int>, T> { function(it.first, it.second) }
-        override fun get(i: Int, j: Int): T = cache(Pair(i, j))
-        override val isMemoized: Boolean = true
+    ) : FunctionMatrix<T>(rows, columns, structure, function) {
+        private val cache = Cache<Int, T> { x -> function(unpairI(x), unpairJ(x)) }
+        override fun get(i: Int, j: Int): T = cache(pair(i, j))
     }
 }

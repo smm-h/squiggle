@@ -11,12 +11,12 @@ class ArrayMatrix<T : Any>(
     initialValueFunction: Matrix.ValueFunction<T>,
 ) : BaseMatrix<T>(), Matrix.Mutable<T> {
     constructor(
-        width: Int,
-        height: Int,
+        rows: Int,
+        columns: Int,
         structure: RingLike<T>,
         mut: Mut = Mut(),
         initialValue: T,
-    ) : this(width, height, structure, mut, Matrix.ValueFunction.Independent { _, _ -> initialValue })
+    ) : this(rows, columns, structure, mut, Matrix.ValueFunction.Independent { _, _ -> initialValue })
 
     private val array: Array<Array<Any>> =
         Array<Array<Any>>(rows, { i -> Array<Any>(columns, { j -> initialValueFunction(this, i, j) }) })
