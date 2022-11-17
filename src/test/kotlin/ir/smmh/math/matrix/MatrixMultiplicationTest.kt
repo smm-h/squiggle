@@ -2,6 +2,7 @@ package ir.smmh.math.matrix
 
 import ir.smmh.math.abstractalgebra.Structures
 import org.junit.jupiter.api.Test
+import kotlin.Float
 import kotlin.test.assertEquals
 
 class MatrixMultiplicationTest {

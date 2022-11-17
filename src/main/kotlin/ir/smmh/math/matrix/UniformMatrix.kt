@@ -7,6 +7,7 @@ class UniformMatrix<T>(
     override val columns: Int,
     override val structure: RingLike<T>,
     val value: T,
-) : BaseMatrix<T>() {
+) : AbstractMatrix<T>() {
+    override val transpose: Matrix<T> = this
     override fun get(i: Int, j: Int): T = value
 }

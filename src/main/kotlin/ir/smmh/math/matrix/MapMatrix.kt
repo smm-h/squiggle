@@ -12,8 +12,11 @@ class MapMatrix<T>(
     override val structure: RingLike<T>,
     override val mut: Mut = Mut(),
     val defaultValue: T = structure.addition.identity!!,
-) : BaseMatrix<T>(), Matrix.Mutable<T> {
+) : AbstractMatrix<T>(), Matrix.Mutable<T> {
+
     private val map: MutableMap<Int, T> = HashMap()
+
+    override fun createSameStructure(rows: Int, columns: Int): Matrix.Mutable<T> = MapMatrix(rows, columns, structure)
     override fun get(i: Int, j: Int): T = map[pair(i, j)] ?: defaultValue
     override fun set(i: Int, j: Int, value: T) {
         mut.preMutate()

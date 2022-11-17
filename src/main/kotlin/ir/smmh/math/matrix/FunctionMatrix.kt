@@ -8,7 +8,11 @@ sealed class FunctionMatrix<T>(
     override val columns: Int,
     override val structure: RingLike<T>,
     protected val function: Matrix.ValueFunction.Independent<T>,
-) : BaseMatrix<T>() {
+) : AbstractMatrix<T>() {
+
+    override val transpose: Matrix<T> by lazy {
+        FunctionMatrix.Unmemoized(columns, rows, structure) { i, j -> this[j, i] }
+    }
 
     class Unmemoized<T>(
         rows: Int,

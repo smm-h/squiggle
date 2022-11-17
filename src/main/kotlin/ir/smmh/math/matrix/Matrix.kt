@@ -20,6 +20,8 @@ import ir.smmh.nile.Mut
  *   is fast and memory usage only increase when values are different from a
  *   given default value; good for sparse matrices and high-level tasks
  * - [UniformMatrix]: no write, read is instantanious because it is a constant
+ * - [LowLevelMatrix]: same as array matrix but specialized and more efficient;
+ *   uses two-dimensional primitive arrays instead of general object arrays.
  */
 interface Matrix<T> {
     val rows: Int
@@ -27,6 +29,22 @@ interface Matrix<T> {
     val structure: RingLike<T>
 
     val transpose: Matrix<T>
+
+    fun areEqual(that: Matrix<*>): Boolean {
+        if (areSameSize(that) && areSameStructure(that)) {
+            for (i in 0 until rows)
+                for (j in 0 until columns)
+                    if (this[i, j] != that[i, j])
+                        return false
+            return true
+        } else return false
+    }
+
+    fun areSameSize(that: Matrix<*>): Boolean =
+        this.rows == that.rows && this.columns == that.columns
+
+    fun areSameStructure(that: Matrix<*>): Boolean =
+        this.structure == that.structure
 
     operator fun get(i: Int, j: Int): T
 
@@ -107,7 +125,13 @@ interface Matrix<T> {
 
     interface Mutable<T> : Matrix<T>, Mut.Able {
 
+        fun createSimilar(): Matrix.Mutable<T> = createSameStructure(rows, columns)
+        fun createSameStructure(rows: Int, columns: Int): Matrix.Mutable<T>
+        override val transpose: Matrix<T> get() = createSameStructure(columns, rows).setTransposed(this)
+
         operator fun set(i: Int, j: Int, value: T)
+
+        fun setTransposed(source: Matrix<T>) = setAll { _, i, j -> source[j, i] }
 
         fun setAll(f: ValueFunction<T>) =
             also { for (i in 0 until rows) for (j in 0 until columns) this[i, j] = f(this, i, j) }
@@ -190,5 +214,36 @@ interface Matrix<T> {
 
         fun <T> of(rows: Int, columns: Int, structure: RingLike<T>, vararg values: T): Matrix<T> =
             MapMatrix(rows, columns, structure, Mut()).setAll { _, i, j -> values[i * columns + j] }
+
+        fun hashCode(m: Matrix<*>): Int {
+            return toString(m).hashCode() xor m.structure.hashCode()
+        }
+
+        fun <T> toString(m: Matrix<T>): String = StringBuilder().apply {
+            val n = m.rows - 1
+            for (i in 0 until m.rows) {
+                if (i != 0) append('\n')
+                append(
+                    when (i) {
+                        0 -> '┌'
+                        n -> '└'
+                        else -> '│'
+                    }
+                )
+                append('\t')
+                for (j in 0 until m.columns) {
+                    if (j != 0) append('\t')
+                    append(m[i, j])
+                }
+                append('\t')
+                append(
+                    when (i) {
+                        0 -> '┐'
+                        n -> '┘'
+                        else -> '│'
+                    }
+                )
+            }
+        }.toString()
     }
 }
