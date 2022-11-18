@@ -4,6 +4,9 @@ import ir.smmh.math.abstractalgebra.Structures
 import kotlin.Float
 
 fun main() {
+
+    // TODO matrices as LaTeX in Markdown
+
     val i = Structures.Integer32Ring
     val r = Structures.RealFPField
 

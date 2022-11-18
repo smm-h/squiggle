@@ -16,7 +16,7 @@ class Rational(numerator: Int, denominator: Int) {
     }
 
     fun approximate(): Double = numerator.toDouble() / denominator
-    val reciprocal: Rational by lazy { Rational(denominator, numerator) }
+    val reciprocal: Rational? by lazy { if (numerator == 0) null else Rational(denominator, numerator) }
     fun negate(): Rational = Rational(-numerator, denominator)
 
     fun add(other: Rational) =

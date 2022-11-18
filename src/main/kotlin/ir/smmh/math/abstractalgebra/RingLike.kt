@@ -96,13 +96,19 @@ class RingLike<T>(
         addition.combine(a, b)
 
     fun negate(a: T): T =
-        addition.inverse!!(a)
+        addition.inverse!!(a)!!
+
+    fun negatable(a: T): Boolean =
+        addition.inverse!!(a) != null
 
     fun multiply(a: T, b: T): T =
         multiplication.combine(a, b)
 
     fun invert(a: T): T =
-        multiplication.inverse!!(a)
+        multiplication.inverse!!(a)!!
+
+    fun invertible(a: T): Boolean =
+        multiplication.inverse!!(a) != null
 
     fun subtract(a: T, b: T): T =
         if (subtraction != null) subtraction.invoke(a, b) else add(a, negate(b))
@@ -168,10 +174,10 @@ class RingLike<T>(
         fun <T> ring(
             domain: Set<T>,
             additiveCombine: Binary<T>,
-            additiveInverse: Unary<T>,
+            additiveInverse: OptionalUnary<T>,
             additiveIdentity: T,
             multiplicativeCombine: Binary<T>,
-            multiplicativeInverse: Unary<T>? = null,
+            multiplicativeInverse: OptionalUnary<T>? = null,
             multiplicativeIdentity: T,
             subtraction: Binary<T>? = null,
             division: Binary<T>? = null,
@@ -203,10 +209,10 @@ class RingLike<T>(
         fun <T> field(
             domain: Set<T>,
             additiveCombine: Binary<T>,
-            additiveInverse: Unary<T>,
+            additiveInverse: OptionalUnary<T>,
             additiveIdentity: T,
             multiplicativeCombine: Binary<T>,
-            multiplicativeInverse: Unary<T>,
+            multiplicativeInverse: OptionalUnary<T>,
             multiplicativeIdentity: T,
             subtraction: Binary<T>? = null,
             division: Binary<T>? = null,

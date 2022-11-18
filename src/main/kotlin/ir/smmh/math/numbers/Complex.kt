@@ -10,7 +10,9 @@ class Complex(val r: Double, val i: Double) {
 
     val magnitudeSquared: Double by lazy { sqr(r) + sqr(i) }
     val magnitude: Double by lazy { sqrt(magnitudeSquared) }
-    val reciprocal: Complex by lazy { Complex(r / magnitudeSquared, -i / magnitudeSquared) }
+    val reciprocal: Complex? by lazy {
+        if (magnitudeSquared == 0.0) null else Complex(r / magnitudeSquared, -i / magnitudeSquared)
+    }
 
     fun negate() =
         Complex(-r, i)

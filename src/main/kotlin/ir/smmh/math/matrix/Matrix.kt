@@ -4,7 +4,10 @@ import ir.smmh.math.abstractalgebra.RingLike
 import ir.smmh.math.abstractalgebra.Structures.BooleanRing
 import ir.smmh.math.matrix.Matrix.ValueFunction
 import ir.smmh.math.matrix.Matrix.ValueFunction.Independent
+import ir.smmh.nile.FunctionalSequence
 import ir.smmh.nile.Mut
+import ir.smmh.nile.Sequential
+import ir.smmh.nile.SequentialImpl
 
 /**
  * You can choose from various different classes of matrices:
@@ -62,7 +65,15 @@ interface Matrix<T> {
 
     val isNatural: Boolean get() = rows > 0 && columns > 0
     val isSquare: Boolean get() = isNatural && rows == columns
-    val isInvertible: Boolean get() = isSquare && determinant != 0
+
+    /**
+     * [Matrix invertibility](https://en.wikipedia.org/wiki/Invertible_matrix)
+     */
+    // TODO this is only correct if the ring is commutative
+    val isInvertible: Boolean get() = isSquare && structure.invertible(determinant!!)
+
+    fun row(i: Int): Sequential<T> = FunctionalSequence(columns) { j -> this[i, j] }
+    fun column(j: Int): Sequential<T> = FunctionalSequence(columns) { i -> this[i, j] }
 
     fun areEqual(that: Matrix<*>): Boolean {
         if (areSameSize(that) && areSameStructure(that)) {

@@ -16,7 +16,7 @@ import ir.smmh.math.settheory.Set
 class GroupLike<T>(
     val domain: Set<T>,
     val combine: Binary<T>,
-    val inverse: Unary<T>? = null,
+    val inverse: OptionalUnary<T>? = null,
     val identity: T? = null,
     val properties: Property.Holder,
 ) {
