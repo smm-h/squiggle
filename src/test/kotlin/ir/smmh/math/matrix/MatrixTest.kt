@@ -1,47 +1,32 @@
 package ir.smmh.math.matrix
 
 import ir.smmh.math.abstractalgebra.Structures
-import kotlin.Float
+import org.junit.jupiter.api.Test
+import kotlin.test.assertEquals
 
-fun main() {
+class MatrixTest {
+
     val i = Structures.Integer32Ring
     val r = Structures.RealFPField
 
     val i2r: (Matrix<Int>) -> Matrix<Float> = { it.convert(r) { it.toFloat() } }
+    val r2i: (Matrix<Float>) -> Matrix<Int> = { it.convert(i) { it.toInt() } }
 
-    val n = 5
-    println("n = $n\n")
+    @Test
+    fun testMultiplication() {
+        val a = Matrix.of(4, 3, i, 1, 0, 1, 2, 1, 1, 0, 1, 1, 1, 1, 2)
+        val b = Matrix.of(3, 3, i, 1, 2, 1, 2, 3, 1, 4, 2, 2)
+        val c = Matrix.of(4, 3, i, 5, 4, 3, 8, 9, 5, 6, 5, 3, 11, 9, 6)
+        assertEquals(c, a * b)
+    }
 
-    val mi: Matrix<Int> = Matrix.identity(n).convert(i) { x -> if (x) 1 else 0 }
-    println("Identity matrix:\n$mi\n")
+    @Test
+    fun testDeterminant2x2() {
+        assertEquals(-19, Matrix.of(2, 2, i, 3, 7, 1, -4).determinant)
+    }
 
-    val mt: Matrix<Int> = FunctionMatrix.Unmemoized(n, n, i, Matrix.multiplicationTable)
-    println("Multiplication table:\n$mt\n")
-
-    val mr: Matrix<Int> = MapMatrix(n, n, i).setAll(Matrix.rowMajor)
-    println("Row-major indices:\n$mr\n")
-
-    val mc: Matrix<Int> = MapMatrix(n, n, i).setAll(Matrix.columnMajor)
-    println("Column-major indices:\n$mc\n")
-
-    val dr = mr - mt
-    println("Row-major minus multiplication:\n$dr\n")
-
-    val dc = mc - mt
-    println("Column-major minus multiplication:\n$dc\n")
-
-    val sum = dr + dc
-    println("Their sum:\n$sum\n")
-
-    val dif = dr - dc
-    println("Their difference:\n$dif\n")
-
-    val k = 2f * (n - 1)
-    val mk = UniformMatrix(n, n, r, k)
-
-    val sumn = (i2r(sum) - mk) / k
-    println("Their sum minus uniform(k) and divided by k:\n$sumn\n")
-
-    val difn = i2r(dif) / (k * 2)
-    println("Their difference divided by 2k:\n$difn\n")
+    @Test
+    fun testDeterminant3x3() {
+        assertEquals(49, Matrix.of(3, 3, i, 2, -3, 1, 2, 0, -1, 1, 4, 5).determinant)
+    }
 }

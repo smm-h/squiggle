@@ -30,6 +30,40 @@ interface Matrix<T> {
 
     val transpose: Matrix<T>
 
+    val determinant: T?
+        get() = if (isSquare) calculatedDeterminant() else null
+
+    private fun calculatedDeterminant(): T {
+        // assume isSquare
+        if (rows == 2) {
+            return structure.subtract(
+                structure.multiply(this[0, 0], this[1, 1]),
+                structure.multiply(this[0, 1], this[1, 0])
+            )
+        } else {
+            var p: T = structure.addition.identity!!
+            for (k in 0 until rows step 2)
+                p = structure.add(p, structure.multiply(this[0, k], getMinor(k).calculatedDeterminant()))
+
+            var n: T = structure.addition.identity!!
+            for (k in 1 until rows step 2)
+                n = structure.add(n, structure.multiply(this[0, k], getMinor(k).calculatedDeterminant()))
+
+            return structure.subtract(p, n)
+        }
+    }
+
+    private fun getMinor(k: Int): Matrix<T> {
+        // assume isSquare && rows > 2 && 0 <= k < rows
+        return FunctionMatrix.Unmemoized(rows - 1, rows - 1, structure) { i, j ->
+            this@Matrix[i + 1, if (j >= k) j + 1 else j]
+        }
+    }
+
+    val isNatural: Boolean get() = rows > 0 && columns > 0
+    val isSquare: Boolean get() = isNatural && rows == columns
+    val isInvertible: Boolean get() = isSquare && determinant != 0
+
     fun areEqual(that: Matrix<*>): Boolean {
         if (areSameSize(that) && areSameStructure(that)) {
             for (i in 0 until rows)
