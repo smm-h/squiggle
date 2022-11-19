@@ -5,11 +5,14 @@ import ir.smmh.math.abstractalgebra.GroupLike.Properties.CLOSED
 import ir.smmh.math.abstractalgebra.GroupLike.Properties.COMMUTATIVE
 import ir.smmh.math.abstractalgebra.GroupLike.Properties.COMPLEMENTIVE
 import ir.smmh.math.abstractalgebra.GroupLike.Properties.IDEMPOTENT
+import ir.smmh.math.abstractalgebra.GroupLike.Properties.INVERTIBLE
 import ir.smmh.math.abstractalgebra.GroupLike.Properties.UNITAL
 import ir.smmh.math.abstractalgebra.RingLike.Companion.field
 import ir.smmh.math.abstractalgebra.RingLike.Companion.ring
 import ir.smmh.math.abstractalgebra.RingLike.Properties.ABSORPTIVE
 import ir.smmh.math.abstractalgebra.RingLike.Properties.DISTRIBUTIVE
+import ir.smmh.math.matrix.Matrix
+import ir.smmh.math.matrix.UniformMatrix
 import ir.smmh.math.numbers.Complex
 import ir.smmh.math.numbers.Rational
 import ir.smmh.math.settheory.Sets
@@ -95,7 +98,7 @@ object Structures {
                 ASSOCIATIVE,
                 COMMUTATIVE,
                 COMPLEMENTIVE,
-            ),
+            )
         ),
         GroupLike(
             Sets.Boolean,
@@ -109,7 +112,7 @@ object Structures {
                 COMMUTATIVE,
                 COMPLEMENTIVE,
                 IDEMPOTENT,
-            ),
+            )
         ),
         null,
         null,
@@ -119,6 +122,72 @@ object Structures {
         Property.Holder(
             DISTRIBUTIVE,
             ABSORPTIVE,
-        ),
+        )
     )
+
+    fun <T> matrixAdditiveGroup(
+        degree: Int,
+        structure: RingLike<T>,
+        identity: Matrix<T>?,
+    ): GroupLike<Matrix<T>> = GroupLike<Matrix<T>>(
+        Sets.Matrices.of(degree, degree, structure),
+        Matrix<T>::plus,
+        Matrix<T>::negative,
+        identity,
+        Property.Holder(
+            CLOSED,
+            UNITAL,
+            COMMUTATIVE,
+            ASSOCIATIVE,
+            INVERTIBLE,
+        )
+    )
+
+    /**
+     * Also known as a [general linear group](https://en.wikipedia.org/wiki/General_linear_group)
+     */
+    fun <T> matrixMultiplicativeGroup(
+        degree: Int,
+        structure: RingLike<T>,
+        identity: Matrix<T>?,
+    ): GroupLike<Matrix<T>> = GroupLike<Matrix<T>>(
+        Sets.Matrices.of(degree, degree, structure),
+        Matrix<T>::times,
+        Matrix<T>::inverse,
+        identity,
+        Property.Holder(
+
+        )
+    )
+
+    /**
+     * [Matrix ring](https://en.wikipedia.org/wiki/Matrix_ring)
+     */
+    fun <T> matrixRing(
+        degree: Int,
+        structure: RingLike<T>,
+        additiveIdentity: Matrix<T>?,
+        multiplicativeIdentity: Matrix<T>?,
+    ): RingLike<Matrix<T>> {
+        return RingLike(
+            Sets.Matrices.of(degree, degree, structure),
+            matrixAdditiveGroup(degree, structure, additiveIdentity),
+            matrixMultiplicativeGroup(degree, structure, multiplicativeIdentity),
+            null,
+            null,
+            Property.Holder(),
+            Property.Holder()
+        )
+    }
+
+    fun <T> numericMatrixRing(degree: Int, structure: RingLike<T>): RingLike<Matrix<T>> {
+        val zero: T = structure.addition.identity!!
+        val one: T = structure.multiplication.identity!!
+        return matrixRing(
+            degree,
+            structure,
+            UniformMatrix(degree, degree, structure, zero),
+            Matrix.identity(degree).convert(structure) { if (it) one else zero }
+        )
+    }
 }

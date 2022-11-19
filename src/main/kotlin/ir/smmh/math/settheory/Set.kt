@@ -2,8 +2,8 @@ package ir.smmh.math.settheory
 
 interface Set<T> {
     fun pick(): T
-    fun pickTwo(): Pair<T, T>
-    fun pickThree(): Triple<T, T, T>
+    fun pickTwo(): Pair<T, T> = pick() to pick()
+    fun pickThree(): Triple<T, T, T> = Triple(pick(), pick(), pick())
     operator fun contains(it: T): Boolean
 
     interface Ordered<T> : Set<T> {

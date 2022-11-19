@@ -21,6 +21,7 @@ class ArrayMatrix<T : Any>(
     private val array = Array<Array<Any>>(rows, { i -> Array<Any>(columns, { j -> initialValueFunction(this, i, j) }) })
 
     override fun createSameStructure(rows: Int, columns: Int): Matrix.Mutable<T> = ArrayMatrix(rows, columns, structure)
+
     @Suppress("UNCHECKED_CAST")
     override fun get(i: Int, j: Int): T = array[i][j] as T
     override fun set(i: Int, j: Int, value: T) {

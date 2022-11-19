@@ -41,8 +41,12 @@ class RingLike<T>(
                             return "Division ring"
                         else
                             return "Ring"
-                    } else
-                        return "Rng"
+                    } else {
+                        if (COMMUTATIVE in multiplication.properties)
+                            return "Integral domain"
+                        else
+                            return "Rng"
+                    }
                 }
                 if (INVERTIBLE in addition.properties) {
                     if (ASSOCIATIVE in multiplication.properties) {
@@ -98,8 +102,10 @@ class RingLike<T>(
     fun negate(a: T): T =
         addition.inverse!!(a)!!
 
-    fun negatable(a: T): Boolean =
-        addition.inverse!!(a) != null
+    fun negatable(a: T): Boolean {
+        val neg = addition.inverse
+        return neg != null && neg(a) != null
+    }
 
     fun multiply(a: T, b: T): T =
         multiplication.combine(a, b)
@@ -107,8 +113,10 @@ class RingLike<T>(
     fun invert(a: T): T =
         multiplication.inverse!!(a)!!
 
-    fun invertible(a: T): Boolean =
-        multiplication.inverse!!(a) != null
+    fun invertible(a: T): Boolean {
+        val inv = multiplication.inverse
+        return inv != null && inv(a) != null
+    }
 
     fun subtract(a: T, b: T): T =
         if (subtraction != null) subtraction.invoke(a, b) else add(a, negate(b))

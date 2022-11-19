@@ -7,7 +7,6 @@ import ir.smmh.math.matrix.Matrix.ValueFunction.Independent
 import ir.smmh.nile.FunctionalSequence
 import ir.smmh.nile.Mut
 import ir.smmh.nile.Sequential
-import ir.smmh.nile.SequentialImpl
 
 /**
  * You can choose from various different classes of matrices:
@@ -44,24 +43,31 @@ interface Matrix<T> {
                 structure.multiply(this[0, 1], this[1, 0])
             )
         } else {
-            var p: T = structure.addition.identity!!
-            for (k in 0 until rows step 2)
-                p = structure.add(p, structure.multiply(this[0, k], getMinor(k).calculatedDeterminant()))
+            var p: T
+            var n: T
 
-            var n: T = structure.addition.identity!!
+            p = structure.addition.identity!!
+            n = p
+
+            for (k in 0 until rows step 2)
+                p = structure.add(p, structure.multiply(this[0, k], getMinor(0, k).calculatedDeterminant()))
+
             for (k in 1 until rows step 2)
-                n = structure.add(n, structure.multiply(this[0, k], getMinor(k).calculatedDeterminant()))
+                n = structure.add(n, structure.multiply(this[0, k], getMinor(0, k).calculatedDeterminant()))
 
             return structure.subtract(p, n)
         }
     }
 
-    private fun getMinor(k: Int): Matrix<T> {
-        // assume isSquare && rows > 2 && 0 <= k < rows
-        return FunctionMatrix.Unmemoized(rows - 1, rows - 1, structure) { i, j ->
-            this@Matrix[i + 1, if (j >= k) j + 1 else j]
+    fun getMinor(i: Int, j: Int): Matrix<T> =
+        FunctionMatrix.Unmemoized(rows - 1, columns - 1, structure) { x, y ->
+            this@Matrix[
+                    if (x >= i) x + 1 else x,
+                    if (y >= j) y + 1 else y]
         }
-    }
+
+    val minorDeterminantMatrix: Matrix<T>
+        get() = FunctionMatrix.Memoized(rows, columns, structure) { i, j -> getMinor(i, j).determinant!! }
 
     val isNatural: Boolean get() = rows > 0 && columns > 0
     val isSquare: Boolean get() = isNatural && rows == columns
@@ -71,6 +77,10 @@ interface Matrix<T> {
      */
     // TODO this is only correct if the ring is commutative
     val isInvertible: Boolean get() = isSquare && structure.invertible(determinant!!)
+    val inverse: Matrix<T>? get() = if (isInvertible) minorDeterminantMatrix * structure.invert(determinant!!) else null
+
+    val negative: Matrix<T>
+        get() = FunctionMatrix.Unmemoized(rows, columns, structure) { i, j -> structure.negate(this@Matrix[i, j]) }
 
     fun row(i: Int): Sequential<T> = FunctionalSequence(columns) { j -> this[i, j] }
     fun column(j: Int): Sequential<T> = FunctionalSequence(columns) { i -> this[i, j] }
