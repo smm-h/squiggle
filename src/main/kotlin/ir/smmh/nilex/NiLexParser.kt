@@ -6,7 +6,6 @@ import ir.smmh.lingu.Token
 import ir.smmh.lingu.Tokenizer.Companion.Tokens
 import ir.smmh.tree.Tree
 import ir.smmh.tree.impl.NodedSpecificTreeImpl
-import java.io.File
 
 
 class NiLexParser() : Parser {

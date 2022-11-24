@@ -4,6 +4,7 @@ import ir.smmh.mage.core.*
 import ir.smmh.mage.core.Event.Companion.happen
 import java.awt.Dimension
 import java.awt.Graphics2D
+import java.awt.Image
 import java.awt.event.*
 import java.awt.geom.AffineTransform
 import java.awt.geom.NoninvertibleTransformException
@@ -187,6 +188,10 @@ object SwingPlatform : Platform {
             if (fill)
                 graphics.fill(path.path) else
                 graphics.draw(path.path)
+        }
+
+        override fun image(x: Double, y: Double, image: Image) {
+            graphics.drawImage(image, x.roundToInt(), y.roundToInt(), null)
         }
     }
 

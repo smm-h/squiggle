@@ -1,5 +1,7 @@
 package ir.smmh.mage.core
 
+import java.awt.Image
+
 interface Graphics {
 
     /**
@@ -41,6 +43,11 @@ interface Graphics {
         ellipse(x - r, y - r, r * 2, r * 2)
 
     fun path(path: Path)
+
+    fun image(x: Double, y: Double, image: Image)
+
+    fun image(point: Point, image: Image) =
+        image(point.x, point.y, image)
 
     interface Path {
         var x: Double

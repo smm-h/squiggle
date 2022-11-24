@@ -29,6 +29,7 @@ interface Tree<DataType> : CanContainValue<DataType> { // , CanSerialize
     fun getBreadthFirstData(): Sequential<DataType?>
     fun getDepthFirstData(): Sequential<DataType?>
     val rootData: DataType?
+
     interface Mutable<DataType> : Tree<DataType>, CanClear {
         override var rootData: DataType?
     }

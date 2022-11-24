@@ -5,7 +5,6 @@ import ir.smmh.lingu.Language.Companion.lateFileExt
 import ir.smmh.lingu.Splitter
 import ir.smmh.lingu.TokenizationUtil.Exception
 import ir.smmh.lingu.Tokenizer
-import ir.smmh.lingu.Tokenizer.Companion.Tokens
 import ir.smmh.markup.Html
 import ir.smmh.markup.toOnOff
 import ir.smmh.markup.toYesNo
