@@ -9,6 +9,9 @@ import ir.smmh.nile.Cache
 import kotlin.random.Random
 
 object Sets {
+
+    val U = UniversalSet<Any?> { null }
+
     private fun randomInt() = Random.nextInt(1000) - 500
     private fun randomDouble() = Random.nextDouble(1000.0) - 500
 
@@ -16,8 +19,8 @@ object Sets {
     val Integer64: Set<Long> = UniversalSet { Random.nextLong(1000L) - 500L }
     val RealFP: Set<Float> = UniversalSet { Random.nextFloat() * 1000F - 500F }
     val RealDP: Set<Double> = UniversalSet(::randomDouble)
-    val Rational: Set<Rational> = UniversalSet { Rational(randomInt(), randomInt()) }
-    val Complex: Set<Complex> = UniversalSet { Complex(randomDouble(), randomDouble()) }
+    val RationalNumbers: Set<Rational> = UniversalSet { Rational.of(randomInt(), randomInt()) }
+    val ComplexNumbers: Set<Complex> = UniversalSet { Complex(randomDouble(), randomDouble()) }
     val Boolean: Set<Boolean> = UniversalSet { Random.nextBoolean() }
 
     class Matrices<T> private constructor(

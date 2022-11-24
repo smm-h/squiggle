@@ -64,7 +64,7 @@ object Structures {
         Float::div,
     )
     val RationalField = field<Rational>(
-        Sets.Rational,
+        Sets.RationalNumbers,
         Rational::add,
         Rational::negate,
         Rational.ZERO,
@@ -75,7 +75,7 @@ object Structures {
         Rational::divide,
     )
     val ComplexField = field<Complex>(
-        Sets.Complex,
+        Sets.ComplexNumbers,
         Complex::add,
         Complex::negate,
         Complex.ZERO,
