@@ -6,10 +6,6 @@ import kotlin.math.ln
 import kotlin.math.pow
 
 object MathUtil {
-    fun factorial(n: Double): Double {
-        return if (n == 0.0) 1.0 else n * factorial(n - 1)
-    }
-
     fun factorial(n: Int): Long {
         return if (n == 0) 1 else n * factorial(n - 1)
     }
