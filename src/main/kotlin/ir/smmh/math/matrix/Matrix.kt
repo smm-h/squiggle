@@ -118,8 +118,8 @@ interface Matrix<T> : TeXable {
     class MatrixMultiplicationException(message: String) : Exception(message)
 
     operator fun times(that: Matrix<T>): Matrix<T> = multiply(that)
-    fun multiply(that: Matrix<T>, mut: Mut = Mut()): Matrix<T> =
-        multiply(that, MapMatrix<T>(this.rows, that.columns, structure, mut))
+    fun multiply(that: Matrix<T>): Matrix<T> =
+        multiply(that, MapMatrix<T>(this.rows, that.columns, structure, Mut()))
 
     /**
      * [Matrix multiplication](https://en.wikipedia.org/wiki/Matrix_multiplication)
@@ -187,7 +187,8 @@ interface Matrix<T> : TeXable {
 
         operator fun set(i: Int, j: Int, value: T)
 
-        fun setTransposed(source: Matrix<T>) = setAll { _, i, j -> source[j, i] }
+        fun setTransposed(source: Matrix<T>) =
+            setAll { _, i, j -> source[j, i] }
 
         fun setAll(f: ValueFunction<T>) =
             also { for (i in 0 until rows) for (j in 0 until columns) this[i, j] = f(this, i, j) }
