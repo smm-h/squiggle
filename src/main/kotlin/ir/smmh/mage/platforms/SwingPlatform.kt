@@ -5,6 +5,7 @@ import ir.smmh.mage.core.Event.Companion.happen
 import java.awt.Dimension
 import java.awt.Graphics2D
 import java.awt.Image
+ import java.awt.Toolkit
 import java.awt.event.*
 import java.awt.geom.AffineTransform
 import java.awt.geom.NoninvertibleTransformException
@@ -21,6 +22,10 @@ import kotlin.system.exitProcess
 
 
 object SwingPlatform : Platform {
+
+    override val screenSize: Size = dimensionToSize(Toolkit.getDefaultToolkit().screenSize)
+
+    private fun dimensionToSize(d: Dimension) = Size.of(d.width, d.height)
 
     override fun createProcess(dispatch: Event.Dispatch, draw: Graphics.Draw): Process =
         SwingProcess(dispatch, draw)
@@ -55,12 +60,13 @@ object SwingPlatform : Platform {
             set(value) {
                 if (field != value && value.isAcceptable()) {
                     field = value
-                    val w = value.width.toInt()
-                    val h = value.height.toInt()
                     val i = frame.insets
-                    frame.size = Dimension(
-                        w + i.left + i.right,
-                        h + i.top + i.bottom
+                    val w = value.width.toInt() + i.left + i.right
+                    val h = value.height.toInt() + i.top + i.bottom
+                    frame.size = Dimension(w, h)
+                    frame.setLocation(
+                        ((screenSize.width - w) / 2).toInt(),
+                        ((screenSize.height - h) / 2).toInt(),
                     )
                     SwingGraphics.size = value
                 }

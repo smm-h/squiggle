@@ -9,6 +9,8 @@ package ir.smmh.mage.core
  */
 interface Platform {
 
+    val screenSize: Size
+
     /**
      * Creates a new [Process] for this [App] on this [Platform].
      */
