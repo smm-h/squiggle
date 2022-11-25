@@ -4,6 +4,7 @@ import ir.smmh.math.abstractalgebra.RingLike
 import ir.smmh.math.abstractalgebra.Structures.BooleanRing
 import ir.smmh.math.matrix.Matrix.ValueFunction
 import ir.smmh.math.matrix.Matrix.ValueFunction.Independent
+import ir.smmh.math.symbolic.TeXable
 import ir.smmh.nile.FunctionalSequence
 import ir.smmh.nile.Mut
 import ir.smmh.nile.Sequential
@@ -25,7 +26,7 @@ import ir.smmh.nile.Sequential
  * - [LowLevelMatrix]: same as array matrix but specialized and more efficient;
  *   uses two-dimensional primitive arrays instead of general object arrays.
  */
-interface Matrix<T> {
+interface Matrix<T> : TeXable {
     val rows: Int
     val columns: Int
     val structure: RingLike<T>
@@ -242,6 +243,11 @@ interface Matrix<T> {
     fun unpairI(x: Int): Int = x / rows
     fun unpairJ(x: Int): Int = x % rows
     fun unpair(x: Int): Pair<Int, Int> = unpairI(x) to unpairJ(x)
+
+    override val render: String
+        get() = (0 until rows).joinToString(" \\\\\n", "\\begin{bmatrix}\n", "\n\\end{bmatrix}") {
+            row(it).joinToString(" & ")
+        }
 
     companion object {
 

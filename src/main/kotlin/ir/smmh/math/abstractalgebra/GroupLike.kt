@@ -6,7 +6,6 @@ import ir.smmh.math.abstractalgebra.GroupLike.Properties.COMMUTATIVE
 import ir.smmh.math.abstractalgebra.GroupLike.Properties.DIVISIBLE
 import ir.smmh.math.abstractalgebra.GroupLike.Properties.IDEMPOTENT
 import ir.smmh.math.abstractalgebra.GroupLike.Properties.INVERTIBLE
-import ir.smmh.math.abstractalgebra.GroupLike.Properties.REGULAR
 import ir.smmh.math.abstractalgebra.GroupLike.Properties.UNITAL
 import ir.smmh.math.settheory.Set
 
@@ -31,11 +30,6 @@ class GroupLike<T>(
                     else
                         return "Band"
                 } else {
-                    if (REGULAR in properties)
-                        if (INVERTIBLE in properties)
-                            return "Inverse semi-group"
-                        else
-                            return "Regular semi-group"
                     if (UNITAL in properties) {
                         if (INVERTIBLE in properties) {
                             if (COMMUTATIVE in properties)
@@ -48,8 +42,15 @@ class GroupLike<T>(
                             else
                                 return "Monoid"
                         }
-                    } else
-                        return "Semi-group"
+                    } else {
+                        if (Properties.REGULAR in properties)
+                            if (INVERTIBLE in properties)
+                                return "Inverse semi-group"
+                            else
+                                return "Regular semi-group"
+                        else
+                            return "Semi-group"
+                    }
                 }
             } else {
                 if (INVERTIBLE in properties)

@@ -7,6 +7,7 @@ import ir.smmh.math.abstractalgebra.GroupLike.Properties.COMPLEMENTIVE
 import ir.smmh.math.abstractalgebra.GroupLike.Properties.IDEMPOTENT
 import ir.smmh.math.abstractalgebra.GroupLike.Properties.INVERTIBLE
 import ir.smmh.math.abstractalgebra.GroupLike.Properties.UNITAL
+import ir.smmh.math.abstractalgebra.RingLike.Companion.abelianGroup
 import ir.smmh.math.abstractalgebra.RingLike.Companion.field
 import ir.smmh.math.abstractalgebra.RingLike.Companion.ring
 import ir.smmh.math.abstractalgebra.RingLike.Properties.ABSORPTIVE
@@ -190,4 +191,11 @@ object Structures {
             Matrix.identity(degree).convert(structure) { if (it) one else zero }
         )
     }
+
+    fun finiteCyclicGroup(degree: Int): GroupLike<Int> = abelianGroup(
+        Sets.Integers.of(degree),
+        { a, b -> (a + b) % degree },
+        { a -> (degree - a) % degree },
+        0,
+    )
 }

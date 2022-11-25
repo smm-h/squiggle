@@ -23,11 +23,20 @@ object Sets {
     val ComplexNumbers: Set<Complex> = UniversalSet { Complex(randomDouble(), randomDouble()) }
     val Boolean: Set<Boolean> = UniversalSet { Random.nextBoolean() }
 
+    class Integers private constructor(val degree: Int): Set<Int> {
+        override fun pick(): Int = Random.nextInt(degree)
+        override fun contains(it: Int): Boolean = it >= 0 && it < degree
+        companion object {
+            private val cache = Cache<Int, Integers> { Integers(it) }
+            fun of(degree: Int): Integers = cache(degree)
+        }
+    }
+
     class Matrices<T> private constructor(
         val rows: Int,
         val columns: Int,
         val structure: RingLike<T>,
-    ) : ir.smmh.math.settheory.Set<Matrix<T>> {
+    ) : Set<Matrix<T>> {
         override fun pick(): Matrix<T> =
             FunctionMatrix.Memoized(rows, columns, structure) { _, _ -> structure.domain.pick() }
 

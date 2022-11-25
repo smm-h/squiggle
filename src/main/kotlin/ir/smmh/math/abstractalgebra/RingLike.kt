@@ -179,6 +179,19 @@ class RingLike<T>(
     }
 
     companion object {
+        fun <T> abelianGroup(
+            domain: Set<T>,
+            additiveCombine: Binary<T>,
+            additiveInverse: OptionalUnary<T>,
+            additiveIdentity: T,
+        ) = GroupLike(
+            domain,
+            additiveCombine,
+            additiveInverse,
+            additiveIdentity,
+            GroupLike.AbelianGroupProperties,
+        )
+
         fun <T> ring(
             domain: Set<T>,
             additiveCombine: Binary<T>,
@@ -189,7 +202,7 @@ class RingLike<T>(
             multiplicativeIdentity: T,
             subtraction: Binary<T>? = null,
             division: Binary<T>? = null,
-        ): RingLike<T> = RingLike(
+        ) = RingLike(
             domain,
             GroupLike(
                 domain,
@@ -224,7 +237,7 @@ class RingLike<T>(
             multiplicativeIdentity: T,
             subtraction: Binary<T>? = null,
             division: Binary<T>? = null,
-        ): RingLike<T> = RingLike(
+        ) = RingLike(
             domain,
             GroupLike(
                 domain,
