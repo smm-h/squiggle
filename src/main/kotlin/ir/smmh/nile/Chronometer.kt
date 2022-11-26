@@ -1,8 +1,5 @@
 package ir.smmh.nile
 
-import java.time.Clock
-import java.time.Instant
-
 /**
  * A [Chronometer] is anything that can measure the time elapsed between the
  * invocations of its [reset] and [stop] methods. It is useful for "stopwatch
@@ -21,52 +18,25 @@ interface Chronometer {
     /**
      * @return The elapsed time since the last "reset", in milliseconds.
      */
-    fun stop(): Double
+    fun stop(): Long
 
-    abstract class ByInstant : Chronometer {
-        private var then: Instant? = null
-
-        abstract fun getInstant(): Instant
-
+    private class Impl(val now: () -> Long) : Chronometer {
+        private var then = 0L
+        override fun stop(): Long = now() - then
         override fun reset() {
-            then = getInstant()
+            then = now()
         }
-
-        override fun stop(): Double =
-            (then!!.toEpochMilli() - getInstant().toEpochMilli()) / 10e6
     }
 
-    class ByClockInstant(private val clock: Clock) : ByInstant() {
-        override fun getInstant(): Instant = clock.instant()
-    }
+    companion object {
+        /**
+         * More portable but less precise than [N]
+         */
+        fun M(): Chronometer = Impl(System::currentTimeMillis)
 
-    class BySystemInstant : ByInstant() {
-        override fun getInstant(): Instant = Instant.now()
-    }
-
-    /**
-     * More portable but less precise than [ByNanoTime]
-     */
-    class ByCurrentTimeMillis : Chronometer {
-        private var m = 0.0
-        override fun reset() {
-            m = System.currentTimeMillis().toDouble()
-        }
-
-        override fun stop(): Double =
-            System.currentTimeMillis() - m
-    }
-
-    /**
-     * More precise but less portable than [ByCurrentTimeMillis]
-     */
-    class ByNanoTime : Chronometer {
-        private var n = 0.0
-        override fun reset() {
-            n = System.nanoTime().toDouble()
-        }
-
-        override fun stop(): Double =
-            (System.nanoTime() - n) / 10e6
+        /**
+         * More precise but less portable than [M]
+         */
+        fun N(): Chronometer = Impl(System::nanoTime)
     }
 }

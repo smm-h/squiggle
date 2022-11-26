@@ -18,7 +18,7 @@ class ArrayMatrix<T : Any>(
         initialValue: T = structure.addition.identity!!,
     ) : this(rows, columns, structure, mut, Matrix.ValueFunction.Independent { _, _ -> initialValue })
 
-    private val array = Array<Array<Any>>(rows, { i -> Array<Any>(columns, { j -> initialValueFunction(this, i, j) }) })
+    private val array = Array<Array<Any>>(rows) { i -> Array<Any>(columns) { j -> initialValueFunction(this, i, j) } }
 
     override fun createSameStructure(rows: Int, columns: Int): Matrix.Mutable<T> = ArrayMatrix(rows, columns, structure)
 
