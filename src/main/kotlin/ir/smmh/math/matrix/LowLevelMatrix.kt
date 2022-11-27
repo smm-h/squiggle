@@ -2,7 +2,7 @@ package ir.smmh.math.matrix
 
 import ir.smmh.math.abstractalgebra.Structures
 
-sealed class LowLevelMatrix<T> : AbstractMatrix<T>() {
+sealed class LowLevelMatrix<T> : AbstractMatrix<T>(), Matrix.Mutable<T> {
 
     class Int(
         override val rows: kotlin.Int,
@@ -10,9 +10,14 @@ sealed class LowLevelMatrix<T> : AbstractMatrix<T>() {
         valueFunction: Matrix.ValueFunction.Independent<kotlin.Int>?,
     ) : LowLevelMatrix<kotlin.Int>() {
         override val structure = Structures.Integer32Ring
+        override fun createSameStructure(rows: kotlin.Int, columns: kotlin.Int): Matrix.Mutable<kotlin.Int> =
+            Int(columns, rows, null)
+
         private val array = Array<IntArray>(rows) { IntArray(columns) }
         override fun get(i: kotlin.Int, j: kotlin.Int): kotlin.Int = array[i][j]
-        override val transpose: Matrix<kotlin.Int> by lazy { Int(columns, rows) { i, j -> this[j, i] } }
+        override fun set(i: kotlin.Int, j: kotlin.Int, value: kotlin.Int) {
+            array[i][j] = value
+        }
 
         init {
             if (valueFunction != null)
@@ -34,9 +39,14 @@ sealed class LowLevelMatrix<T> : AbstractMatrix<T>() {
         valueFunction: Matrix.ValueFunction.Independent<kotlin.Long>?,
     ) : LowLevelMatrix<kotlin.Long>() {
         override val structure = Structures.Integer64Ring
+        override fun createSameStructure(rows: kotlin.Int, columns: kotlin.Int): Matrix.Mutable<kotlin.Long> =
+            Long(columns, rows, null)
+
         private val array = Array<LongArray>(rows) { LongArray(columns) }
         override fun get(i: kotlin.Int, j: kotlin.Int): kotlin.Long = array[i][j]
-        override val transpose: Matrix<kotlin.Long> by lazy { Long(columns, rows) { i, j -> this[j, i] } }
+        override fun set(i: kotlin.Int, j: kotlin.Int, value: kotlin.Long) {
+            array[i][j] = value
+        }
 
         init {
             if (valueFunction != null)
@@ -58,9 +68,14 @@ sealed class LowLevelMatrix<T> : AbstractMatrix<T>() {
         valueFunction: Matrix.ValueFunction.Independent<kotlin.Double>?,
     ) : LowLevelMatrix<kotlin.Double>() {
         override val structure = Structures.RealDPField
+        override fun createSameStructure(rows: kotlin.Int, columns: kotlin.Int): Matrix.Mutable<kotlin.Double> =
+            Double(columns, rows, null)
+
         private val array = Array<DoubleArray>(rows) { DoubleArray(columns) }
         override fun get(i: kotlin.Int, j: kotlin.Int): kotlin.Double = array[i][j]
-        override val transpose: Matrix<kotlin.Double> by lazy { Double(columns, rows) { i, j -> this[j, i] } }
+        override fun set(i: kotlin.Int, j: kotlin.Int, value: kotlin.Double) {
+            array[i][j] = value
+        }
 
         init {
             if (valueFunction != null)
@@ -82,9 +97,14 @@ sealed class LowLevelMatrix<T> : AbstractMatrix<T>() {
         valueFunction: Matrix.ValueFunction.Independent<kotlin.Float>?,
     ) : LowLevelMatrix<kotlin.Float>() {
         override val structure = Structures.RealFPField
+        override fun createSameStructure(rows: kotlin.Int, columns: kotlin.Int): Matrix.Mutable<kotlin.Float> =
+            Float(columns, rows, null)
+
         private val array = Array<FloatArray>(rows) { FloatArray(columns) }
         override fun get(i: kotlin.Int, j: kotlin.Int): kotlin.Float = array[i][j]
-        override val transpose: Matrix<kotlin.Float> by lazy { Float(columns, rows) { i, j -> this[j, i] } }
+        override fun set(i: kotlin.Int, j: kotlin.Int, value: kotlin.Float) {
+            array[i][j] = value
+        }
 
         init {
             if (valueFunction != null)
@@ -106,9 +126,14 @@ sealed class LowLevelMatrix<T> : AbstractMatrix<T>() {
         valueFunction: Matrix.ValueFunction.Independent<kotlin.Boolean>?,
     ) : LowLevelMatrix<kotlin.Boolean>() {
         override val structure = Structures.BooleanRing
+        override fun createSameStructure(rows: kotlin.Int, columns: kotlin.Int): Matrix.Mutable<kotlin.Boolean> =
+            Boolean(columns, rows, null)
+
         private val array = Array<BooleanArray>(rows) { BooleanArray(columns) }
         override fun get(i: kotlin.Int, j: kotlin.Int): kotlin.Boolean = array[i][j]
-        override val transpose: Matrix<kotlin.Boolean> by lazy { Boolean(columns, rows) { i, j -> this[j, i] } }
+        override fun set(i: kotlin.Int, j: kotlin.Int, value: kotlin.Boolean) {
+            array[i][j] = value
+        }
 
         init {
             if (valueFunction != null)

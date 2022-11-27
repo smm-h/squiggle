@@ -119,7 +119,7 @@ interface Matrix<T> : TeXable {
 
     operator fun times(that: Matrix<T>): Matrix<T> = multiply(that)
     fun multiply(that: Matrix<T>): Matrix<T> =
-        multiply(that, MapMatrix<T>(this.rows, that.columns, structure, Mut()))
+        multiply(that, MapMatrix<T>(this.rows, that.columns, structure))
 
     /**
      * [Matrix multiplication](https://en.wikipedia.org/wiki/Matrix_multiplication)
@@ -179,7 +179,7 @@ interface Matrix<T> : TeXable {
     private fun remInverse(that: T): Matrix<T> =
         FunctionMatrix.Unmemoized(rows, columns, structure) { i, j -> structure.remainder(that, this[i, j]) }
 
-    interface Mutable<T> : Matrix<T>, Mut.Able {
+    interface Mutable<T> : Matrix<T> { //, Mut.Able {
 
         fun createSimilar(): Matrix.Mutable<T> = createSameStructure(rows, columns)
         fun createSameStructure(rows: Int, columns: Int): Matrix.Mutable<T>
@@ -275,7 +275,7 @@ interface Matrix<T> : TeXable {
             FunctionMatrix.Unmemoized(n, n, BooleanRing) { i, j -> i == j }
 
         fun <T> of(rows: Int, columns: Int, structure: RingLike<T>, vararg values: T): Matrix<T> =
-            MapMatrix(rows, columns, structure, Mut()).setAll { _, i, j -> values[i * columns + j] }
+            MapMatrix(rows, columns, structure).setAll { _, i, j -> values[i * columns + j] }
 
         fun hashCode(m: Matrix<*>): Int {
             return toString(m).hashCode() xor m.structure.hashCode()
