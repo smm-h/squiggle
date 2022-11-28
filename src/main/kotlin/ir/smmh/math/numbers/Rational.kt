@@ -25,7 +25,7 @@ class Rational private constructor(
         if (precise) "${numerator.toInt()}${if (denominator == 1.0) "" else "/${denominator.toInt()}"}"
         else approximate().toString()
 
-    override val render: String =
+    override val tex: String =
         if (precise) "{${numerator.toInt()}}${if (denominator == 1.0) "" else "\\over{${denominator.toInt()}}"}"
         else approximate().toString()
 

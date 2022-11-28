@@ -6,12 +6,12 @@ import org.scilab.forge.jlatexmath.TeXFormula
 import java.awt.Color
 
 interface TeXable {
-    val render: String
+    val tex: String
 
     fun show(size: Int) {
         ImageViewer(
             SwingPlatform,
-            TeXFormula("$$render$").createBufferedImage(0, size.toFloat(), Color.BLACK, Color.WHITE)
+            TeXFormula("$$tex$").createBufferedImage(0, size.toFloat(), Color.BLACK, Color.WHITE)
         ).start()
     }
 }

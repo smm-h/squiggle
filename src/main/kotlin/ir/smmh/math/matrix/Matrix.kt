@@ -243,7 +243,7 @@ interface Matrix<T> : TeXable {
     fun unpairJ(x: Int): Int = x % rows
     fun unpair(x: Int): Pair<Int, Int> = unpairI(x) to unpairJ(x)
 
-    override val render: String
+    override val tex: String
         get() = (0 until rows).joinToString(" \\\\\n", "\\begin{bmatrix}\n", "\n\\end{bmatrix}") {
             row(it).joinToString(" & ")
         }
