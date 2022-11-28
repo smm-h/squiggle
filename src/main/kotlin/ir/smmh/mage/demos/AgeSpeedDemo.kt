@@ -17,28 +17,30 @@ class AgeSpeedDemo(platform: Platform) : BasicApp(platform) {
     private val ballColor = Color.Named.Yellow
     private val ballBlurColor = ballColor.alphaVariant(16)
 
-    override fun main() {
-        backColor = Color.Named.Black
-        val balls = Temporal.AndVisual.Group.List<Ball>()
-        repeat(30) {
-            balls.add(Ball(size.randomPoint()))
-        }
-        add(balls)
-        addVisual { g ->
-            g.color = Color.Ranges100.TransparentWhite[75]
-            g.fill = false
-            g.circle(mousePoint, mouseInnerRadius)
-            g.circle(mousePoint, mouseOuterRadius)
-        }
-        addTemporal {
-//            var count = 0
-            balls.forEach {
-                val distance = it.position.distance(mousePoint)
-                it.ageSpeed = if (distance > mouseOuterRadius) 1.0
-                else if (distance < mouseInnerRadius) 0.0 // (0.0).also { count++ }
-                else (distance - mouseInnerRadius) / (mouseOuterRadius - mouseInnerRadius)
+    init {
+        addSetup {
+            backColor = Color.Named.Black
+            val balls = Temporal.AndVisual.Group.List<Ball>()
+            repeat(30) {
+                balls.add(Ball(size.randomPoint()))
             }
+            add(balls)
+            addVisual { g ->
+                g.color = Color.Ranges100.TransparentWhite[75]
+                g.fill = false
+                g.circle(mousePoint, mouseInnerRadius)
+                g.circle(mousePoint, mouseOuterRadius)
+            }
+            addTemporal {
+//            var count = 0
+                balls.forEach {
+                    val distance = it.position.distance(mousePoint)
+                    it.ageSpeed = if (distance > mouseOuterRadius) 1.0
+                    else if (distance < mouseInnerRadius) 0.0 // (0.0).also { count++ }
+                    else (distance - mouseInnerRadius) / (mouseOuterRadius - mouseInnerRadius)
+                }
 //            println(count)
+            }
         }
     }
 

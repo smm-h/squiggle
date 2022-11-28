@@ -7,12 +7,14 @@ import ir.smmh.mage.core.Utils.degrees
 import ir.smmh.mage.core.Utils.fullCircle
 
 open class PolygonDemo(platform: Platform) : BasicApp(platform) {
-    override fun main() {
-        regularStar(100.0, 50.0, 5).also {
-            add(it)
-            addTemporal {
-                it.translation = mousePoint
-                it.rotation += 1.0.degrees
+    init {
+        addSetup {
+            regularStar(100.0, 50.0, 5).also {
+                add(it)
+                addTemporal {
+                    it.translation = mousePoint
+                    it.rotation += 1.0.degrees
+                }
             }
         }
     }

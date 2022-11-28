@@ -22,6 +22,8 @@ abstract class BasicApp(platform: Platform) : App(platform) {
     private val debugTemporalGroup = Temporal.Group.List<Temporal>()
     private val debugVisualGroup = Visual.Group.List<Visual>()
 
+    private val setups: MutableList<() -> Unit> = ArrayList()
+
     fun add(it: Any) {
         var added = false
         if (it is Temporal) {
@@ -43,6 +45,9 @@ abstract class BasicApp(platform: Platform) : App(platform) {
             throw Exception("nothing was added")
         }
     }
+
+    fun addSetup(lambda: () -> Unit) =
+        setups.add(lambda)
 
     fun addTemporal(lambda: () -> Unit) =
         mainTemporalGroup.add(Temporal.Lambda(lambda))
@@ -107,10 +112,8 @@ abstract class BasicApp(platform: Platform) : App(platform) {
 
         debugMode = false
 
-        main()
+        for (s in setups) s()
     }
-
-    abstract fun main()
 
     // val makePath: Graphics.Path.() -> Unit
     // TODO remove 'inner'

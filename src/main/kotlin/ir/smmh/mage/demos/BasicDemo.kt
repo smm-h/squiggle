@@ -11,12 +11,14 @@ import ir.smmh.mage.core.Point.Companion.line
  * app that can listen and respond to events and has its own graphical logic.
  */
 class BasicDemo(platform: Platform) : BasicApp(platform) {
-    override fun main() {
-        val corners = size.getCorners()
-        addVisual { g: Graphics ->
-            g.color = Color.Named.Blue
-            corners.forEach { corner ->
-                g.line(corner, mousePoint)
+    init {
+        addSetup {
+            val corners = size.getCorners()
+            addVisual { g: Graphics ->
+                g.color = Color.Named.Blue
+                corners.forEach { corner ->
+                    g.line(corner, mousePoint)
+                }
             }
         }
     }
