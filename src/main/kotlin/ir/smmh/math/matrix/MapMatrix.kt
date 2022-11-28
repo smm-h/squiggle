@@ -12,7 +12,7 @@ class MapMatrix<T>(
     override val structure: RingLike<T>,
 //    override val mut: Mut = Mut(),
     val defaultValue: T = structure.addition.identity!!,
-) : AbstractMatrix<T>(), Matrix.Mutable<T> {
+) : AbstractMatrix.Mutable<T>() {
 
     private val map: MutableMap<Int, T> = HashMap()
 

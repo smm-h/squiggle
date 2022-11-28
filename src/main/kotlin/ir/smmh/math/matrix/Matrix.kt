@@ -181,9 +181,7 @@ interface Matrix<T> : TeXable {
 
     interface Mutable<T> : Matrix<T> { //, Mut.Able {
 
-        fun createSimilar(): Matrix.Mutable<T> = createSameStructure(rows, columns)
-        fun createSameStructure(rows: Int, columns: Int): Matrix.Mutable<T>
-        override val transpose: Matrix<T> get() = createSameStructure(columns, rows).setTransposed(this)
+        override val transpose: Matrix.Mutable<T>
 
         operator fun set(i: Int, j: Int, value: T)
 

@@ -2,7 +2,7 @@ package ir.smmh.math.matrix
 
 import ir.smmh.math.abstractalgebra.Structures
 
-sealed class LowLevelMatrix<T> : AbstractMatrix<T>(), Matrix.Mutable<T> {
+sealed class LowLevelMatrix<T> : AbstractMatrix.Mutable<T>() {
 
     class Int(
         override val rows: kotlin.Int,

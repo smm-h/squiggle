@@ -9,7 +9,7 @@ class ArrayMatrix<T : Any>(
     override val structure: RingLike<T>,
 //    override val mut: Mut = Mut(),
     initialValueFunction: Matrix.ValueFunction<T>,
-) : AbstractMatrix<T>(), Matrix.Mutable<T> {
+) : AbstractMatrix.Mutable<T>() {
     constructor(
         rows: Int,
         columns: Int,
