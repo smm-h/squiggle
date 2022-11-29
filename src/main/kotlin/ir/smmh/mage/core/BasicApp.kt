@@ -15,7 +15,7 @@ import ir.smmh.util.LanguageUtils.late
  * which says that programs should not surprise the users. In other words, it
  * has what is known as "sensible defaults".
  */
-abstract class BasicApp(platform: Platform) : App(platform) {
+open class BasicApp(platform: Platform) : App(platform) {
 
     private val mainTemporalGroup = Temporal.Group.List<Temporal>()
     private val mainVisualGroup = Visual.Group.List<Visual>()

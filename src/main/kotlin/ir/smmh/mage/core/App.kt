@@ -7,7 +7,7 @@ import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.math.roundToLong
 
-abstract class App(val platform: Platform) {
+abstract class App(override val platform: Platform) : PlatformSpecific {
 
     val temporalRoot: Temporal.Group<Temporal> = Temporal.Group.List()
     val visualRoot: Visual.Group<Visual> = Visual.Group.List()

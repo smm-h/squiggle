@@ -1,24 +1,13 @@
 package ir.smmh.mage.core
 
-import java.awt.Image
-
-interface Graphics {
-
-    /**
-     * Creates an empty [Path] that can be efficiently drawn on this [Graphics].
-     */
-    fun createPath(): Path
-
-    /**
-     * Creates an empty [TransformationMatrix] that can efficiently transform
-     * a [Path] on this [Graphics].
-     */
-    fun createTransformationMatrix(): TransformationMatrix
+interface Graphics : PlatformSpecific {
 
     val identityMatrix: TransformationMatrix
     var transformationMatrix: TransformationMatrix
 
     fun interface Draw : (Graphics) -> Unit
+
+    var size: Size
 
     // val stroke: Stroke
     var fill: Boolean
@@ -49,7 +38,9 @@ interface Graphics {
     fun image(point: Point, image: Image) =
         image(point.x, point.y, image)
 
-    interface Path {
+    fun toImage(): Image
+
+    interface Path : PlatformSpecific {
         var x: Double
         var y: Double
         fun move(x: Double, y: Double) {
@@ -62,16 +53,10 @@ interface Graphics {
         fun bezier(x1: Double, y1: Double, x2: Double, y2: Double, x3: Double, y3: Double)
         fun transform(transformationMatrix: TransformationMatrix)
         fun transform(transformation: TransformationMatrix.() -> Unit) =
-            transform(createTransformationMatrix().apply(transformation))
-
-        /**
-         * Creates an empty [TransformationMatrix] that can efficiently
-         * transform this [Path] on its [Graphics].
-         */
-        fun createTransformationMatrix(): TransformationMatrix
+            transform(platform.createTransformationMatrix().apply(transformation))
     }
 
-    interface TransformationMatrix {
+    interface TransformationMatrix : PlatformSpecific {
         fun translate(x: Double, y: Double)
         val translationX: Double
         val translationY: Double

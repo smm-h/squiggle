@@ -4,8 +4,7 @@ import ir.smmh.mage.core.*
 import ir.smmh.mage.core.Event.Companion.happen
 import java.awt.Dimension
 import java.awt.Graphics2D
-import java.awt.Image
- import java.awt.Toolkit
+import java.awt.Toolkit
 import java.awt.event.*
 import java.awt.geom.AffineTransform
 import java.awt.geom.NoninvertibleTransformException
@@ -44,7 +43,7 @@ object SwingPlatform : Platform {
                 g.color = java.awt.Color.BLUE
                 g.fillRect(0, 0, size.width, size.height)
                 this@SwingProcess.draw(this@SwingProcess.graphics)
-                g.drawImage(SwingGraphics.image, 0, 0, null)
+                g.drawImage(this@SwingProcess.graphics.image, 0, 0, null)
                 repaint()
             }
         }
@@ -68,13 +67,13 @@ object SwingPlatform : Platform {
                         ((screenSize.width - w) / 2).toInt(),
                         ((screenSize.height - h) / 2).toInt(),
                     )
-                    SwingGraphics.size = value
+                    graphics.size = value
                 }
             }
 
         private fun Size.isAcceptable() = width > 0 && height > 0
 
-        override val graphics: Graphics = SwingGraphics
+        override val graphics = SwingGraphics(Size.OneOne)
 
         init {
             frame.isResizable = false
@@ -137,17 +136,30 @@ object SwingPlatform : Platform {
         }
 
         override fun screenshot(address: String) {
-            ImageIO.write((graphics as SwingGraphics).image, "png", File(address))
+            ImageIO.write(graphics.image, "png", File(address))
         }
     }
 
-    private object SwingGraphics : Graphics {
+    fun createImage(image: java.awt.Image): Image = SwingImage(image)
 
-        private const val imageType: Int = BufferedImage.TYPE_INT_ARGB
+    private class SwingImage(val image: java.awt.Image) : ir.smmh.mage.core.Image {
+        override val platform = SwingPlatform
+        override val size: Size by lazy { Size.of(image.getWidth(null), image.getHeight(null)) }
+    }
+
+    override fun createGraphics(size: Size): Graphics = SwingGraphics(size)
+
+    private class SwingGraphics(
+        initialSize: Size,
+        val imageType: Int = BufferedImage.TYPE_INT_ARGB,
+    ) : Graphics {
+
+        override val platform = SwingPlatform
+
         var image = BufferedImage(1, 1, imageType)
         private var graphics: Graphics2D = image.graphics as Graphics2D
 
-        var size: Size
+        override var size: Size
             get() = Size.of(image.getWidth(null), image.getHeight(null))
             set(value) {
                 image = BufferedImage(
@@ -158,17 +170,15 @@ object SwingPlatform : Platform {
                 graphics = image.graphics as Graphics2D
             }
 
-        override fun createPath(): Graphics.Path =
-            SwingPlatform.createPath()
-
-        override fun createTransformationMatrix(): Graphics.TransformationMatrix =
-            SwingPlatform.createTransformationMatrix()
+        init {
+            size = initialSize
+        }
 
         override val identityMatrix: Graphics.TransformationMatrix = createTransformationMatrix()
         override var transformationMatrix: Graphics.TransformationMatrix = createTransformationMatrix()
             set(value) {
                 field = value
-                SwingGraphics.graphics.transform = (value as SwingTransformationMatrix).affineTransform
+                graphics.transform = (value as SwingTransformationMatrix).affineTransform
             }
 
         override var fill: Boolean = false
@@ -197,7 +207,11 @@ object SwingPlatform : Platform {
         }
 
         override fun image(x: Double, y: Double, image: Image) {
-            graphics.drawImage(image, x.roundToInt(), y.roundToInt(), null)
+            graphics.drawImage((image as SwingImage).image, x.roundToInt(), y.roundToInt(), null)
+        }
+
+        override fun toImage(): ir.smmh.mage.core.Image {
+            return SwingImage(image) // TODO recreate image
         }
     }
 
@@ -222,6 +236,8 @@ object SwingPlatform : Platform {
         SwingPath()
 
     private class SwingPath(val path: Path2D = Path2D.Double()) : Graphics.Path {
+
+        override val platform = SwingPlatform
 
         override var x: Double
             get() = path.currentPoint.x
@@ -249,9 +265,6 @@ object SwingPlatform : Platform {
 
         override fun transform(transformationMatrix: Graphics.TransformationMatrix) =
             path.transform((transformationMatrix as SwingTransformationMatrix).affineTransform)
-
-        override fun createTransformationMatrix(): Graphics.TransformationMatrix =
-            SwingPlatform.createTransformationMatrix()
     }
 
     override fun createTransformationMatrix(): Graphics.TransformationMatrix =
@@ -259,6 +272,8 @@ object SwingPlatform : Platform {
 
     private class SwingTransformationMatrix(val affineTransform: AffineTransform = AffineTransform()) :
         Graphics.TransformationMatrix {
+
+        override val platform = SwingPlatform
 
         override val translationX: Double
             get() = affineTransform.translateX

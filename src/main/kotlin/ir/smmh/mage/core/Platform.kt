@@ -27,4 +27,9 @@ interface Platform {
      * transform a [Graphics.Path] of this [Platform].
      */
     fun createTransformationMatrix(): Graphics.TransformationMatrix
+
+    /**
+     * Creates an empty [Graphics] that can be drawn on
+     */
+    fun createGraphics(size: Size): Graphics
 }

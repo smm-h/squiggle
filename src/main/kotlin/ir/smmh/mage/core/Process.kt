@@ -5,9 +5,8 @@ package ir.smmh.mage.core
  * for events and reports them using `dispatch`. It also maintains graphics and
  * displays it on the screen.
  */
-interface Process {
+interface Process : PlatformSpecific {
 
-    val platform: Platform
     val dispatch: Event.Dispatch
     val draw: Graphics.Draw
 

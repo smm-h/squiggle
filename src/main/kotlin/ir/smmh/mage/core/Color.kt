@@ -218,6 +218,9 @@ sealed interface Color {
         fun gray(value: Int) =
             rgb(value, value, value)
 
+        fun gray(value: Float) =
+            gray((value * 255).toInt())
+
         private fun mergeComponent(from: Int, to: Int, amount: Float): Int =
             from + ((to - from) * amount).roundToInt()
 
