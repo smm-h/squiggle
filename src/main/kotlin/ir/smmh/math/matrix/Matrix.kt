@@ -1,13 +1,17 @@
 package ir.smmh.math.matrix
 
+import ir.smmh.mage.core.Color
+import ir.smmh.mage.core.Image
+import ir.smmh.mage.core.Platform
+import ir.smmh.mage.core.Size
 import ir.smmh.math.abstractalgebra.RingLike
 import ir.smmh.math.abstractalgebra.Structures.BooleanRing
 import ir.smmh.math.matrix.Matrix.ValueFunction
 import ir.smmh.math.matrix.Matrix.ValueFunction.Independent
 import ir.smmh.math.symbolic.TeXable
 import ir.smmh.nile.FunctionalSequence
-import ir.smmh.nile.Mut
 import ir.smmh.nile.Sequential
+
 
 /**
  * You can choose from various different classes of matrices:
@@ -247,6 +251,18 @@ interface Matrix<T> : TeXable {
         get() = (0 until rows).joinToString(" \\\\\n", "\\begin{bmatrix}\n", "\n\\end{bmatrix}") {
             row(it).joinToString(" & ")
         }
+
+    fun toImage(platform: Platform, zoom: Int = 1, colorer: (T) -> Color.Packed): Image =
+        platform.createGraphics(Size.of(rows * zoom, columns * zoom)).apply {
+            val z = zoom.toDouble()
+            fill = true
+            for (i in 0 until rows) {
+                for (j in 0 until columns) {
+                    color = colorer(this@Matrix[i, j])
+                    rectangle(i * z, j * z, z, z)
+                }
+            }
+        }.toImage()
 
     companion object {
 

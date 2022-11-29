@@ -1,6 +1,5 @@
 package ir.smmh.math.vector
 
-import ir.smmh.math.abstractalgebra.RingLike
 import ir.smmh.math.matrix.Matrix
 
 interface Vector<T> : Matrix<T> {

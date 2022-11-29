@@ -1,7 +1,6 @@
 package ir.smmh.math.matrix
 
 import ir.smmh.math.abstractalgebra.RingLike
-import ir.smmh.nile.Mut
 
 class ArrayMatrix<T : Any>(
     override val rows: Int,

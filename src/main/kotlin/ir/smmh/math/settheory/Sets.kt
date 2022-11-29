@@ -23,9 +23,10 @@ object Sets {
     val ComplexNumbers: Set<Complex> = UniversalSet { Complex(randomDouble(), randomDouble()) }
     val Boolean: Set<Boolean> = UniversalSet { Random.nextBoolean() }
 
-    class Integers private constructor(val degree: Int): Set<Int> {
+    class Integers private constructor(val degree: Int) : Set<Int> {
         override fun pick(): Int = Random.nextInt(degree)
         override fun contains(it: Int): Boolean = it >= 0 && it < degree
+
         companion object {
             private val cache = Cache<Int, Integers> { Integers(it) }
             fun of(degree: Int): Integers = cache(degree)
