@@ -20,7 +20,7 @@ dependencies {
 //    compileOnly("org.jetbrains.kotlin:kotlin-stdlib:+")
     implementation(kotlin("reflect"))
     implementation(kotlin("script-runtime"))
-    implementation("org.scilab.forge:jlatexmath:+")
+    implementation("org.scilab.forge:jlatexmath:1.0.7")
 }
 
 tasks.test {

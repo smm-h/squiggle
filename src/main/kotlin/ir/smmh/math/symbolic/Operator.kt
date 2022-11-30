@@ -3,8 +3,8 @@ package ir.smmh.math.symbolic
 sealed interface Operator {
     fun interface Unary : Operator {
 
-        operator fun invoke(a: Any) =
-            Expression.combine(this, Expression.of(a))
+        operator fun invoke(a: Expression) =
+            Expression.combine(this, a)
 
         fun render(a: String): String
 
@@ -33,8 +33,8 @@ sealed interface Operator {
 
     fun interface Binary : Operator {
 
-        operator fun invoke(a: Any, b: Any) =
-            Expression.combine(this, Expression.of(a), Expression.of(b))
+        operator fun invoke(a: Expression, b: Expression) =
+            Expression.combine(this, a, b)
 
         fun render(a: String, b: String): String
 
@@ -55,6 +55,8 @@ sealed interface Operator {
                 val Over = Operator.Binary.Infix("\\over") // frac prefix?
                 val Mod = Operator.Binary.Infix("mod")
                 val Equal = Operator.Binary.Infix("=")
+                val Superscript = Operator.Binary.Infix("^")
+                val Subscript = Operator.Binary.Infix("_")
             }
         }
 
@@ -65,14 +67,25 @@ sealed interface Operator {
 
     fun interface Ternary : Operator {
 
-        operator fun invoke(a: Any, b: Any, c: Any) =
-            Expression.combine(this, Expression.of(a), Expression.of(b), Expression.of(c))
+        operator fun invoke(a: Expression, b: Expression, c: Expression) =
+            Expression.combine(this, a, b, c)
 
         fun render(a: String, b: String, c: String): String
     }
 
     fun interface Multiary : Operator {
         fun render(input: List<String>): String
+
+        companion object {
+            val Sum = Operator.Multiary {
+                val (variable, lowerLimit, upperLimit, function) = it
+                "\\sum_{$variable = {$lowerLimit}}^{$upperLimit} {$function}"
+            }
+            val Prod = Operator.Multiary {
+                val (variable, lowerLimit, upperLimit, function) = it
+                "\\sum_{$variable = {$lowerLimit}}^{$upperLimit} {$function}"
+            }
+        }
     }
 
     /*

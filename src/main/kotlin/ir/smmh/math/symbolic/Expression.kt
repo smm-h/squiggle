@@ -4,13 +4,13 @@ import ir.smmh.math.numbers.Complex
 import ir.smmh.math.numbers.Rational
 import ir.smmh.math.settheory.Set
 import ir.smmh.math.settheory.Sets
-import ir.smmh.math.symbolic.Operator.Binary.Infix.Companion.Equal
 
 sealed interface Expression : TeXable {
     val arity: Int
     operator fun get(index: Int): Expression
 
     sealed interface Constant<T> : Expression {
+        override val arity get() = 0
         val set: Set<T>
         val value: T
     }
@@ -19,17 +19,22 @@ sealed interface Expression : TeXable {
         val operator: Operator
     }
 
+    sealed interface Variable<T> : Expression {
+        override val arity get() = 0
+        val set: Set<T>
+        val name: String
+    }
+
     private class Nullary<T>(
         override val set: Set<T>,
         override val value: T,
     ) : Constant<T> {
-        override val arity = 0
         override fun get(index: Int) =
             throw IndexOutOfBoundsException(index)
 
-        override val render: String by lazy {
+        override val tex: String by lazy {
             val it = value
-            if (it is TeXable) it.render else it.toString()
+            if (it is TeXable) it.tex else it.toString()
         }
     }
 
@@ -41,8 +46,8 @@ sealed interface Expression : TeXable {
         override fun get(index: Int) = if (index == 0) value else
             throw IndexOutOfBoundsException(index)
 
-        override val render: String by lazy {
-            operator.render(this[0].render)
+        override val tex: String by lazy {
+            operator.render(this[0].tex)
         }
     }
 
@@ -55,8 +60,8 @@ sealed interface Expression : TeXable {
         override fun get(index: Int) = if (index == 0) lhs else if (index == 1) rhs else
             throw IndexOutOfBoundsException(index)
 
-        override val render: String by lazy {
-            operator.render(this[0].render, this[1].render)
+        override val tex: String by lazy {
+            operator.render(this[0].tex, this[1].tex)
         }
     }
 
@@ -70,8 +75,8 @@ sealed interface Expression : TeXable {
         override fun get(index: Int) = if (index == 0) a else if (index == 1) b else if (index == 2) c else
             throw IndexOutOfBoundsException(index)
 
-        override val render: String by lazy {
-            operator.render(this[0].render, this[1].render, this[2].render)
+        override val tex: String by lazy {
+            operator.render(this[0].tex, this[1].tex, this[2].tex)
         }
     }
 
@@ -82,14 +87,29 @@ sealed interface Expression : TeXable {
         override val arity = values.size
         override fun get(index: Int) = values[index]
 
-        override val render: String by lazy {
-            operator.render((0 until arity).map { i -> this[i].render })
+        override val tex: String by lazy {
+            operator.render((0 until arity).map { i -> this[i].tex })
         }
+    }
+
+    private class VariableImpl<T>(
+        override val set: Set<T>,
+        override val name: String,
+    ) : Variable<T> {
+        override fun get(index: Int) =
+            throw IndexOutOfBoundsException(index)
+
+        override val tex: String get() = name
     }
 
     companion object {
 
-        fun of(it: Any?): Expression = Nullary(Sets.U, it)
+        fun <T> variable(set: Set<T>, name: String): Expression =
+            VariableImpl<T>(set, name)
+
+//        fun of(it: Any?): Expression =
+//            if (it is Expression) it // throw Exception("already an expression")
+//            else Nullary(Sets.U, it)
 
         fun of(it: Int): Expression = Nullary(Sets.Integer32, it)
         fun of(it: Long): Expression = Nullary(Sets.Integer64, it)
@@ -113,11 +133,5 @@ sealed interface Expression : TeXable {
 
         fun combine(operator: Operator.Multiary, vararg arguments: Expression): Expression =
             Multiary(operator, *arguments)
-    }
-
-    fun interface Calculator<T> {
-        fun calculate(expression: Expression): T
-        fun express(expression: Expression): Expression = Equal(expression, of(calculate(expression)))
-        class CalculationException(message: String) : Exception(message)
     }
 }

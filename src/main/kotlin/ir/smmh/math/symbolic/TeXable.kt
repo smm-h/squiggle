@@ -9,14 +9,15 @@ import java.awt.Color
 interface TeXable {
     val tex: String
 
-    fun show(size: Int) {
-        val image = TeXFormula("$$tex$").createBufferedImage(0, size.toFloat(), Color.BLACK, Color.WHITE)
+    fun show(scale: Int) {
+        val image = TeXFormula("$$tex$").createBufferedImage(0, scale.toFloat(), Color.BLACK, Color.WHITE)
         val g = SwingPlatform.createImage(image)
         BasicApp(SwingPlatform).apply {
             addSetup {
                 addVisual {
                     it.image(origin, g)
                 }
+                size = g.size
             }
             start()
         }
