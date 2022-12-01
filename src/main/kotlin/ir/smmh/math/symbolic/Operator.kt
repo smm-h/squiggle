@@ -17,6 +17,7 @@ sealed interface Operator {
                 val Cos = Operator.Unary.Prefix("\\cos")
                 val Tan = Operator.Unary.Prefix("\\tan")
                 val Ln = Operator.Unary.Prefix("\\ln_")
+                val Root = Operator.Unary.Prefix("\\sqrt")
             }
         }
 
@@ -32,17 +33,6 @@ sealed interface Operator {
     fun interface Binary : Operator {
         operator fun invoke(a: Any, b: Any) = Expression.combine(this, a, b)
         fun render(a: String, b: String): String
-
-        class Prefix(val symbol: String) : Binary {
-            override fun render(a: String, b: String) = "$symbol{$a}{$b}"
-
-            companion object {
-                val Sin = Prefix("\\sin^")
-                val Cos = Prefix("\\cos^")
-                val Tan = Prefix("\\tan^")
-                val Log = Prefix("\\log_")
-            }
-        }
 
         class Infix(val symbol: String) : Binary {
             override fun render(a: String, b: String) = "{$a}$symbol{$b}"
@@ -62,8 +52,12 @@ sealed interface Operator {
             }
         }
 
-        class Postfix(val symbol: String) : Binary {
-            override fun render(a: String, b: String) = "{$a}{$b}$symbol"
+        companion object {
+            val Sin = Binary { x, p -> "\\sin^{$p}{$x}" }
+            val Cos = Binary { x, p -> "\\cos^{$p}{$x}" }
+            val Tan = Binary { x, p -> "\\tan^{$p}{$x}" }
+            val Log = Binary { x, p -> "\\log_{$p}{$x}" }
+            val Root = Binary { x, p -> "\\sqrt[$p]{$x}" }
         }
     }
 

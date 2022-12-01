@@ -26,6 +26,7 @@ object RationalCalculator : Calculator<Rational> {
                         Operator.Unary.Prefix.Cos -> Rational.of(Math.cos(a.approximate()))
                         Operator.Unary.Prefix.Tan -> Rational.of(Math.tan(a.approximate()))
                         Operator.Unary.Prefix.Ln -> Rational.of(Math.log(a.approximate()))
+                        Operator.Unary.Prefix.Root -> Rational.of(Math.sqrt(a.approximate()))
                         else -> throw Exception("undefined operation")
                     }
                 }
@@ -39,10 +40,11 @@ object RationalCalculator : Calculator<Rational> {
                         Operator.Binary.Infix.Cross, Operator.Binary.Infix.Invisible -> a * b
                         Operator.Binary.Infix.OverInline, Operator.Binary.Infix.Over -> a / b
                         Operator.Binary.Infix.Superscript -> a.power(b.approximate().toInt())
-                        Operator.Binary.Prefix.Sin -> Rational.of(pow(Math.sin(b.approximate()), a.approximate()))
-                        Operator.Binary.Prefix.Cos -> Rational.of(pow(Math.cos(b.approximate()), a.approximate()))
-                        Operator.Binary.Prefix.Tan -> Rational.of(pow(Math.tan(b.approximate()), a.approximate()))
-                        Operator.Binary.Prefix.Log -> Rational.of(Math.log(b.approximate()) / Math.log(a.approximate()))
+                        Operator.Binary.Sin -> Rational.of(pow(Math.sin(a.approximate()), b.approximate()))
+                        Operator.Binary.Cos -> Rational.of(pow(Math.cos(a.approximate()), b.approximate()))
+                        Operator.Binary.Tan -> Rational.of(pow(Math.tan(a.approximate()), b.approximate()))
+                        Operator.Binary.Log -> Rational.of(Math.log(a.approximate()) / Math.log(b.approximate()))
+                        Operator.Binary.Root -> Rational.of(Math.pow(a.approximate(), 1 / b.approximate()))
                         // Operator.Binary.Infix.Mod -> {}
                         else -> throw Exception("undefined operation")
                     }
