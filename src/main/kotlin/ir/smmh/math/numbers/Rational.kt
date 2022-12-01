@@ -95,60 +95,80 @@ class Rational private constructor(
         fun toRational(): Rational =
             Rational(numerator, denominator, precise)
 
+        fun normalize() {
+            if (precise) {
+                val gcd = MathUtil.gcd(numerator.toInt(), denominator.toInt())
+                numerator = (numerator / gcd).toDouble()
+                denominator = (denominator / gcd).toDouble()
+            }
+        }
+
         operator fun plusAssign(that: Int) {
-            numerator + that * denominator
+            numerator += that * denominator
+            normalize()
         }
 
         operator fun minusAssign(that: Int) {
-            numerator - that * denominator
+            numerator -= that * denominator
+            normalize()
         }
 
         operator fun timesAssign(that: Int) {
             numerator *= that
+            normalize()
         }
 
         operator fun divAssign(that: Int) {
             denominator *= that
+            normalize()
         }
 
         operator fun plusAssign(that: Double) {
-            numerator + that * denominator; precise = false
+            numerator += that * denominator
+            precise = false
         }
 
         operator fun minusAssign(that: Double) {
-            numerator - that * denominator; precise = false
+            numerator -= that * denominator
+            precise = false
         }
 
         operator fun timesAssign(that: Double) {
-            numerator *= that; precise = false
+            numerator *= that
+            precise = false
         }
 
         operator fun divAssign(that: Double) {
-            denominator *= that; precise = false
+            denominator *= that
+            precise = false
         }
 
         operator fun plusAssign(that: Rational) {
             numerator = numerator * that.denominator + that.numerator * denominator
             denominator *= that.denominator
             precise = precise && that.precise
+            normalize()
         }
 
         operator fun minusAssign(that: Rational) {
             numerator = numerator * that.denominator - that.numerator * denominator
             denominator *= that.denominator
             precise = precise && that.precise
+            normalize()
         }
 
         operator fun timesAssign(that: Rational) {
             numerator *= that.numerator
             denominator *= that.denominator
             precise = precise && that.precise
+            normalize()
         }
 
         operator fun divAssign(that: Rational) {
             numerator *= that.denominator
             denominator *= that.numerator
             precise = precise && that.precise
+            normalize()
         }
 
         override fun toString() = "$numerator/$denominator"

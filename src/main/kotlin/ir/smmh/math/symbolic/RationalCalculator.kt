@@ -4,6 +4,7 @@ import ir.smmh.math.numbers.Rational
 import ir.smmh.math.settheory.Set
 import ir.smmh.math.settheory.UniversalNumberSets
 import ir.smmh.math.symbolic.Calculator.Exception
+import java.lang.Math.pow
 import java.util.concurrent.atomic.AtomicReference
 
 object RationalCalculator : Calculator<Rational> {
@@ -24,6 +25,7 @@ object RationalCalculator : Calculator<Rational> {
                         Operator.Unary.Prefix.Sin -> Rational.of(Math.sin(a.approximate()))
                         Operator.Unary.Prefix.Cos -> Rational.of(Math.cos(a.approximate()))
                         Operator.Unary.Prefix.Tan -> Rational.of(Math.tan(a.approximate()))
+                        Operator.Unary.Prefix.Ln -> Rational.of(Math.log(a.approximate()))
                         else -> throw Exception("undefined operation")
                     }
                 }
@@ -37,12 +39,16 @@ object RationalCalculator : Calculator<Rational> {
                         Operator.Binary.Infix.Cross, Operator.Binary.Infix.Invisible -> a * b
                         Operator.Binary.Infix.OverInline, Operator.Binary.Infix.Over -> a / b
                         Operator.Binary.Infix.Superscript -> a.power(b.approximate().toInt())
+                        Operator.Binary.Prefix.Sin -> Rational.of(pow(Math.sin(b.approximate()), a.approximate()))
+                        Operator.Binary.Prefix.Cos -> Rational.of(pow(Math.cos(b.approximate()), a.approximate()))
+                        Operator.Binary.Prefix.Tan -> Rational.of(pow(Math.tan(b.approximate()), a.approximate()))
+                        Operator.Binary.Prefix.Log -> Rational.of(Math.log(b.approximate()) / Math.log(a.approximate()))
                         // Operator.Binary.Infix.Mod -> {}
                         else -> throw Exception("undefined operation")
                     }
                 }
                 Operator.Multiary.Sum -> {
-                    val v: String = (expression[0] as Expression.Variable<*>).name
+                    val v: String = (expression[0] as Expression.Variable).name
                     val a: Int = RationalCalculator.calculate(expression[1], context).approximate().toInt()
                     val b: Int = RationalCalculator.calculate(expression[2], context).approximate().toInt()
                     Rational.Mutable.of(Rational.ZERO) { s ->
@@ -55,7 +61,7 @@ object RationalCalculator : Calculator<Rational> {
                     }
                 }
                 Operator.Multiary.Prod -> {
-                    val v: String = (expression[0] as Expression.Variable<*>).name
+                    val v: String = (expression[0] as Expression.Variable).name
                     val a: Int = RationalCalculator.calculate(expression[1], context).approximate().toInt()
                     val b: Int = RationalCalculator.calculate(expression[2], context).approximate().toInt()
                     Rational.Mutable.of(Rational.ONE) { s ->
@@ -69,7 +75,7 @@ object RationalCalculator : Calculator<Rational> {
                 }
                 else -> throw Exception("undefined operation")
             }
-        } else if (expression is Expression.Constant<*>) {
+        } else if (expression is Expression.Constant) {
             // val set = expression.set
             val value = expression.value
             return when (value) {
@@ -78,7 +84,7 @@ object RationalCalculator : Calculator<Rational> {
                 is Rational -> value
                 else -> throw Exception("not a rational number: $value")
             }
-        } else if (expression is Expression.Variable<*>) {
+        } else if (expression is Expression.Variable) {
             context[expression.name]
         } else {
             throw Exception("invalid expression")

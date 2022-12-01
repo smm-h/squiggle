@@ -3,39 +3,50 @@ package ir.smmh.math.symbolic
 import ir.smmh.math.numbers.Complex
 import ir.smmh.math.numbers.Rational
 import ir.smmh.math.settheory.Set
-import ir.smmh.math.settheory.Sets
+import ir.smmh.math.settheory.UniversalNumberSets
 
 sealed interface Expression : TeXable {
     val arity: Int
     operator fun get(index: Int): Expression
 
-    sealed interface Constant<T> : Expression {
+    sealed interface Constant : Expression {
         override val arity get() = 0
-        val set: Set<T>
-        val value: T
+        val set: Set
+        val value: Any
     }
 
     sealed interface Operation : Expression {
         val operator: Operator
     }
 
-    sealed interface Variable<T> : Expression {
+    sealed interface Variable : Expression {
         override val arity get() = 0
-        val set: Set<T>
+        val set: Set
         val name: String
     }
 
-    private class Nullary<T>(
-        override val set: Set<T>,
-        override val value: T,
-    ) : Constant<T> {
+    /**
+     * Value is unknown and depends on [Context]
+     */
+    private class VariableNullary(
+        override val set: Set,
+        override val name: String,
+        override val tex: String = name,
+    ) : Variable {
         override fun get(index: Int) =
             throw IndexOutOfBoundsException(index)
+    }
 
-        override val tex: String by lazy {
-            val it = value
-            if (it is TeXable) it.tex else it.toString()
-        }
+    /**
+     * Value is immutable and constant
+     */
+    private class ConstantNullary(
+        override val set: Set,
+        override val value: Any,
+        override val tex: String = if (value is TeXable) value.tex else value.toString(),
+    ) : Constant {
+        override fun get(index: Int) =
+            throw IndexOutOfBoundsException(index)
     }
 
     private class Unary(
@@ -82,7 +93,7 @@ sealed interface Expression : TeXable {
 
     private class Multiary(
         override val operator: Operator.Multiary,
-        vararg val values: Expression,
+        val values: List<Expression>,
     ) : Operation {
         override val arity = values.size
         override fun get(index: Int) = values[index]
@@ -92,46 +103,51 @@ sealed interface Expression : TeXable {
         }
     }
 
-    private class VariableImpl<T>(
-        override val set: Set<T>,
-        override val name: String,
-    ) : Variable<T> {
-        override fun get(index: Int) =
-            throw IndexOutOfBoundsException(index)
-
-        override val tex: String get() = name
-    }
-
     companion object {
 
-        fun <T> variable(set: Set<T>, name: String): Expression =
-            VariableImpl<T>(set, name)
+        fun variable(set: Set, name: String): Expression =
+            VariableNullary(set, name)
 
-//        fun of(it: Any?): Expression =
-//            if (it is Expression) it // throw Exception("already an expression")
-//            else Nullary(Sets.U, it)
+        fun variable(set: Set, name: String, tex: String): Expression =
+            VariableNullary(set, name, tex)
 
-        fun of(it: Int): Expression = Nullary(Sets.Integer32, it)
-        fun of(it: Long): Expression = Nullary(Sets.Integer64, it)
-        fun of(it: Float): Expression = Nullary(Sets.RealFP, it)
-        fun of(it: Double): Expression = Nullary(Sets.RealDP, it)
-        fun of(it: Boolean): Expression = Nullary(Sets.Boolean, it)
-        fun of(it: Rational): Expression = Nullary(Sets.RationalNumbers, it)
-        fun of(it: Complex): Expression = Nullary(Sets.ComplexNumbers, it)
+        fun of(set: Set, it: Any): Expression =
+            ConstantNullary(set, it)
 
-        fun <T> of(set: Set<T>, it: T): Expression =
-            Nullary(set, it)
+        fun of(set: Set, it: Any, tex: String): Expression =
+            ConstantNullary(set, it, tex)
 
-        fun combine(operator: Operator.Unary, argument: Expression): Expression =
-            Unary(operator, argument)
+        fun of(it: Any): Expression = when (it) {
+            is Expression -> it
+            // is String -> variable()
+            is Int -> of(it)
+            is Long -> of(it)
+            is Float -> of(it)
+            is Double -> of(it)
+            is Boolean -> of(it)
+            is Rational -> of(it)
+            is Complex -> of(it)
+            else -> throw Exception("unspecified type: $it")
+        }
 
-        fun combine(operator: Operator.Binary, lhs: Expression, rhs: Expression): Expression =
-            Binary(operator, lhs, rhs)
+        fun of(it: Int): Expression = ConstantNullary(UniversalNumberSets.IntIntegers, it)
+        fun of(it: Long): Expression = ConstantNullary(UniversalNumberSets.LongIntegers, it)
+        fun of(it: Float): Expression = ConstantNullary(UniversalNumberSets.FloatRealNumbers, it)
+        fun of(it: Double): Expression = ConstantNullary(UniversalNumberSets.DoubleRealNumbers, it)
+        fun of(it: Boolean): Expression = ConstantNullary(UniversalNumberSets.Booleans, it)
+        fun of(it: Rational): Expression = ConstantNullary(UniversalNumberSets.RationalNumbers, it)
+        fun of(it: Complex): Expression = ConstantNullary(UniversalNumberSets.ComplexNumbers, it)
 
-        fun combine(operator: Operator.Ternary, a: Expression, b: Expression, c: Expression): Expression =
-            Ternary(operator, a, b, c)
+        fun combine(operator: Operator.Unary, a: Any): Expression =
+            Unary(operator, Expression.of(a))
 
-        fun combine(operator: Operator.Multiary, vararg arguments: Expression): Expression =
-            Multiary(operator, *arguments)
+        fun combine(operator: Operator.Binary, a: Any, b: Any): Expression =
+            Binary(operator, Expression.of(a), Expression.of(b))
+
+        fun combine(operator: Operator.Ternary, a: Any, b: Any, c: Any): Expression =
+            Ternary(operator, Expression.of(a), Expression.of(b), Expression.of(c))
+
+        fun combine(operator: Operator.Multiary, vararg arguments: Any): Expression =
+            Multiary(operator, arguments.map(Expression::of))
     }
 }

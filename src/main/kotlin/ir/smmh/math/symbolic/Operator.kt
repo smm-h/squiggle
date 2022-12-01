@@ -1,11 +1,9 @@
 package ir.smmh.math.symbolic
 
 sealed interface Operator {
+
     fun interface Unary : Operator {
-
-        operator fun invoke(a: Expression) =
-            Expression.combine(this, a)
-
+        operator fun invoke(a: Any) = Expression.combine(this, a)
         fun render(a: String): String
 
         class Prefix(val symbol: String) : Unary {
@@ -15,10 +13,10 @@ sealed interface Operator {
                 val Plus = Operator.Unary.Prefix("+")
                 val Minus = Operator.Unary.Prefix("-")
                 val PlusMinus = Operator.Unary.Prefix("\\pm")
-
-                val Sin = Operator.Unary.Prefix("sin")
-                val Cos = Operator.Unary.Prefix("cos")
-                val Tan = Operator.Unary.Prefix("tan")
+                val Sin = Operator.Unary.Prefix("\\sin")
+                val Cos = Operator.Unary.Prefix("\\cos")
+                val Tan = Operator.Unary.Prefix("\\tan")
+                val Ln = Operator.Unary.Prefix("\\ln_")
             }
         }
 
@@ -32,31 +30,35 @@ sealed interface Operator {
     }
 
     fun interface Binary : Operator {
-
-        operator fun invoke(a: Expression, b: Expression) =
-            Expression.combine(this, a, b)
-
+        operator fun invoke(a: Any, b: Any) = Expression.combine(this, a, b)
         fun render(a: String, b: String): String
 
         class Prefix(val symbol: String) : Binary {
             override fun render(a: String, b: String) = "$symbol{$a}{$b}"
+
+            companion object {
+                val Sin = Prefix("\\sin^")
+                val Cos = Prefix("\\cos^")
+                val Tan = Prefix("\\tan^")
+                val Log = Prefix("\\log_")
+            }
         }
 
         class Infix(val symbol: String) : Binary {
             override fun render(a: String, b: String) = "{$a}$symbol{$b}"
 
             companion object {
-                val Plus = Operator.Binary.Infix("+")
-                val Minus = Operator.Binary.Infix("-")
-                val PlusMinus = Operator.Binary.Infix("\\pm")
-                val Cross = Operator.Binary.Infix("\\times")
-                val Invisible = Operator.Binary.Infix("")
-                val OverInline = Operator.Binary.Infix("\\div")
-                val Over = Operator.Binary.Infix("\\over") // frac prefix?
-                val Mod = Operator.Binary.Infix("mod")
-                val Equal = Operator.Binary.Infix("=")
-                val Superscript = Operator.Binary.Infix("^")
-                val Subscript = Operator.Binary.Infix("_")
+                val Plus = Infix("+")
+                val Minus = Infix("-")
+                val PlusMinus = Infix("\\pm")
+                val Cross = Infix("\\times")
+                val Invisible = Infix("")
+                val OverInline = Infix("\\div")
+                val Over = Infix("\\over") // frac prefix?
+                val Mod = Infix("mod")
+                val Equal = Infix("=")
+                val Superscript = Infix("^")
+                val Subscript = Infix("_")
             }
         }
 
@@ -66,14 +68,12 @@ sealed interface Operator {
     }
 
     fun interface Ternary : Operator {
-
-        operator fun invoke(a: Expression, b: Expression, c: Expression) =
-            Expression.combine(this, a, b, c)
-
+        operator fun invoke(a: Any, b: Any, c: Any) = Expression.combine(this, a, b, c)
         fun render(a: String, b: String, c: String): String
     }
 
     fun interface Multiary : Operator {
+        operator fun invoke(vararg arguments: Any) = Expression.combine(this, *arguments)
         fun render(input: List<String>): String
 
         companion object {
@@ -87,23 +87,4 @@ sealed interface Operator {
             }
         }
     }
-
-    /*
-    arithmetic, modulo, factorial, exponent, logarithm
-    vector/matrix (concat, scalar mul, ...)
-    bitwise/boolean (and/or/xor/not/...)
-    set (union, intersecton, in, subset)
-    comparison
-    forall/exists
-    ^ _
-    \frac \sqrt \sum \prod
-    \neg \wedge \vee
-    \pm \cdot
-    \bar \dot \hat \tilde
-    \in \notin \cup \cap
-    \leq \neq \geq
-    \supset \subset
-    \circ \prime
-    \{ \} \mid
-     */
 }
