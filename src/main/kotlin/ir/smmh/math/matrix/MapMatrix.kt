@@ -5,7 +5,7 @@ import ir.smmh.math.abstractalgebra.RingLike
 /**
  * The provided ring must have an additive identity
  */
-class MapMatrix<T>(
+class MapMatrix<T : Any>(
     override val rows: Int,
     override val columns: Int,
     override val structure: RingLike<T>,

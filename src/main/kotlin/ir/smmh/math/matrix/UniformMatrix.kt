@@ -2,7 +2,7 @@ package ir.smmh.math.matrix
 
 import ir.smmh.math.abstractalgebra.RingLike
 
-class UniformMatrix<T>(
+class UniformMatrix<T : Any>(
     override val rows: Int,
     override val columns: Int,
     override val structure: RingLike<T>,

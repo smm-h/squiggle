@@ -3,7 +3,7 @@ package ir.smmh.math.matrix
 import ir.smmh.math.abstractalgebra.RingLike
 import ir.smmh.nile.Cache
 
-sealed class FunctionMatrix<T>(
+sealed class FunctionMatrix<T : Any>(
     override val rows: Int,
     override val columns: Int,
     override val structure: RingLike<T>,
@@ -14,7 +14,7 @@ sealed class FunctionMatrix<T>(
         FunctionMatrix.Unmemoized(columns, rows, structure) { i, j -> this[j, i] }
     }
 
-    class Unmemoized<T>(
+    class Unmemoized<T : Any>(
         rows: Int,
         columns: Int,
         structure: RingLike<T>,
@@ -23,7 +23,7 @@ sealed class FunctionMatrix<T>(
         override fun get(i: Int, j: Int): T = function(i, j)
     }
 
-    class Memoized<T>(
+    class Memoized<T : Any>(
         rows: Int,
         columns: Int,
         structure: RingLike<T>,

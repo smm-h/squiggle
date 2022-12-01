@@ -3,13 +3,13 @@ package ir.smmh.math.symbolic
 import ir.smmh.math.abstractalgebra.GroupLike
 import ir.smmh.math.abstractalgebra.Property
 import ir.smmh.math.abstractalgebra.RingLike
-import ir.smmh.math.settheory.Sets.Integer32
-import ir.smmh.math.settheory.UniversalSet
+import ir.smmh.math.settheory.Set
+import ir.smmh.math.settheory.UniversalNumberSets.IntIntegers
 
 object Expressions {
     val ZERO = Expression.of(0)
     val ONE = Expression.of(1)
-    val set = UniversalSet<Expression> { Expression.of(Integer32.pick()) }
+    val set = Set.Specific.Uncountable.Universal<Expression> { Expression.of(IntIntegers.choose()) }
     val ring = RingLike(
         set,
         GroupLike(

@@ -11,6 +11,7 @@ fun interface Context<T : Any> {
         fun <T : Any> of(name: String, value: T, fallback: Context<T>) = Context {
             if (it == name) value else fallback[name]
         }
+
         fun <T : Any> of(name: String, value: AtomicReference<T>, fallback: Context<T>) = Context {
             if (it == name) value.get() else fallback[name]
         }

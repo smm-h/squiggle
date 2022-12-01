@@ -14,8 +14,8 @@ import ir.smmh.math.settheory.Set
 /**
  * Two binary operations defined on the same domain: addition and multiplication
  */
-class RingLike<T>(
-    val domain: Set<T>,
+class RingLike<T : Any>(
+    val domain: Set.Specific<T>,
     val addition: GroupLike<T>,
     val multiplication: GroupLike<T>,
     val subtraction: Binary<T>? = null,
@@ -150,7 +150,7 @@ class RingLike<T>(
         }
 
         interface Test {
-            fun <T> test(structure: RingLike<T>): Boolean
+            fun <T : Any> test(structure: RingLike<T>): Boolean
         }
     }
 
@@ -159,11 +159,11 @@ class RingLike<T>(
             val A = it.addition.combine
             val M = it.multiplication.combine
             val L = {
-                val (a, b, c) = it.domain.pickThree()
+                val (a, b, c) = it.domain.chooseThree()
                 M(a, A(b, c)) == A(M(a, b), M(a, c))
             }
             val R = {
-                val (a, b, c) = it.domain.pickThree()
+                val (a, b, c) = it.domain.chooseThree()
                 M(A(a, b), c) == A(M(a, c), M(b, c))
             }
             L to R
@@ -172,15 +172,15 @@ class RingLike<T>(
             val A = it.addition.combine
             val M = it.multiplication.combine
             {
-                val (a, b) = it.domain.pickTwo()
+                val (a, b) = it.domain.chooseTwo()
                 M(a, A(a, b)) == a && A(a, M(a, b)) == a
             }
         }
     }
 
     companion object {
-        fun <T> abelianGroup(
-            domain: Set<T>,
+        fun <T : Any> abelianGroup(
+            domain: Set.Specific<T>,
             additiveCombine: Binary<T>,
             additiveInverse: OptionalUnary<T>,
             additiveIdentity: T,
@@ -192,8 +192,8 @@ class RingLike<T>(
             GroupLike.AbelianGroupProperties,
         )
 
-        fun <T> ring(
-            domain: Set<T>,
+        fun <T : Any> ring(
+            domain: Set.Specific<T>,
             additiveCombine: Binary<T>,
             additiveInverse: OptionalUnary<T>,
             additiveIdentity: T,
@@ -227,8 +227,8 @@ class RingLike<T>(
             Property.Holder(DISTRIBUTIVE),
         )
 
-        fun <T> field(
-            domain: Set<T>,
+        fun <T : Any> field(
+            domain: Set.Specific<T>,
             additiveCombine: Binary<T>,
             additiveInverse: OptionalUnary<T>,
             additiveIdentity: T,

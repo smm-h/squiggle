@@ -2,13 +2,13 @@ package ir.smmh.math.symbolic
 
 import ir.smmh.math.numbers.Rational
 import ir.smmh.math.settheory.Set
-import ir.smmh.math.settheory.Sets
+import ir.smmh.math.settheory.UniversalNumberSets
 import ir.smmh.math.symbolic.Calculator.Exception
 import java.util.concurrent.atomic.AtomicReference
 
 object RationalCalculator : Calculator<Rational> {
 
-    override val set: Set<Rational> = Sets.RationalNumbers
+    override val set: Set.Specific<Rational> = UniversalNumberSets.RationalNumbers
 
     override fun calculate(expression: Expression, context: Context<Rational>): Rational {
         return if (expression is Expression.Operation) {

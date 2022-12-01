@@ -16,12 +16,14 @@ import ir.smmh.math.matrix.Matrix
 import ir.smmh.math.matrix.UniformMatrix
 import ir.smmh.math.numbers.Complex
 import ir.smmh.math.numbers.Rational
-import ir.smmh.math.settheory.Sets
+import ir.smmh.math.settheory.FiniteIntegersSet
+import ir.smmh.math.settheory.MatricesSet
+import ir.smmh.math.settheory.UniversalNumberSets
 
 object Structures {
     // a field is INVERTIBLE and COMMUTATIVE, but a ring is not
     val Integer32Ring = ring<Int>(
-        Sets.Integer32,
+        UniversalNumberSets.IntIntegers,
         Int::plus,
         Int::unaryMinus,
         0,
@@ -32,7 +34,7 @@ object Structures {
         Int::div,
     )
     val Integer64Ring = ring<Long>(
-        Sets.Integer64,
+        UniversalNumberSets.LongIntegers,
         Long::plus,
         Long::unaryMinus,
         0L,
@@ -43,7 +45,7 @@ object Structures {
         Long::div,
     )
     val RealDPField = field<Double>(
-        Sets.RealDP,
+        UniversalNumberSets.DoubleRealNumbers,
         Double::plus,
         Double::unaryMinus,
         0.0,
@@ -54,7 +56,7 @@ object Structures {
         Double::div,
     )
     val RealFPField = field<Float>(
-        Sets.RealFP,
+        UniversalNumberSets.FloatRealNumbers,
         Float::plus,
         Float::unaryMinus,
         0.0F,
@@ -65,7 +67,7 @@ object Structures {
         Float::div,
     )
     val RationalField = field<Rational>(
-        Sets.RationalNumbers,
+        UniversalNumberSets.RationalNumbers,
         Rational::add,
         Rational::negate,
         Rational.ZERO,
@@ -76,7 +78,7 @@ object Structures {
         Rational::divide,
     )
     val ComplexField = field<Complex>(
-        Sets.ComplexNumbers,
+        UniversalNumberSets.ComplexNumbers,
         Complex::add,
         Complex::negate,
         Complex.ZERO,
@@ -87,9 +89,9 @@ object Structures {
         Complex::divide,
     )
     val BooleanRing = RingLike<Boolean>(
-        Sets.Boolean,
+        UniversalNumberSets.Booleans,
         GroupLike(
-            Sets.Boolean,
+            UniversalNumberSets.Booleans,
             Boolean::xor,
             Boolean::not,
             false,
@@ -102,7 +104,7 @@ object Structures {
             )
         ),
         GroupLike(
-            Sets.Boolean,
+            UniversalNumberSets.Booleans,
             Boolean::and,
             Boolean::not,
             true,
@@ -126,12 +128,12 @@ object Structures {
         )
     )
 
-    fun <T> matrixAdditiveGroup(
+    fun <T : Any> matrixAdditiveGroup(
         degree: Int,
         structure: RingLike<T>,
         identity: Matrix<T>?,
     ): GroupLike<Matrix<T>> = GroupLike<Matrix<T>>(
-        Sets.Matrices.of(degree, degree, structure),
+        MatricesSet.of(degree, degree, structure),
         Matrix<T>::plus,
         Matrix<T>::negative,
         identity,
@@ -147,12 +149,12 @@ object Structures {
     /**
      * Also known as a [general linear group](https://en.wikipedia.org/wiki/General_linear_group)
      */
-    fun <T> matrixMultiplicativeGroup(
+    fun <T : Any> matrixMultiplicativeGroup(
         degree: Int,
         structure: RingLike<T>,
         identity: Matrix<T>?,
     ): GroupLike<Matrix<T>> = GroupLike<Matrix<T>>(
-        Sets.Matrices.of(degree, degree, structure),
+        MatricesSet.of(degree, degree, structure),
         Matrix<T>::times,
         Matrix<T>::inverse,
         identity,
@@ -164,14 +166,14 @@ object Structures {
     /**
      * [Matrix ring](https://en.wikipedia.org/wiki/Matrix_ring)
      */
-    fun <T> matrixRing(
+    fun <T : Any> matrixRing(
         degree: Int,
         structure: RingLike<T>,
         additiveIdentity: Matrix<T>?,
         multiplicativeIdentity: Matrix<T>?,
     ): RingLike<Matrix<T>> {
         return RingLike(
-            Sets.Matrices.of(degree, degree, structure),
+            MatricesSet.of(degree, degree, structure),
             matrixAdditiveGroup(degree, structure, additiveIdentity),
             matrixMultiplicativeGroup(degree, structure, multiplicativeIdentity),
             null,
@@ -181,7 +183,7 @@ object Structures {
         )
     }
 
-    fun <T> numericMatrixRing(degree: Int, structure: RingLike<T>): RingLike<Matrix<T>> {
+    fun <T : Any> numericMatrixRing(degree: Int, structure: RingLike<T>): RingLike<Matrix<T>> {
         val zero: T = structure.addition.identity!!
         val one: T = structure.multiplication.identity!!
         return matrixRing(
@@ -193,7 +195,7 @@ object Structures {
     }
 
     fun finiteCyclicGroup(degree: Int): GroupLike<Int> = abelianGroup(
-        Sets.Integers.of(degree),
+        FiniteIntegersSet.of(degree),
         { a, b -> (a + b) % degree },
         { a -> (degree - a) % degree },
         0,

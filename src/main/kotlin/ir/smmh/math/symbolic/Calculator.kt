@@ -5,7 +5,7 @@ import ir.smmh.math.symbolic.Operator.Binary.Infix.Companion.Equal
 
 interface Calculator<T : Any> {
 
-    val set: Set<T>
+    val set: Set.Specific<T>
 
     fun calculate(expression: Expression, context: Context<T>): T
 

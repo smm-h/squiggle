@@ -12,8 +12,8 @@ import ir.smmh.math.settheory.Set
 /**
  * A binary operation defined on a domain
  */
-class GroupLike<T>(
-    val domain: Set<T>,
+class GroupLike<T : Any>(
+    val domain: Set.Specific<T>,
     val combine: Binary<T>,
     val inverse: OptionalUnary<T>? = null,
     val identity: T? = null,
@@ -98,7 +98,7 @@ class GroupLike<T>(
         }
 
         interface Test {
-            fun <T> test(structure: GroupLike<T>): Boolean
+            fun <T : Any> test(structure: GroupLike<T>): Boolean
         }
     }
 
@@ -106,21 +106,21 @@ class GroupLike<T>(
         val CLOSED: Property = Single.Nondirectional("Closed", "Closure") {
             val f = it.combine
             {
-                val (a, b) = it.domain.pickTwo()
+                val (a, b) = it.domain.chooseTwo()
                 f(a, b) in it.domain
             }
         }
         val ASSOCIATIVE: Property = Single.Nondirectional("Associative", "Associativity") {
             val f = it.combine
             {
-                val (a, b, c) = it.domain.pickThree()
+                val (a, b, c) = it.domain.chooseThree()
                 f(f(a, b), c) == f(a, f(b, c))
             }
         }
         val COMMUTATIVE: Property = Single.Nondirectional("Commutative", "Commutativity") {
             val f = it.combine
             {
-                val (a, b) = it.domain.pickTwo()
+                val (a, b) = it.domain.chooseTwo()
                 f(a, b) == f(b, a)
             }
         }
@@ -134,15 +134,15 @@ class GroupLike<T>(
         val DIVISIBLE: Property = Single.Nondirectional("Divisible", "Divisibility") {
             val f = it.combine
             {
-                val (a, b) = it.domain.pickTwo()
-                val (x, y) = it.domain.pickTwo()
+                val (a, b) = it.domain.chooseTwo()
+                val (x, y) = it.domain.chooseTwo()
                 f(a, x) == b && f(y, a) == b // TODO
             }
         }
         val REGULAR: Property = Single.Nondirectional("Regular", "Regularity") {
             val f = it.combine
             {
-                val (a, z) = it.domain.pickTwo()
+                val (a, z) = it.domain.chooseTwo()
                 f(f(a, z), a) == a
             }
         }
@@ -152,7 +152,7 @@ class GroupLike<T>(
                 { false }
             } else {
                 {
-                    val (a, z) = it.domain.pickTwo()
+                    val (a, z) = it.domain.chooseTwo()
                     it.identity == f(a, z) && it.identity == f(z, a)
                 }
             }
@@ -160,18 +160,18 @@ class GroupLike<T>(
         val IDEMPOTENT: Property = Single.Nondirectional("Idempotent", "Idempotency") {
             val f = it.combine
             {
-                val a = it.domain.pick()
+                val a = it.domain.choose()
                 f(a, a) == a
             }
         }
         val CANCELLATIVE: Property.Directional = Single.Directional("Cancellative", "Cancellativity") {
             val f = it.combine
             val L = {
-                val (a, b, c) = it.domain.pickThree()
+                val (a, b, c) = it.domain.chooseThree()
                 if (f(c, a) == f(c, b)) a == b else true// TODO
             }
             val R = {
-                val (a, b, c) = it.domain.pickThree()
+                val (a, b, c) = it.domain.chooseThree()
                 if (f(a, c) == f(b, c)) a == b else true
             }
             L to R
@@ -180,7 +180,7 @@ class GroupLike<T>(
             val f = it.combine
             val i = it.identity
             {
-                val (a, b) = it.domain.pickTwo()
+                val (a, b) = it.domain.chooseTwo()
                 f(a, b) == i // TODO
             }
         }
@@ -190,7 +190,7 @@ class GroupLike<T>(
             if (d is Set.Ordered) {
                 val o = d.partialOrder
                 {
-                    val (a, b, c) = d.pickThree()
+                    val (a, b, c) = d.chooseThree()
                     !(o(a, b) xor o(f(a, c), f(b, c)))
                 }
             } else {

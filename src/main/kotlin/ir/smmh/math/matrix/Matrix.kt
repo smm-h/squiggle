@@ -30,7 +30,7 @@ import ir.smmh.nile.Sequential
  * - [LowLevelMatrix]: same as array matrix but specialized and more efficient;
  *   uses two-dimensional primitive arrays instead of general object arrays.
  */
-interface Matrix<T> : TeXable {
+interface Matrix<T : Any> : TeXable {
     val rows: Int
     val columns: Int
     val structure: RingLike<T>
@@ -108,7 +108,7 @@ interface Matrix<T> : TeXable {
 
     operator fun get(i: Int, j: Int): T
 
-    fun <R> convert(structure: RingLike<R>, convertor: (T) -> R): Matrix<R> =
+    fun <R : Any> convert(structure: RingLike<R>, convertor: (T) -> R): Matrix<R> =
         FunctionMatrix.Unmemoized(rows, columns, structure) { i, j -> convertor(this[i, j]) }
 
     operator fun contains(it: T): Boolean {
@@ -183,7 +183,7 @@ interface Matrix<T> : TeXable {
     private fun remInverse(that: T): Matrix<T> =
         FunctionMatrix.Unmemoized(rows, columns, structure) { i, j -> structure.remainder(that, this[i, j]) }
 
-    interface Mutable<T> : Matrix<T> { //, Mut.Able {
+    interface Mutable<T : Any> : Matrix<T> { //, Mut.Able {
 
         override val transpose: Matrix.Mutable<T>
 
@@ -231,8 +231,8 @@ interface Matrix<T> : TeXable {
 
     fun interface Condition : (Int, Int) -> Boolean
 
-    fun interface ValueFunction<T> : (Matrix<T>, Int, Int) -> T {
-        fun interface Independent<T> : (Int, Int) -> T, ValueFunction<T> {
+    fun interface ValueFunction<T : Any> : (Matrix<T>, Int, Int) -> T {
+        fun interface Independent<T : Any> : (Int, Int) -> T, ValueFunction<T> {
             override fun invoke(m: Matrix<T>, i: Int, j: Int): T = invoke(i, j)
         }
 
@@ -288,14 +288,14 @@ interface Matrix<T> : TeXable {
         fun identity(n: Int): Matrix<Boolean> =
             FunctionMatrix.Unmemoized(n, n, BooleanRing) { i, j -> i == j }
 
-        fun <T> of(rows: Int, columns: Int, structure: RingLike<T>, vararg values: T): Matrix<T> =
+        fun <T : Any> of(rows: Int, columns: Int, structure: RingLike<T>, vararg values: T): Matrix<T> =
             MapMatrix(rows, columns, structure).setAll { _, i, j -> values[i * columns + j] }
 
         fun hashCode(m: Matrix<*>): Int {
             return toString(m).hashCode() xor m.structure.hashCode()
         }
 
-        fun <T> toString(m: Matrix<T>): String = StringBuilder().apply {
+        fun <T : Any> toString(m: Matrix<T>): String = StringBuilder().apply {
             val n = m.rows - 1
             for (i in 0 until m.rows) {
                 if (i != 0) append('\n')
