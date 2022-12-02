@@ -22,4 +22,9 @@ interface TeXable {
             start()
         }
     }
+
+    companion object {
+        fun texOf(it: Any): String =
+            if (it is TeXable) it.tex else it.toString()
+    }
 }

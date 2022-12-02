@@ -22,19 +22,24 @@ interface Set {
         override fun chooseTwo(): Pair<T, T> = choose() to choose()
         override fun chooseThree(): Triple<T, T, T> = Triple(choose(), choose(), choose())
 
-        interface Ordered<T : Any> : Specific<T>, Set.Ordered
+        // interface Ordered<T : Any> : Specific<T>, Set.Ordered
 
-        interface Finite<T : Any> : Specific<T>, Set.Finite {
+        interface Finite<T : Any> : Specific<T>, Set.Finite.NonEmpty {
+
+            override val over: Iterable<T>
+
             class Singleton<T : Any>(val value: T) : Finite<T> {
                 override val cardinality: Int get() = 1
                 override val choose: () -> T = { value }
                 override fun containsSpecific(it: T): Boolean = it == value
+                override val over: Iterable<T> by lazy { listOf(value) }
             }
 
             class Universal<T : Any>(
-                override val cardinality: Int,
+                override val over: List<T>,
                 override val choose: () -> T,
             ) : Finite<T> {
+                override val cardinality: Int = over.size
                 override fun containsSpecific(it: T): Boolean = true
             }
         }
@@ -95,20 +100,22 @@ interface Set {
         fun chooseThree(): Triple<*, *, *> = Triple(choose(), choose(), choose())
     }
 
-    interface Ordered : NonEmpty {
+//    TODO interface Ordered : NonEmpty
+//        interface Partially : Ordered { val partialOrder: (Any, Any) -> Boolean }
+//        interface Totally : Ordered {val totalOrder: (Any) -> Int }
 
-        // TODO partial/total
-        val partialOrder: (Any, Any) -> Boolean
-    }
 
     interface Finite : Set {
         val cardinality: Int
 
         interface NonEmpty : Finite, Set.NonEmpty {
+            val over: Iterable<Any>
+
             class Singleton(val value: Any) : NonEmpty {
                 override val cardinality: Int get() = 1
                 override val choose: () -> Any = { value }
                 override fun contains(it: Any): Boolean = it == value
+                override val over: Iterable<Any> by lazy { listOf(value) }
             }
         }
     }

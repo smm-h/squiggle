@@ -1,83 +1,64 @@
 package ir.smmh.math.symbolic
 
-sealed interface Operator {
+abstract class Operator(val name: String) {
 
-    fun interface Unary : Operator {
+    override fun toString() = name
+
+    class Unary(name: String, val render: (String) -> String) : Operator(name) {
         operator fun invoke(a: Any) = Expression.combine(this, a)
-        fun render(a: String): String
 
-        class Prefix(val symbol: String) : Unary {
-            override fun render(a: String) = "$symbol{$a}"
+        companion object {
+            fun prefix(name: String, symbol: String) = Unary(name) { "$symbol{$it}" }
+            val Plus = prefix("Plus", "+")
+            val Minus = prefix("Minus", "-")
+            val PlusMinus = prefix("PlusMinus", "\\pm")
+            val Sin = prefix("Sin", "\\sin")
+            val Cos = prefix("Cos", "\\cos")
+            val Tan = prefix("Tan", "\\tan")
+            val Ln = prefix("Ln", "\\ln_")
+            val Root = prefix("Root", "\\sqrt")
 
-            companion object {
-                val Plus = Operator.Unary.Prefix("+")
-                val Minus = Operator.Unary.Prefix("-")
-                val PlusMinus = Operator.Unary.Prefix("\\pm")
-                val Sin = Operator.Unary.Prefix("\\sin")
-                val Cos = Operator.Unary.Prefix("\\cos")
-                val Tan = Operator.Unary.Prefix("\\tan")
-                val Ln = Operator.Unary.Prefix("\\ln_")
-                val Root = Operator.Unary.Prefix("\\sqrt")
-            }
-        }
-
-        class Postfix(val symbol: String) : Unary {
-            override fun render(a: String) = "{$a}$symbol"
-
-            companion object {
-                val Exclamation = Operator.Unary.Postfix("!")
-            }
+            fun postfix(name: String, symbol: String) = Unary(name) { "{$it}$symbol" }
+            val Exclamation = postfix("Exclamation", "!")
         }
     }
 
-    fun interface Binary : Operator {
+    class Binary(name: String, val render: (String, String) -> String) : Operator(name) {
         operator fun invoke(a: Any, b: Any) = Expression.combine(this, a, b)
-        fun render(a: String, b: String): String
-
-        class Infix(val symbol: String) : Binary {
-            override fun render(a: String, b: String) = "{$a}$symbol{$b}"
-
-            companion object {
-                val Plus = Infix("+")
-                val Minus = Infix("-")
-                val PlusMinus = Infix("\\pm")
-                val Cross = Infix("\\times")
-                val Invisible = Infix("")
-                val OverInline = Infix("\\div")
-                val Over = Infix("\\over") // frac prefix?
-                val Mod = Infix("mod")
-                val Equal = Infix("=")
-                val Superscript = Infix("^")
-                val Subscript = Infix("_")
-            }
-        }
 
         companion object {
-            val Sin = Binary { x, p -> "\\sin^{$p}{$x}" }
-            val Cos = Binary { x, p -> "\\cos^{$p}{$x}" }
-            val Tan = Binary { x, p -> "\\tan^{$p}{$x}" }
-            val Log = Binary { x, p -> "\\log_{$p}{$x}" }
-            val Root = Binary { x, p -> "\\sqrt[$p]{$x}" }
+            fun infix(name: String, symbol: String) = Binary(name) { a, b -> "{$a}$symbol{$b}" }
+            val Plus = infix("Plus", "+")
+            val Minus = infix("Minus", "-")
+            val PlusMinus = infix("PlusMinus", "\\pm")
+            val Cross = infix("Cross", "\\times")
+            val Invisible = infix("Invisible", "")
+            val OverInline = infix("OverInline", "\\div")
+            val Over = infix("Over", "\\over") // TODO frac?
+            val Mod = infix("Mod", "mod")
+            val Equal = infix("Equal", "=")
+            val Superscript = infix("Superscript", "^")
+            val Subscript = infix("Subscript", "_")
+
+            val Sin = Binary("Sin") { x, p -> "\\sin^{$p}{$x}" }
+            val Cos = Binary("Cos") { x, p -> "\\cos^{$p}{$x}" }
+            val Tan = Binary("Tan") { x, p -> "\\tan^{$p}{$x}" }
+            val Log = Binary("Log") { x, p -> "\\log_{$p}{$x}" }
+            val Root = Binary("Root") { x, p -> "\\sqrt[$p]{$x}" }
         }
     }
 
-    fun interface Ternary : Operator {
-        operator fun invoke(a: Any, b: Any, c: Any) = Expression.combine(this, a, b, c)
-        fun render(a: String, b: String, c: String): String
-    }
-
-    fun interface Multiary : Operator {
+    class Multiary(name: String, val render: (List<String>) -> String) : Operator(name) {
         operator fun invoke(vararg arguments: Any) = Expression.combine(this, *arguments)
-        fun render(input: List<String>): String
 
         companion object {
-            val Sum = Operator.Multiary {
+            val Sum = Multiary("Sum") {
                 val (variable, lowerLimit, upperLimit, function) = it
                 "\\sum_{$variable = {$lowerLimit}}^{$upperLimit} {$function}"
             }
-            val Prod = Operator.Multiary {
+            val Prod = Multiary("Prod") {
                 val (variable, lowerLimit, upperLimit, function) = it
-                "\\sum_{$variable = {$lowerLimit}}^{$upperLimit} {$function}"
+                "\\prod_{$variable = {$lowerLimit}}^{$upperLimit} {$function}"
             }
         }
     }

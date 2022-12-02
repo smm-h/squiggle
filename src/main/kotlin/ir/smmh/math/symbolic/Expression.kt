@@ -43,7 +43,7 @@ sealed interface Expression : TeXable {
     private class ConstantNullary(
         override val set: Set,
         override val value: Any,
-        override val tex: String = if (value is TeXable) value.tex else value.toString(),
+        override val tex: String = TeXable.texOf(value),
     ) : Constant {
         override fun get(index: Int) =
             throw IndexOutOfBoundsException(index)
@@ -73,21 +73,6 @@ sealed interface Expression : TeXable {
 
         override val tex: String by lazy {
             operator.render(this[0].tex, this[1].tex)
-        }
-    }
-
-    private class Ternary(
-        override val operator: Operator.Ternary,
-        val a: Expression,
-        val b: Expression,
-        val c: Expression,
-    ) : Operation {
-        override val arity = 3
-        override fun get(index: Int) = if (index == 0) a else if (index == 1) b else if (index == 2) c else
-            throw IndexOutOfBoundsException(index)
-
-        override val tex: String by lazy {
-            operator.render(this[0].tex, this[1].tex, this[2].tex)
         }
     }
 
@@ -143,9 +128,6 @@ sealed interface Expression : TeXable {
 
         fun combine(operator: Operator.Binary, a: Any, b: Any): Expression =
             Binary(operator, Expression.of(a), Expression.of(b))
-
-        fun combine(operator: Operator.Ternary, a: Any, b: Any, c: Any): Expression =
-            Ternary(operator, Expression.of(a), Expression.of(b), Expression.of(c))
 
         fun combine(operator: Operator.Multiary, vararg arguments: Any): Expression =
             Multiary(operator, arguments.map(Expression::of))
