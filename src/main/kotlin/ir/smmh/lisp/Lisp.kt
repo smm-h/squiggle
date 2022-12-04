@@ -161,7 +161,7 @@ class Lisp(customize: Customization.() -> Unit) : Language.Construction<Runnable
              * set the given value to that variable.
              */
             operator fun set(name: String, value: Value) {
-                val variable = this[name] ?: Variable(ir.smmh.lisp.Type._Anything).also { _this[name] = it }
+                val variable = this[name] ?: Variable(Type._Anything).also { _this[name] = it }
                 variable.value = value
             }
 

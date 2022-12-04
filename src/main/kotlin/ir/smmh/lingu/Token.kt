@@ -41,10 +41,12 @@ data class Token(
     }
 
     sealed class Structure() {
-        data class Leaf(val data: Token) :
-            Structure()
+        data class Leaf(val token: Token) : Structure() {
+            override fun toString(): String = token.toString()
+        }
 
-        data class Node(val list: List<Structure>) :
-            Structure()
+        data class Node(val list: List<Structure>) : Structure() {
+            override fun toString(): String = list.toString()
+        }
     }
 }
