@@ -41,7 +41,7 @@ object NiLexLanguage : Language.HasFileExt.Impl("nlx"), Language.Construction<Js
 
     fun assertCountIsEven(type: String, aspect: Code.Aspect<List<Token>> = Tokens) = assert {
         var count = 0
-        for (token in (aspect of it)!!) if (token.type.name == type) count++
+        for (token in aspect of it) if (token.type.name == type) count++
         if (count % 2 == 0) null
         else "type count not even: '$type' ($count)"
     }
@@ -51,7 +51,7 @@ object NiLexLanguage : Language.HasFileExt.Impl("nlx"), Language.Construction<Js
         else assert {
             var openers = 0
             var closers = 0
-            for (token in (aspect of it)!!) when (token.type.name) {
+            for (token in aspect of it) when (token.type.name) {
                 opener -> openers++
                 closer -> closers++
             }
@@ -63,7 +63,7 @@ object NiLexLanguage : Language.HasFileExt.Impl("nlx"), Language.Construction<Js
         if (opener == closer) assertCountIsEven(opener, aspect)
         else assert {
             var balance = 0
-            for (token in (aspect of it)!!) when (token.type.name) {
+            for (token in aspect of it) when (token.type.name) {
                 opener -> balance++
                 closer -> {
                     balance--
@@ -76,8 +76,9 @@ object NiLexLanguage : Language.HasFileExt.Impl("nlx"), Language.Construction<Js
 
     val FilteredTokens = Code.Aspect<List<Token>>("filtered-tokens")
 
-    fun filterOut(vararg tags: String) = Code.Process { code ->
-        code[FilteredTokens] = code[Tokens]!!.filter(createFilter(*tags))
+    fun filterOut(vararg tags: String) = filterOut(createFilter(*tags))
+    fun filterOut(filter: (Token) -> Boolean) = Code.Process { code ->
+        code[FilteredTokens] = (if (FilteredTokens in code) code[FilteredTokens] else code[Tokens]).filter(filter)
     }
 
     fun createFilter(vararg tags: String): (Token) -> Boolean = { token ->
@@ -95,7 +96,7 @@ object NiLexLanguage : Language.HasFileExt.Impl("nlx"), Language.Construction<Js
 
     private fun addToArray(array: Json.Array.Mutable, code: Code) {
         // do combinations and then remove gaps:
-        val q = ArrayDeque((Tokens of code)!!.filter(filter))
+        val q = ArrayDeque((Tokens of code).filter(filter))
         while (q.isNotEmpty()) {
             val token = q.removeFirst()
             when (token.type.name) {

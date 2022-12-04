@@ -16,7 +16,7 @@ class NiLexParser() : Parser {
 
     override fun parse(code: Code): Tree<Token> {
         val tree = NodedSpecificTreeImpl<Token>()
-        val tokens = (Tokens of code)!!
+        val tokens = Tokens of code
         val root: Token = tokens[0]
         tree.rootData = root
         tree.rootNode!!.children
@@ -24,7 +24,7 @@ class NiLexParser() : Parser {
 
         // combinations
         // remove gaps
-//        val q = ArrayDeque((Tokens of code)!!.filter {
+//        val q = ArrayDeque((Tokens of code).filter {
 //                it.type.name !in NiLexLanguage.gaps &&
 //                        it.type !is NiLexTokenizer.Kept.Opener &&
 //                        it.type !is NiLexTokenizer.Kept.Closer

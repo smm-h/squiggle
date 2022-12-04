@@ -18,7 +18,7 @@ class CodeProcessListTest {
     @Test
     fun testSplitter() {
         val tokenCount = Code.Aspect<Int>("token-count")
-        val process = Splitter.Predefined.splitter + { it[tokenCount] = it[Tokens]!!.size }
+        val process = Splitter.Predefined.splitter + { it[tokenCount] = it[Tokens].size }
         val code = Code("Hi, it's nice to finally meet you!", null)
         process(code)
         println(Tokens of code)

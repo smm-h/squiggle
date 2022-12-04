@@ -10,8 +10,8 @@ class NiLexTokenizerTest {
     @Test
     fun testExample() {
         val process = NiLexLanguage.process +
-                { println(it[Tokens]!!.joinToString(separator = "\n")) } +
-                { println(it[Tokens]!!.size) }
+                { println(it[Tokens].joinToString(separator = "\n")) } +
+                { println(it[Tokens].size) }
 
         process(Code(File("res/test-lang.nlx")))
     }

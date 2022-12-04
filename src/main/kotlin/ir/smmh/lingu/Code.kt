@@ -114,13 +114,13 @@ class Code private constructor(
                     }
                     if (code.processFailed) break
                 }
-                (Mishaps of code)?.joinToString("\n")?.let { println(it) }
+                (Mishaps of code).joinToString("\n").let { println(it) }
             }
         }
     }
 
     class Aspect<T>(override val name: String) : Named {
-        infix fun of(code: Code): T? = code[this]
+        infix fun of(code: Code): T = code[this]
         override fun toString() = name
     }
 
@@ -156,7 +156,7 @@ class Code private constructor(
 
     fun issue(mishap: Mishap) {
         if (Mishaps !in aspects) aspects[Mishaps] = ArrayList<Mishap>()
-        (Mishaps of this)!!.add(mishap)
+        (Mishaps of this).add(mishap)
         if (mishap.fatal) processFailed = true
     }
 
@@ -189,9 +189,7 @@ class Code private constructor(
     operator fun contains(aspect: Aspect<*>): Boolean = aspect in aspects
 
     @Suppress("UNCHECKED_CAST")
-    operator fun <T> get(aspect: Aspect<T>): T? {
-        return aspects[aspect] as T
-    }
+    operator fun <T> get(aspect: Aspect<T>) = aspects[aspect] as T
 
     operator fun <T> set(aspect: Aspect<T>, value: T?) {
         if (value == null)
