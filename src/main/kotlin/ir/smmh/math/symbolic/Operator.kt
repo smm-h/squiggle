@@ -1,65 +1,56 @@
 package ir.smmh.math.symbolic
 
-abstract class Operator(val name: String) {
+class Operator(
+    val name: String,
+    val arity: IntRange,
+    val render: (List<String>) -> String,
+) {
 
-    override fun toString() = name
-
-    class Unary(name: String, val render: (String) -> String) : Operator(name) {
-        operator fun invoke(a: Any) = Expression.combine(this, a)
-
-        companion object {
-            fun prefix(name: String, symbol: String) = Unary(name) { "$symbol{$it}" }
-            val Plus = prefix("Plus", "+")
-            val Minus = prefix("Minus", "-")
-            val PlusMinus = prefix("PlusMinus", "\\pm")
-            val Sin = prefix("Sin", "\\sin")
-            val Cos = prefix("Cos", "\\cos")
-            val Tan = prefix("Tan", "\\tan")
-            val Ln = prefix("Ln", "\\ln_")
-            val Root = prefix("Root", "\\sqrt")
-
-            fun postfix(name: String, symbol: String) = Unary(name) { "{$it}$symbol" }
-            val Exclamation = postfix("Exclamation", "!")
-        }
+    companion object {
+        private val nullary = 0..0
+        private val unary = 1..1
+        private val binary = 2..2
+        private val ternary = 3..3
+        private val quadary = 4..4
     }
 
-    class Binary(name: String, val render: (String, String) -> String) : Operator(name) {
-        operator fun invoke(a: Any, b: Any) = Expression.combine(this, a, b)
-
-        companion object {
-            fun infix(name: String, symbol: String) = Binary(name) { a, b -> "{$a}$symbol{$b}" }
-            val Plus = infix("Plus", "+")
-            val Minus = infix("Minus", "-")
-            val PlusMinus = infix("PlusMinus", "\\pm")
-            val Cross = infix("Cross", "\\times")
-            val Invisible = infix("Invisible", "")
-            val OverInline = infix("OverInline", "\\div")
-            val Over = infix("Over", "\\over") // TODO frac?
-            val Mod = infix("Mod", "mod")
-            val Equal = infix("Equal", "=")
-            val Superscript = infix("Superscript", "^")
-            val Subscript = infix("Subscript", "_")
-
-            val Sin = Binary("Sin") { x, p -> "\\sin^{$p}{$x}" }
-            val Cos = Binary("Cos") { x, p -> "\\cos^{$p}{$x}" }
-            val Tan = Binary("Tan") { x, p -> "\\tan^{$p}{$x}" }
-            val Log = Binary("Log") { x, p -> "\\log_{$p}{$x}" }
-            val Root = Binary("Root") { x, p -> "\\sqrt[$p]{$x}" }
-        }
+    fun interface Definitions {
+        fun defineInto(table: Table): Table
     }
 
-    class Multiary(name: String, val render: (List<String>) -> String) : Operator(name) {
-        operator fun invoke(vararg arguments: Any) = Expression.combine(this, *arguments)
+    fun interface Table {
+        fun define(operator: Operator)
 
-        companion object {
-            val Sum = Multiary("Sum") {
-                val (variable, lowerLimit, upperLimit, function) = it
-                "\\sum_{$variable = {$lowerLimit}}^{$upperLimit} {$function}"
-            }
-            val Prod = Multiary("Prod") {
-                val (variable, lowerLimit, upperLimit, function) = it
-                "\\prod_{$variable = {$lowerLimit}}^{$upperLimit} {$function}"
-            }
+        fun arbitrary(name: String, arity: IntRange, render: (List<String>) -> String) =
+            define(Operator(name, arity, render))
+
+        fun nullary(name: String, render: String) =
+            arbitrary(name, nullary) { render }
+
+        fun unary(name: String, render: (String) -> String) =
+            arbitrary(name, unary) { val (a) = it; render(a) }
+
+        fun binary(name: String, render: (String, String) -> String) =
+            arbitrary(name, binary) { val (a, b) = it; render(a, b) }
+
+        fun ternary(name: String, render: (String, String, String) -> String) =
+            arbitrary(name, ternary) { val (a, b, c) = it; render(a, b, c) }
+
+        fun quadary(name: String, render: (String, String, String, String) -> String) =
+            arbitrary(name, quadary) { val (a, b, c, d) = it; render(a, b, c, d) }
+
+        fun unaryPrefix(name: String, symbol: String) =
+            unary(name) { "$symbol{$it}" }
+
+        fun unaryPostfix(name: String, symbol: String) =
+            unary(name) { "{$it}$symbol" }
+
+        fun binaryInfix(name: String, symbol: String) =
+            binary(name) { a, b -> "{$a}$symbol{$b}" }
+
+        fun quadaryLimited(name: String, symbol: String) = quadary(name) {
+            variable, lowerLimit, upperLimit, function ->
+            "${symbol}_{$variable = {$lowerLimit}}^{$upperLimit} {$function}"
         }
     }
 }
