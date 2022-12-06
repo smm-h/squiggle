@@ -23,7 +23,7 @@ class Sexp(opener: String, closer: String, tokenizer: String, filter: (Token) ->
 
     override val process: Code.Process = tokenize + assertBalance(opener, closer) + filterOut(filter) + { code ->
         var curr: Frame = Frame(null)
-        for (token in FilteredTokens of code) {
+        for (token in code.get(FilteredTokens)) {
             when (token.type.name) {
                 pOpen -> curr = Frame(curr)
                 pClose -> {

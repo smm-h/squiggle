@@ -155,7 +155,7 @@ object Html : Language.HasFileExt.Impl("html"), Language.Markup {
             tagLn("blockquote", compile(it.contents) + by)
         }
         is Markup.Section.CodeBlock -> {
-            val sh = syntaxHighlighting of it.code
+            val sh = it.code.getNullable(syntaxHighlighting)
             if (sh == null) tagLn("pre", it.code.string)
             else sh.compile()
         }

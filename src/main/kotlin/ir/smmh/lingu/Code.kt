@@ -65,7 +65,7 @@ class Code private constructor(
     fun beDeserialized(): Any? {
         val it = language
         if (it is Language.Serialization) it.deserialize(this)
-        return this[Language.Serialization.Deserialization]
+        return getNullable(Language.Serialization.Deserialization)
     }
 
     private val aspects: MutableMap<Aspect<*>, Any> = HashMap()
@@ -114,13 +114,12 @@ class Code private constructor(
                     }
                     if (code.processFailed) break
                 }
-                (Mishaps of code).joinToString("\n").let { println(it) }
+                code.getNullable(Mishaps)?.joinToString("\n").let { println(it) }
             }
         }
     }
 
     class Aspect<T>(override val name: String) : Named {
-        infix fun of(code: Code): T = code[this]
         override fun toString() = name
     }
 
@@ -156,7 +155,7 @@ class Code private constructor(
 
     fun issue(mishap: Mishap) {
         if (Mishaps !in aspects) aspects[Mishaps] = ArrayList<Mishap>()
-        (Mishaps of this).add(mishap)
+        get(Mishaps).add(mishap)
         if (mishap.fatal) processFailed = true
     }
 
@@ -188,8 +187,10 @@ class Code private constructor(
 
     operator fun contains(aspect: Aspect<*>): Boolean = aspect in aspects
 
+    fun <T> get(aspect: Aspect<T>) = getNullable(aspect)!!
+
     @Suppress("UNCHECKED_CAST")
-    operator fun <T> get(aspect: Aspect<T>) = aspects[aspect] as T
+    fun <T> getNullable(aspect: Aspect<T>) = aspects[aspect] as T?
 
     operator fun <T> set(aspect: Aspect<T>, value: T?) {
         if (value == null)
