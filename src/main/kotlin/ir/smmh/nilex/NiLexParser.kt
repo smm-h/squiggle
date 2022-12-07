@@ -16,7 +16,7 @@ class NiLexParser() : Parser {
 
     override fun parse(code: Code): Tree<Token> {
         val tree = NodedSpecificTreeImpl<Token>()
-        val tokens = Tokens of code
+        val tokens = code[Tokens]
         val root: Token = tokens[0]
         tree.rootData = root
         tree.rootNode!!.children

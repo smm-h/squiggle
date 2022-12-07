@@ -12,7 +12,7 @@ class CodeProcessListTest {
         val process = Code.Process.empty + { it[reversed] = it.string.reversed() }
         val code = Code("Hey!", null)
         process(code)
-        assertEquals("!yeH", reversed of code)
+        assertEquals("!yeH", code[reversed])
     }
 
     @Test
@@ -21,7 +21,7 @@ class CodeProcessListTest {
         val process = Splitter.Predefined.splitter + { it[tokenCount] = it[Tokens].size }
         val code = Code("Hi, it's nice to finally meet you!", null)
         process(code)
-        println(Tokens of code)
-        assertEquals(7, tokenCount of code)
+        println(code[Tokens])
+        assertEquals(7, code[tokenCount])
     }
 }

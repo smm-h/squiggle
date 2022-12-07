@@ -200,7 +200,7 @@ class Lisp(customize: Customization.() -> Unit) : Language.Construction<Runnable
     override val process: Code.Process = tokenize +
             filterOut("opener", "closer", "whitespace", "comment", "multiLineComment") +
             customization.assertAreBalanced + { code ->
-        val queue = ArrayDeque(code.get(FilteredTokens))
+        val queue = ArrayDeque(code[FilteredTokens])
         val stack = Callstack()
         while (queue.isNotEmpty()) {
             val token = queue.removeFirst()

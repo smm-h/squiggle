@@ -114,12 +114,12 @@ class Code private constructor(
                     }
                     if (code.processFailed) break
                 }
-                code.getNullable(Mishaps)?.joinToString("\n").let { println(it) }
+                code.getNullable(Mishaps)?.joinToString("\n")?.let { println(it) }
             }
         }
     }
 
-    class Aspect<T>(override val name: String) : Named {
+    class Aspect<T : Any>(override val name: String) : Named {
         override fun toString() = name
     }
 
@@ -155,7 +155,7 @@ class Code private constructor(
 
     fun issue(mishap: Mishap) {
         if (Mishaps !in aspects) aspects[Mishaps] = ArrayList<Mishap>()
-        get(Mishaps).add(mishap)
+        this[Mishaps].add(mishap)
         if (mishap.fatal) processFailed = true
     }
 
@@ -187,12 +187,12 @@ class Code private constructor(
 
     operator fun contains(aspect: Aspect<*>): Boolean = aspect in aspects
 
-    fun <T> get(aspect: Aspect<T>) = getNullable(aspect)!!
+    operator fun <T : Any> get(aspect: Aspect<T>) = getNullable(aspect)!!
 
     @Suppress("UNCHECKED_CAST")
-    fun <T> getNullable(aspect: Aspect<T>) = aspects[aspect] as T?
+    fun <T : Any> getNullable(aspect: Aspect<T>) = aspects[aspect] as T?
 
-    operator fun <T> set(aspect: Aspect<T>, value: T?) {
+    operator fun <T : Any> set(aspect: Aspect<T>, value: T?) {
         if (value == null)
             aspects.remove(aspect)
         else

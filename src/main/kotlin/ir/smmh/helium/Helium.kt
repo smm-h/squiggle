@@ -20,7 +20,7 @@ object Helium : Language.Processable {
     override val process: Code.Process = tokenize +
             filterOut("opener", "closer", "whitespace", "comment", "multiLineComment") + { code ->
         val statements = ArrayList<Token.Structure>()
-        val tokens = FilteredTokens of code
+        val tokens = code[FilteredTokens]
     }
 }
 

@@ -65,11 +65,11 @@ interface Language {
         val process: Code.Process
     }
 
-    interface Construction<T> : Processable {
+    interface Construction<T : Any> : Processable {
         val construction: Code.Aspect<T>
         operator fun get(code: Code): T? {
             process.invoke(code)
-            return code[construction]
+            return code.getNullable(construction)
         }
     }
 
@@ -83,7 +83,7 @@ interface Language {
         }
 
         companion object {
-            val Deserialization = Code.Aspect<Any?>("deserialization")
+            val Deserialization = Code.Aspect<Any>("deserialization")
         }
         // TODO intermediate representation?
     }
