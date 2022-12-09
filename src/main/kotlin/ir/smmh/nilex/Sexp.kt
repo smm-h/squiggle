@@ -8,10 +8,17 @@ import ir.smmh.nilex.NiLexLanguage.assertBalance
 import ir.smmh.nilex.NiLexLanguage.filterOut
 import ir.smmh.nilex.NiLexTokenizer.Companion.v
 
-class Sexp(opener: String, closer: String, tokenizer: String, filter: (Token) -> Boolean) :
-    Language.Construction<Token.Structure> {
+class Sexp(val opener: String, val closer: String, tokenizer: String, filter: (Token) -> Boolean) :
+    Language.Representation<Token.Structure>, Language.Processable {
 
-    override val construction = Code.Aspect<Token.Structure>("root")
+    override val parsed = Code.Aspect<Token.Structure>("root")
+    override fun parse(string: String): Token.Structure =
+        code(string).run { beProcessed(); this[parsed] }
+
+    override fun represent(it: Token.Structure): String = when (it) {
+        is Token.Structure.Leaf -> it.token.data
+        is Token.Structure.Node -> it.list.joinToString(" ", opener, closer, transform = ::represent)
+    }
 
     private val pOpen = v(opener)
     private val pClose = v(closer)
@@ -34,6 +41,6 @@ class Sexp(opener: String, closer: String, tokenizer: String, filter: (Token) ->
                 else -> curr.list.add(Token.Structure.Leaf(token))
             }
         }
-        code[construction] = Token.Structure.Node(curr.list)
+        code[parsed] = Token.Structure.Node(curr.list)
     }
 }
