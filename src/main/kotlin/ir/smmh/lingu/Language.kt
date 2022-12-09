@@ -73,6 +73,19 @@ interface Language {
         }
     }
 
+    interface Representation<T : Any> : Language {
+
+        val parsed: Code.Aspect<T>
+
+        fun represent(it: T): String
+        fun parse(string: String): T
+
+        fun representAsCode(it: T): Code = Code(represent(it), this)
+        fun parse(code: Code) {
+            code[parsed] = parse(code.string)
+        }
+    }
+
     interface Serialization : Language {
         fun serialize(it: Any?): String
         fun deserialize(string: String): Any?

@@ -16,7 +16,8 @@ import ir.smmh.util.StringUtil.getStringAndClear
 import kotlin.math.pow
 import kotlin.reflect.KClass
 
-object Json : Language.HasFileExt.Impl("json"), Language.Serialization, Language.Processable {
+object Json : Language.HasFileExt.Impl("json"), Language.Serialization, Language.Processable,
+    Language.Representation<Json.Value> {
 
     override val process = Code.Process {
         val v = parse(it.string)
@@ -112,7 +113,9 @@ object Json : Language.HasFileExt.Impl("json"), Language.Serialization, Language
         }
     }
 
-    fun parse(string: String): Value {
+    override val parsed = Code.Aspect<Value>("parsed")
+    override fun represent(it: Value): String = it.serialization
+    override fun parse(string: String): Value {
         return when (val s = string.trim()) {
             "" -> throw Exception("empty json")
             "null" -> Null
