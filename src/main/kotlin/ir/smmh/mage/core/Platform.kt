@@ -9,6 +9,8 @@ package ir.smmh.mage.core
  */
 interface Platform {
 
+    val identityMatrix: Graphics.TransformationMatrix
+
     val screenSize: Size
 
     /**

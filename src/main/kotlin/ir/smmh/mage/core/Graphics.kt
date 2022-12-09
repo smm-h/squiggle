@@ -2,7 +2,6 @@ package ir.smmh.mage.core
 
 interface Graphics : PlatformSpecific {
 
-    val identityMatrix: TransformationMatrix
     var transformationMatrix: TransformationMatrix
 
     fun interface Draw : (Graphics) -> Unit

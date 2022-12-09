@@ -38,7 +38,7 @@ class Grid(platform: Platform) : App(platform) {
 //            fill = true
 //            rectangle(0.0, 0.0, size.width, size.height)
 
-            transformationMatrix = identityMatrix
+            transformationMatrix = platform.identityMatrix
             transformationMatrix = platform.createTransformationMatrix().apply {
 //                translate(mousePoint)
                 val s = hypot(mousePoint.x, mousePoint.y) * 0.01
