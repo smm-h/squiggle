@@ -6,6 +6,7 @@ import ir.smmh.mage.core.Point.Companion.gridDots
 import ir.smmh.mage.core.Point.Companion.gridLines
 import ir.smmh.mage.core.Point.Companion.move
 import ir.smmh.mage.core.Point.Companion.translate
+import ir.smmh.mage.platforms.SwingPlatform
 import ir.smmh.util.LanguageUtils.late
 
 /**
@@ -46,17 +47,21 @@ open class BasicApp(platform: Platform) : App(platform) {
         }
     }
 
-    fun addSetup(lambda: () -> Unit) =
+    fun addSetup(lambda: () -> Unit) {
         setups.add(lambda)
+    }
 
-    fun addTemporal(lambda: () -> Unit) =
+    fun addTemporal(lambda: () -> Unit) {
         mainTemporalGroup.add(Temporal.Lambda(lambda))
+    }
 
-    fun addVisual(lambda: (Graphics) -> Unit) =
+    fun addVisual(lambda: (Graphics) -> Unit) {
         mainVisualGroup.add(Visual.Lambda(lambda))
+    }
 
-    fun addFinalizable(lambda: Finalizable) =
+    fun addFinalizable(lambda: Finalizable) {
         finally(lambda)
+    }
 
     var debugMode = false
         set(value) {
@@ -93,7 +98,9 @@ open class BasicApp(platform: Platform) : App(platform) {
         on(Event.Key.Released("ESCAPE")) { exit() }
         on(Event.Key.Released("R")) { restart() }
         on(Event.Key.Released("F5")) { debugMode = !debugMode }
-        on(Event.Mouse.Moved) { mousePoint = it }
+
+        //on(Event.Mouse.Moved) { mousePoint = it }
+        addTemporal { SwingPlatform.mousePoint(process)?.let { mousePoint = it } }
 
         addVisual { g ->
             g.color = backColor
@@ -112,7 +119,7 @@ open class BasicApp(platform: Platform) : App(platform) {
 
         debugMode = false
 
-        for (s in setups) s()
+        setups.forEach { it.invoke() }
     }
 
     // val makePath: Graphics.Path.() -> Unit

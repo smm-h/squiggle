@@ -34,4 +34,10 @@ interface Platform {
      * Creates an empty [Graphics] that can be drawn on
      */
     fun createGraphics(size: Size): Graphics
+
+    fun createColor(hue: Float, saturation: Float, brightness: Float): Color.Packed
+
+    fun createColor(hue: Float) = createColor(hue, 1F, 1F)
+
+    fun renderTeX(tex: String, scale: Float, foreground: Color, background: Color): Image
 }

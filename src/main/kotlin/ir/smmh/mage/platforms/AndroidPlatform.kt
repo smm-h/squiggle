@@ -9,19 +9,35 @@ package ir.smmh.mage.platforms
 //import ir.smmh.mage.MainActivity.Companion.mainActivity
 //import ir.smmh.mage.core.*
 //import ir.smmh.mage.core.Color
-//import ir.smmh.mage.core.Point
-//import ir.smmh.mage.core.Utils.radiansToDegrees
+//import ir.smmh.mage.core.Utils.toDegrees
 //import kotlin.math.roundToInt
 //
 //object AndroidPlatform : Platform {
-//    override fun createProcess(dispatch: Event.Dispatch, draw: Graphics.Draw): Process = mainActivity?.let {
-//        AndroidProcess(it, dispatch, draw)
-//    } ?: throw RuntimeException("MainActivity is null")
+//
+//    override val identityMatrix: Graphics.TransformationMatrix =
+//        AndroidTransformationMatrix()
+//
+//    override val screenSize: Size
+//        get() = Size.OneOne // TODO screen size
+//
+//    override fun createColor(hue: Float, saturation: Float, brightness: Float): Color.Packed =
+//        Color.packedInt(android.graphics.Color.HSVToColor(FloatArray(hue, saturation, brightness)))
+//
+//    override fun createGraphics(size: Size): Graphics =
+//        AndroidGraphics(size)
+//
+//    override fun createProcess(dispatch: Event.Dispatch, draw: Graphics.Draw): Process =
+//        mainActivity?.let {
+//            AndroidProcess(it, dispatch, draw)
+//        } ?: throw RuntimeException("MainActivity is null")
 //
 //    override fun createPath(): Graphics.Path =
 //        AndroidPath()
 //
 //    private class AndroidPath(val path: Path = Path()) : Graphics.Path {
+//
+//        override val platform: Platform get() = AndroidPlatform
+//
 //        override var x: Double = 0.0
 //            set(value) {
 //                field = value
@@ -42,19 +58,32 @@ package ir.smmh.mage.platforms
 //        override fun quadratic(x1: Double, y1: Double, x2: Double, y2: Double) =
 //            path.quadTo(x1.toFloat(), y1.toFloat(), x2.toFloat(), y2.toFloat())
 //
-//        override fun bezier(x1: Double, y1: Double, x2: Double, y2: Double, x3: Double, y3: Double) =
-//            path.cubicTo(x1.toFloat(), y1.toFloat(), x2.toFloat(), y2.toFloat(), x3.toFloat(), y3.toFloat())
+//        override fun bezier(
+//            x1: Double,
+//            y1: Double,
+//            x2: Double,
+//            y2: Double,
+//            x3: Double,
+//            y3: Double
+//        ) =
+//            path.cubicTo(
+//                x1.toFloat(),
+//                y1.toFloat(),
+//                x2.toFloat(),
+//                y2.toFloat(),
+//                x3.toFloat(),
+//                y3.toFloat()
+//            )
 //
 //        override fun transform(transformationMatrix: Graphics.TransformationMatrix) =
 //            path.transform((transformationMatrix as AndroidTransformationMatrix).matrix)
-//
-//        override fun createTransformationMatrix(): Graphics.TransformationMatrix =
-//            AndroidTransformationMatrix()
 //
 //    }
 //
 //    private class AndroidTransformationMatrix(val matrix: Matrix = Matrix()) :
 //        Graphics.TransformationMatrix {
+//
+//        override val platform: Platform get() = AndroidPlatform
 //
 //        override fun translate(x: Double, y: Double) {
 //            matrix.preTranslate(x.toFloat(), y.toFloat())
@@ -69,7 +98,7 @@ package ir.smmh.mage.platforms
 //        }
 //
 //        override fun rotate(radians: Double) {
-//            matrix.preRotate(radians.radiansToDegrees().toFloat())
+//            matrix.preRotate(radians.toDegrees().toFloat())
 //        }
 //
 //        private fun getMatrixContentsAsArray(): FloatArray =
@@ -94,40 +123,12 @@ package ir.smmh.mage.platforms
 //    override fun createTransformationMatrix(): Graphics.TransformationMatrix =
 //        AndroidTransformationMatrix()
 //
-//    @SuppressLint("ClickableViewAccessibility")
-//    private class AndroidProcess(
-//        val mainActivity: MainActivity,
-//        override var dispatch: Event.Dispatch,
-//        override val draw: Graphics.Draw,
-//    ) : Process, Graphics {
+//    private class AndroidGraphics(initialSize: Size) : Graphics {
 //
-//        override val platform: Platform = AndroidPlatform
+//        override var transformationMatrix: Graphics.TransformationMatrix =
+//            identityMatrix
 //
-//        private val view = object : View(mainActivity) {
-//            override fun onDraw(canvas: Canvas) {
-//                super.onDraw(canvas)
-//                this@AndroidProcess.draw(graphics)
-//                canvas.drawBitmap(bitmap, 0f, 0f, null)
-//                invalidate()
-//            }
-//        }
-//
-//        init {
-//            mainActivity.setContentView(view)
-//            view.setOnTouchListener { _, e ->
-//                dispatch(Event.Mouse.Moved.happen(e.point))
-//                true
-//            }
-////            isFocusable = true // make sure we get key events
-//        }
-//
-////    override fun onKeyUp/Down(keyCode: Int, msg: KeyEvent): Boolean
-//
-//        override var title: String
-//            get() = mainActivity.title as String
-//            set(value) {
-//                mainActivity.title = value
-//            }
+//        override val platform: Platform get() = AndroidPlatform
 //
 //        override var size: Size = Size.OneOne
 //            set(value) {
@@ -142,24 +143,20 @@ package ir.smmh.mage.platforms
 //                }
 //            }
 //
-//        override val graphics: Graphics = this
-//
-//        override fun stop() {}
+//        init {
+//            this.size = initialSize
+//        }
 //
 //        private val bitmapConfig = Bitmap.Config.ARGB_8888
-//        private var bitmap: Bitmap = Bitmap.createBitmap(1, 1, bitmapConfig)
+//
+//        // TODO make this private
+//        var bitmap: Bitmap = Bitmap.createBitmap(1, 1, bitmapConfig)
 //        private var canvas: Canvas = Canvas(bitmap)
 //
 //        private val paint = Paint().apply {
 //            style = Paint.Style.STROKE
 //            color = android.graphics.Color.BLACK
 //        }
-//
-//        override fun createPath(): Graphics.Path =
-//            AndroidPlatform.createPath()
-//
-//        override fun createTransformationMatrix(): Graphics.TransformationMatrix =
-//            AndroidPlatform.createTransformationMatrix()
 //
 //        override var fill: Boolean = false
 //            set(value) {
@@ -186,7 +183,64 @@ package ir.smmh.mage.platforms
 //
 //        override fun path(path: Graphics.Path) =
 //            canvas.drawPath((path as AndroidPath).path, paint)
+//
+//        override fun image(x: Double, y: Double, image: Image) =
+//            canvas.drawBitmap((image as AndroidImage).bitmap, x.toFloat(), y.toFloat(), paint)
+//
+//        override fun toImage(): Image =
+//            AndroidImage(Bitmap.createBitmap(bitmap))
 //    }
 //
-//    private val MotionEvent.point get() = Point.of(x, y)
+//    private class AndroidImage(val bitmap: Bitmap) : Image {
+//        override val platform: Platform get() = AndroidPlatform
+//        override val size: Size by lazy { Size.of(bitmap.width, bitmap.height) }
+//    }
+//
+//    @SuppressLint("ClickableViewAccessibility")
+//    private class AndroidProcess(
+//        val mainActivity: MainActivity,
+//        override var dispatch: Event.Dispatch,
+//        override val draw: Graphics.Draw,
+//    ) : Process {
+//
+//        override val platform: Platform get() = AndroidPlatform
+//
+//        private val view = object : View(mainActivity) {
+//            override fun onDraw(canvas: Canvas) {
+//                super.onDraw(canvas)
+//                this@AndroidProcess.draw(graphics)
+//                canvas.drawBitmap(graphics.bitmap, 0f, 0f, null)
+//                invalidate()
+//            }
+//        }
+//
+//        init {
+//            mainActivity.setContentView(view)
+//            view.setOnTouchListener { _, e ->
+//                dispatch(Event.Mouse.Moved.happen(e.point))
+//                true
+//            }
+////            isFocusable = true // make sure we get key events
+//        }
+//
+////    override fun onKeyUp/Down(keyCode: Int, msg: KeyEvent): Boolean
+//
+//        override var title: String
+//            get() = mainActivity.title as String
+//            set(value) {
+//                mainActivity.title = value
+//            }
+//
+//        override val graphics = AndroidGraphics(Size.OneOne)
+//
+//        override var size: Size by graphics::size
+//
+//        override fun stop() {}
+//
+//        override fun screenshot(address: String) {
+//            // TODO
+//        }
+//    }
+//
+//    private val MotionEvent.point get() = ir.smmh.mage.core.Point.of(x, y)
 //}

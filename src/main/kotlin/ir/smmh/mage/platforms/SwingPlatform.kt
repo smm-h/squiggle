@@ -1,10 +1,16 @@
 package ir.smmh.mage.platforms
 
 import ir.smmh.mage.core.*
+import ir.smmh.mage.core.Color
+import ir.smmh.mage.core.Event
 import ir.smmh.mage.core.Event.Companion.happen
-import java.awt.Dimension
-import java.awt.Graphics2D
-import java.awt.Toolkit
+import ir.smmh.mage.core.Event.Mouse.Button
+import ir.smmh.mage.core.Event.Window
+import ir.smmh.mage.core.Graphics
+import ir.smmh.mage.core.Image
+import ir.smmh.mage.core.Point
+import org.scilab.forge.jlatexmath.TeXFormula
+import java.awt.*
 import java.awt.event.*
 import java.awt.geom.AffineTransform
 import java.awt.geom.NoninvertibleTransformException
@@ -22,9 +28,22 @@ import kotlin.system.exitProcess
 
 object SwingPlatform : Platform {
 
+    private val lastMousePoint = java.awt.Point(-1, -1)
+
+    fun mousePoint(process: Process): Point? {
+        val p = MouseInfo.getPointerInfo().location
+        return if (p == lastMousePoint) null else {
+            val c = (process as SwingProcess).location
+            Point.of(p.x - c.x, p.y - c.y)
+        }
+    }
+
     override val screenSize: Size = dimensionToSize(Toolkit.getDefaultToolkit().screenSize)
 
     private fun dimensionToSize(d: Dimension) = Size.of(d.width, d.height)
+
+    override fun createColor(hue: Float, saturation: Float, brightness: Float): Color.Packed =
+        Color.packedInt(java.awt.Color.HSBtoRGB(hue, saturation, brightness))
 
     override fun createProcess(dispatch: Event.Dispatch, draw: Graphics.Draw): Process =
         SwingProcess(dispatch, draw)
@@ -34,14 +53,14 @@ object SwingPlatform : Platform {
         override val draw: Graphics.Draw,
     ) : Process {
 
-        override val platform: Platform = SwingPlatform
+        override val platform: Platform get() = SwingPlatform
+
+        val location: java.awt.Point get() = panel.locationOnScreen
 
         private val frame = JFrame()
         private val panel = object : JPanel(null) {
             override fun paint(g: java.awt.Graphics) {
                 super.paint(g)
-                g.color = java.awt.Color.BLUE
-                g.fillRect(0, 0, size.width, size.height)
                 this@SwingProcess.draw(this@SwingProcess.graphics)
                 g.drawImage(this@SwingProcess.graphics.image, 0, 0, null)
                 repaint()
@@ -55,6 +74,7 @@ object SwingPlatform : Platform {
                     frame.title = value
                 }
             }
+
         override var size: Size = Size.OneOne
             set(value) {
                 if (field != value && value.isAcceptable()) {
@@ -143,7 +163,7 @@ object SwingPlatform : Platform {
     fun createImage(image: java.awt.Image): Image = SwingImage(image)
 
     private class SwingImage(val image: java.awt.Image) : ir.smmh.mage.core.Image {
-        override val platform = SwingPlatform
+        override val platform: Platform get() = SwingPlatform
         override val size: Size by lazy { Size.of(image.getWidth(null), image.getHeight(null)) }
     }
 
@@ -154,7 +174,7 @@ object SwingPlatform : Platform {
         val imageType: Int = BufferedImage.TYPE_INT_ARGB,
     ) : Graphics {
 
-        override val platform = SwingPlatform
+        override val platform: Platform get() = SwingPlatform
 
         var image = BufferedImage(1, 1, imageType)
         private var graphics: Graphics2D = image.graphics as Graphics2D
@@ -168,13 +188,13 @@ object SwingPlatform : Platform {
                     imageType
                 )
                 graphics = image.graphics as Graphics2D
+                graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
             }
 
         init {
             size = initialSize
         }
 
-        override val identityMatrix: Graphics.TransformationMatrix = createTransformationMatrix()
         override var transformationMatrix: Graphics.TransformationMatrix = createTransformationMatrix()
             set(value) {
                 field = value
@@ -185,7 +205,7 @@ object SwingPlatform : Platform {
         override var color: Color.Packed
             get() = Color.packedInt(graphics.color.rgb)
             set(value) {
-                graphics.color = java.awt.Color(value.rgba, true)
+                graphics.color = value.toSwingColor()
             }
 
         override fun line(x1: Double, y1: Double, x2: Double, y2: Double) =
@@ -215,6 +235,8 @@ object SwingPlatform : Platform {
         }
     }
 
+    override val identityMatrix: Graphics.TransformationMatrix = createTransformationMatrix()
+
     private val MouseEvent.mousePoint: Point
         get() = Point.of(x.toDouble(), y.toDouble())
 
@@ -237,7 +259,7 @@ object SwingPlatform : Platform {
 
     private class SwingPath(val path: Path2D = Path2D.Double()) : Graphics.Path {
 
-        override val platform = SwingPlatform
+        override val platform: Platform get() = SwingPlatform
 
         override var x: Double
             get() = path.currentPoint.x
@@ -273,7 +295,7 @@ object SwingPlatform : Platform {
     private class SwingTransformationMatrix(val affineTransform: AffineTransform = AffineTransform()) :
         Graphics.TransformationMatrix {
 
-        override val platform = SwingPlatform
+        override val platform: Platform get() = SwingPlatform
 
         override val translationX: Double
             get() = affineTransform.translateX
@@ -312,4 +334,10 @@ object SwingPlatform : Platform {
                 null
             }
     }
+
+    private fun Color.toSwingColor() =
+        java.awt.Color(rgba, true)
+
+    override fun renderTeX(tex: String, scale: Float, foreground: Color, background: Color): Image =
+        createImage(TeXFormula(tex).createBufferedImage(0, scale, foreground.toSwingColor(), background.toSwingColor()))
 }

@@ -54,8 +54,7 @@ open class Event<T : Any>(val address: String) {
         object StateChanged : Window("StateChanged")
     }
 
-    class Key private constructor(address: String, name: String) :
-        Event<Key.Data>("Key.$name.$address") {
+    class Key private constructor(address: String, name: String) : Event<Key.Data>("Key.$address.$name") {
         companion object {
             val Typed = Cache(preprocessKey = String::uppercase) { Key("Typed", it) }
             val Pressed = Cache(preprocessKey = String::uppercase) { Key("Pressed", it) }
