@@ -39,6 +39,11 @@ sealed interface Point {
         y * factor
     )
 
+    operator fun div(factor: Double): Point = of(
+        x / factor,
+        y / factor
+    )
+
     fun add(magnitude: Double, direction: Double): Point = of(
         x + magnitude * cos(direction),
         y + magnitude * -sin(direction)
@@ -202,6 +207,11 @@ sealed interface Point {
         operator fun timesAssign(factor: Double) {
             x *= factor
             y *= factor
+        }
+
+        operator fun divAssign(factor: Double) {
+            x /= factor
+            y /= factor
         }
 
         private data class Impl(override var x: Double, override var y: Double) : AbstractImpl(), Mutable

@@ -48,26 +48,33 @@ sealed interface Vector {
         y * factor
     )
 
+    operator fun div(factor: Double): Vector = towards(
+        x / factor,
+        y / factor
+    )
+
     companion object {
         operator fun Double.times(vector: Vector): Vector = towards(
             this * vector.x,
             this * vector.y
         )
+        operator fun Double.div(vector: Vector): Vector = towards(
+            this / vector.x,
+            this / vector.y
+        )
 
         fun towards(x: Double, y: Double): Vector =
             Impl(x, y)
 
-        fun unit(direction: Double): Vector =
-            towards(
-                cos(direction),
-                -sin(direction)
-            )
+        fun unit(direction: Double): Vector = towards(
+            cos(direction),
+            -sin(direction)
+        )
 
-        fun of(magnitude: Double, direction: Double): Vector =
-            towards(
-                magnitude * cos(direction),
-                magnitude * -sin(direction)
-            )
+        fun of(magnitude: Double, direction: Double): Vector = towards(
+            magnitude * cos(direction),
+            magnitude * -sin(direction)
+        )
 
         fun Graphics.vector(from: Point, vector: Vector) {
             val to = from + vector
@@ -90,7 +97,7 @@ sealed interface Vector {
         val Graphics.TransformationMatrix.shear: Vector
             get() = towards(scaleX, scaleY)
 
-        fun angle(x: Double, y: Double): Double =
+        private fun angle(x: Double, y: Double): Double =
             -kotlin.math.atan2(y, x)
     }
 
@@ -127,9 +134,19 @@ sealed interface Vector {
             y += other.y
         }
 
+        operator fun minusAssign(other: Vector) {
+            x -= other.x
+            y -= other.y
+        }
+
         operator fun timesAssign(factor: Double) {
             x *= factor
             y *= factor
+        }
+
+        operator fun divAssign(factor: Double) {
+            x /= factor
+            y /= factor
         }
 
         fun setToZero() {
