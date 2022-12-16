@@ -8,7 +8,7 @@ import ir.smmh.mage.core.Utils.fullCircle
 
 open class PolygonDemo(platform: Platform) : BasicApp(platform) {
     init {
-        addSetup {
+        initially {
             regularStar(100.0, 50.0, 5).also {
                 add(it)
                 addTemporal {

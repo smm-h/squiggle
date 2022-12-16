@@ -12,7 +12,7 @@ import ir.smmh.mage.core.Point.Companion.line
  */
 class BasicDemo(platform: Platform) : BasicApp(platform) {
     init {
-        addSetup {
+        initially {
             val corners = size.getCorners()
             addVisual { g: Graphics ->
                 g.color = Color.Named.Blue

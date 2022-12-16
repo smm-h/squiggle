@@ -23,7 +23,7 @@ open class BasicApp(platform: Platform) : App(platform) {
     private val debugTemporalGroup = Temporal.Group.List<Temporal>()
     private val debugVisualGroup = Visual.Group.List<Visual>()
 
-    private val setups: MutableList<() -> Unit> = ArrayList()
+    private val initializations: MutableList<() -> Unit> = ArrayList()
 
     fun add(it: Any) {
         var added = false
@@ -47,21 +47,24 @@ open class BasicApp(platform: Platform) : App(platform) {
         }
     }
 
-    fun addSetup(lambda: () -> Unit) {
-        setups.add(lambda)
+    fun initially(it: () -> Unit) {
+        initializations.add(it)
     }
 
-    fun addTemporal(lambda: () -> Unit) {
-        mainTemporalGroup.add(Temporal.Lambda(lambda))
-    }
+    fun addTemporal(lambda: () -> Unit) =
+        addTemporal(Temporal.Lambda(lambda))
 
-    fun addVisual(lambda: (Graphics) -> Unit) {
-        mainVisualGroup.add(Visual.Lambda(lambda))
-    }
+    fun addVisual(lambda: (Graphics) -> Unit) =
+        addVisual(Visual.Lambda(lambda))
 
-    fun addFinalizable(lambda: Finalizable) {
-        finally(lambda)
-    }
+    fun addTemporal(it: Temporal) =
+        mainTemporalGroup.add(it)
+
+    fun addVisual(it: Visual) =
+        mainVisualGroup.add(it)
+
+    fun finally(it: () -> Unit) =
+        finally(Finalizable(it))
 
     var debugMode = false
         set(value) {
@@ -119,7 +122,7 @@ open class BasicApp(platform: Platform) : App(platform) {
 
         debugMode = false
 
-        setups.forEach { it.invoke() }
+        initializations.forEach { it.invoke() }
     }
 
     // val makePath: Graphics.Path.() -> Unit

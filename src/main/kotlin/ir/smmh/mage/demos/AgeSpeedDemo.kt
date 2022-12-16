@@ -18,7 +18,7 @@ class AgeSpeedDemo(platform: Platform) : BasicApp(platform) {
     private val ballBlurColor = ballColor.alphaVariant(16)
 
     init {
-        addSetup {
+        initially {
             backColor = Color.Named.Black
             val balls = Temporal.AndVisual.Group.List<Ball>()
             repeat(30) {

@@ -6,7 +6,7 @@ import kotlin.math.round
 
 class PacmanGame(platform: Platform, private val seed: String = defaultSeed) : BasicApp(platform) {
     init {
-        addSetup {
+        initially {
             val world: World = World.fromText(seed)
             val padding = size.width * 0.05
             world.offset.x = padding
