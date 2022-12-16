@@ -6,5 +6,5 @@ import kotlin.random.Random
 
 fun main() {
     val dice = p(1) { 6 } + p(1) { 5 } + p(3) { Random.nextInt(4) + 1 }
-    println(dice.bag(1000).reportShares())
+    println(dice.bagUniform(1000).reportShares())
 }
