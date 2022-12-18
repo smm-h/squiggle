@@ -1,13 +1,12 @@
 package ir.smmh.math.numbers
 
-import ir.smmh.math.symbolic.TeXable
 import ir.smmh.util.MathUtil
 
 class Rational private constructor(
     val numerator: Double,
     val denominator: Double,
     val precise: Boolean,
-) : TeXable {
+) {
 
     init {
         require(denominator != 0.0) { "denominator cannot be zero" }
@@ -15,10 +14,6 @@ class Rational private constructor(
 
     override fun toString() =
         if (precise) "${numerator.toInt()}${if (denominator == 1.0) "" else "/${denominator.toInt()}"}"
-        else approximate().toString()
-
-    override val tex: String =
-        if (precise) "{${numerator.toInt()}}${if (denominator == 1.0) "" else "\\over{${denominator.toInt()}}"}"
         else approximate().toString()
 
     fun approximate(): Double = numerator.toDouble() / denominator

@@ -1,10 +1,9 @@
 package ir.smmh.math.numbers
 
 import ir.smmh.mage.core.Utils.sqr
-import ir.smmh.math.symbolic.TeXable
 import kotlin.math.sqrt
 
-class Complex(val r: Double, val i: Double) : TeXable {
+class Complex(val r: Double, val i: Double) {
     constructor(value: Int) : this(value.toDouble())
     constructor(value: Double) : this(value, 0.0)
     constructor(real: Int, imaginary: Int) : this(real.toDouble(), imaginary.toDouble())
@@ -59,7 +58,6 @@ class Complex(val r: Double, val i: Double) : TeXable {
     )
 
     override fun toString() = "$r+$i·i"
-    override val tex: String by lazy { "$r + $i \\cdot i" }
 
     fun power(p: Int): Complex {
         var x = ONE
