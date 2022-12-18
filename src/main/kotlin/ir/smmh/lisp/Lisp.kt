@@ -245,7 +245,9 @@ class Lisp(customize: Customization.() -> Unit) : Language.Construction<Runnable
 
         @JvmStatic
         fun main(args: Array<String>) {
-            Lisp.defaultFlavor.code(File("res/lisp-test")).beConstructedInto<Runnable>().run()
+            Lisp.defaultFlavor.apply {
+                this[code(File("res/lisp-test"))]!!.run()
+            }
         }
     }
 }

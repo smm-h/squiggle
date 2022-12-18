@@ -13,7 +13,7 @@ class Sexp(val opener: String, val closer: String, tokenizer: String, filter: (T
 
     override val parsed = Code.Aspect<Token.Structure>("root")
     override fun parse(string: String): Token.Structure =
-        code(string).run { beProcessed(); this[parsed] }
+        code(string).run { process(this); this[parsed] }
 
     override fun represent(it: Token.Structure): String = when (it) {
         is Token.Structure.Leaf -> it.token.data

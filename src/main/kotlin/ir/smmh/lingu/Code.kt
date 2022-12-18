@@ -48,26 +48,6 @@ class Code private constructor(
             }
         }
 
-    val canBeProcessed: Boolean get() = language is Language.Processable
-    fun beProcessed() {
-        val it = language
-        if (it is Language.Processable) it.process(this)
-    }
-
-    val canBeConstructedInto: Boolean get() = language is Language.Construction<*>
-    fun <T> beConstructedInto(): T {
-        val construct = language as Language.Construction<*>
-        @Suppress("UNCHECKED_CAST")
-        return construct[this] as T
-    }
-
-    val canBeDeserialized: Boolean get() = language is Language.Serialization
-    fun beDeserialized(): Any? {
-        val it = language
-        if (it is Language.Serialization) it.deserialize(this)
-        return getNullable(Language.Serialization.Deserialization)
-    }
-
     private val aspects: MutableMap<Aspect<*>, Any> = HashMap()
 
     fun interface Process : (Code) -> Unit {
