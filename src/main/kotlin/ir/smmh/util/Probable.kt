@@ -2,35 +2,55 @@ package ir.smmh.util
 
 import kotlin.random.Random
 
-class Probable<T> : () -> T {
+class Probable<T> : () -> T, Iterable<Pair<Double, () -> T>> {
 
-    private val list: MutableList<Pair<Double, () -> T>> = ArrayList()
+    private val pairs: MutableSet<Pair<Double, () -> T>> = HashSet()
     private var total = 0.0
+
+    override fun iterator(): Iterator<Pair<Double, () -> T>> =
+        pairs.iterator()
 
     override fun invoke(): T = map(Random.nextFloat())
 
-    fun map(gray: Float): T {
-        var x = gray * total
-        for ((p, f) in list) {
+    fun map(value: Float): T {
+        var x = value * total
+        for ((p, f) in pairs) {
             x -= p
-            if (x <= 0) return f()
+            if (x < 0) return f()
         }
-        return list.last().second()
+        throw IllegalArgumentException("value must be in range [0, 1)")
     }
 
-    fun add(that: Probable<T>) = apply {
+    fun addAll(that: Probable<T>) {
         total += that.total
-        list.addAll(that.list)
+        pairs.addAll(that.pairs)
     }
 
-    fun add(probability: Double, function: () -> T) = apply {
+    fun add(probability: Double, function: () -> T): Pair<Double, () -> T> {
         total += probability
-        list.add(probability to function)
+        val pair = probability to function
+        pairs.add(pair)
+        return pair
     }
 
-    fun add(probability: Int, function: () -> T) = add(probability.toDouble(), function)
+    fun add(probability: Int, function: () -> T) =
+        add(probability.toDouble(), function)
 
-    fun bagRandom(n: Int) = Bag<T>().also { bag -> repeat(n) { bag.add(this()) } }
+    operator fun contains(it: Pair<Double, () -> T>) =
+        it in pairs
 
-    fun bagUniform(n: Int) = Bag<T>().also { bag -> for (i in 0 until n) bag.add(map(i.toFloat() / n)) }
+    fun remove(pair: Pair<Double, () -> T>) {
+        if (pair in this) if (pairs.remove(pair)) total -= pair.first
+    }
+
+    fun clear() {
+        total = 0.0
+        pairs.clear()
+    }
+
+    fun bagRandom(n: Int) =
+        Bag<T>().also { bag -> repeat(n) { bag.add(this()) } }
+
+    fun bagUniform(n: Int) =
+        Bag<T>().also { bag -> for (i in 0 until n) bag.add(map(i.toFloat() / n)) }
 }
