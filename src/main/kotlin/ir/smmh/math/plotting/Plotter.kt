@@ -4,6 +4,40 @@ import ir.smmh.mage.core.*
 
 class Plotter(platform: Platform) : BasicApp(platform) {
 
+    var defaultColor: Color.Packed = Color.Named.Black
+    var defaultPrecision: Int = 1
+
+    inner class Plot(
+        override var visible: Boolean = true,
+        //val domain: Domain,
+        var color: Color.Packed = Color.Named.Black,
+        var precision: Int = 1,
+        val function: (Double) -> Double,
+    ) : Visual {
+        override fun draw(g: Graphics) {
+            g.color = color
+            drawIterable((0..size.width.toInt()) step precision, function, g)
+        }
+    }
+
+    private fun drawIterable(
+        iterable: Iterable<Int>,
+        function: (Double) -> Double,
+        graphics: Graphics,
+    ) {
+        var x1 = 0.0
+        var y1 = pixelYOf(function(realXOf(x1)))
+        var x2: Double
+        var y2: Double
+        for (x in iterable) {
+            x2 = x1
+            y2 = y1
+            x1 = x.toDouble()
+            y1 = pixelYOf(function(realXOf(x1)))
+            graphics.line(x1, y1, x2, y2)
+        }
+    }
+
     fun pixelCoordinatesOf(real: Point): Point = Point.of(pixelXOf(real.x), pixelYOf(real.y))
     fun realCoordinatesOf(pixel: Point): Point = Point.of(realXOf(pixel.x), realYOf(pixel.y))
 
@@ -12,60 +46,6 @@ class Plotter(platform: Platform) : BasicApp(platform) {
 
     fun realXOf(pixelX: Double): Double = +(pixelX - o.x) / u.x
     fun realYOf(pixelY: Double): Double = -(pixelY - o.y) / u.y
-
-    fun Graphics.plot(precision: Int = 1, function: (Double) -> Double) {
-        var x1 = 0.0
-        var y1 = pixelYOf(function(realXOf(x1)))
-        var x2: Double
-        var y2: Double
-        for (x in (0..size.width.toInt()) step precision) {
-            x2 = x1
-            y2 = y1
-            x1 = x.toDouble()
-            y1 = pixelYOf(function(realXOf(x1)))
-            line(x1, y1, x2, y2)
-        }
-    }
-
-    var defaultColor: Color.Packed = Color.Named.Black
-    var defaultPrecision: Int = 1
-
-    fun addPlot(
-        color: Color.Packed = defaultColor,
-        precision: Int = defaultPrecision,
-        function: (Double) -> Double
-    ) = addVisual { g ->
-        g.color = color
-        g.plot(precision, function)
-    }
-
-    /**
-     * The highest ratio of the screen length to be filled with axes, on each dimension
-     */
-    var axisThreshold = 0.075
-
-    /**
-     * From 0-100; the maximum level of transparency on the [axisColorRange]
-     */
-    var axisMaxTranparency = 10 // 60 for dark mode
-
-    /**
-     * A [Color.Ranges100.TransparentGray] whose values are used to color the axes
-     */
-    var axisColorRange = Color.Ranges100.TransparentGray
-
-    private fun axisTransparency(x: Double): Int =
-        ((axisThreshold - x.coerceIn(0.0, axisThreshold)) / axisThreshold * axisMaxTranparency).toInt()
-
-    fun Graphics.axisX(x: Double) {
-        val pixelX = pixelXOf(x)
-        line(pixelX, 0.0, pixelX, size.height)
-    }
-
-    fun Graphics.axisY(y: Double) {
-        val pixelY = pixelYOf(y)
-        line(0.0, pixelY, size.width, pixelY)
-    }
 
     /**
      * The center of the screen
@@ -118,8 +98,36 @@ class Plotter(platform: Platform) : BasicApp(platform) {
 
     private var pressedAt: Point? = null
 
+    /**
+     * The highest ratio of the screen length to be filled with axes, on each dimension
+     */
+    var axisThreshold = 0.075
+
+    /**
+     * From 0-100; the maximum level of transparency on the [axisColorRange]
+     */
+    var axisMaxTranparency = 10 // 60 for dark mode
+
+    /**
+     * A [Color.Ranges100.TransparentGray] whose values are used to color the axes
+     */
+    var axisColorRange = Color.Ranges100.TransparentGray
+
+    private fun axisTransparency(x: Double): Int =
+        ((axisThreshold - x.coerceIn(0.0, axisThreshold)) / axisThreshold * axisMaxTranparency).toInt()
+
+    fun Graphics.axisX(x: Double) {
+        val pixelX = pixelXOf(x)
+        line(pixelX, 0.0, pixelX, size.height)
+    }
+
+    fun Graphics.axisY(y: Double) {
+        val pixelY = pixelYOf(y)
+        line(0.0, pixelY, size.width, pixelY)
+    }
+
     init {
-        addSetup {
+        initially {
 
             // back color
             backColor = Color.Named.White
