@@ -1,8 +1,14 @@
 package ir.smmh.math.settheory
 
+import ir.smmh.math.symbolic.Expression
+
 interface Set {
 
-    operator fun contains(it: Any): Boolean
+    class SetOperationException(val expression: Expression) : Exception("set operation undefined")
+
+    fun containsGeneric(it: Any): Boolean
+
+    operator fun contains(it: Any): Boolean = containsGeneric(it)
 
     // TODO val powerSet: Specific<Set>
 
@@ -10,7 +16,7 @@ interface Set {
 
         fun containsSpecific(it: T): Boolean
 
-        override fun contains(it: Any): Boolean =
+        override fun containsGeneric(it: Any): Boolean =
             try {
                 @Suppress("UNCHECKED_CAST")
                 containsSpecific(it as T)
@@ -26,9 +32,13 @@ interface Set {
 
         interface Finite<T : Any> : Specific<T>, Set.Finite.NonEmpty {
 
+            fun singletonNullable(): T?
+            fun singleton(): T = singletonNullable() ?: throw Exception("set is not a singleton")
+
             override val over: Iterable<T>
 
-            class Singleton<T : Any>(val value: T) : Finite<T> {
+            class Singleton<T : Any>(val value: T) : AbstractSet(), Finite<T> {
+                override fun singletonNullable(): T = value
                 override val cardinality: Int get() = 1
                 override val choose: () -> T = { value }
                 override fun containsSpecific(it: T): Boolean = it == value
@@ -38,25 +48,29 @@ interface Set {
             class Universal<T : Any>(
                 override val over: List<T>,
                 override val choose: () -> T,
-            ) : Finite<T> {
+            ) : AbstractSet(), Finite<T> {
+                override fun singletonNullable(): T? = null
                 override val cardinality: Int = over.size
                 override fun containsSpecific(it: T): Boolean = true
             }
         }
 
-        interface CountablyInfinite<T : Any> : Specific<T>, Set.CountablyInfinite {
-            class Universal<T : Any>(
-                override val choose: () -> T,
-            ) : CountablyInfinite<T> {
-                override fun containsSpecific(it: T): Boolean = true
-            }
-        }
+        sealed interface Infinite<T : Any> : Specific<T>, Set.Infinite {
 
-        interface Uncountable<T : Any> : Specific<T>, Set.Uncountable {
-            class Universal<T : Any>(
-                override val choose: () -> T,
-            ) : Uncountable<T> {
-                override fun containsSpecific(it: T): Boolean = true
+            interface Countable<T : Any> : Specific<T>, Set.Infinite.Countable {
+                class Universal<T : Any>(
+                    override val choose: () -> T,
+                ) : Countable<T> {
+                    override fun containsSpecific(it: T): Boolean = true
+                }
+            }
+
+            interface Uncountable<T : Any> : Specific<T>, Set.Infinite.Uncountable {
+                class Universal<T : Any>(
+                    override val choose: () -> T,
+                ) : Uncountable<T> {
+                    override fun containsSpecific(it: T): Boolean = true
+                }
             }
         }
 
@@ -82,15 +96,15 @@ interface Set {
         }
     }
 
-    object Universal : CountablyInfinite {
-        override val cardinality = CardinalNumber.AbsoluteInfinite
+    object Universal : Infinite.Uncountable {
+        override val cardinality = CardinalNumber.absoluteInfinite
         override val choose = { Unit }
-        override fun contains(it: Any) = it != Universal
+        override fun containsGeneric(it: Any) = it != Universal
     }
 
     object Empty : Finite {
         override val cardinality: Int = 0
-        override fun contains(it: Any): Boolean = false
+        override fun containsGeneric(it: Any): Boolean = false
         // override val powerSet: Specific<Set> = Specific.Finite.Singleton(this)
     }
 
@@ -111,20 +125,28 @@ interface Set {
         interface NonEmpty : Finite, Set.NonEmpty {
             val over: Iterable<Any>
 
-            class Singleton(val value: Any) : NonEmpty {
+            class Singleton(val value: Any) : AbstractSet(), NonEmpty {
                 override val cardinality: Int get() = 1
                 override val choose: () -> Any = { value }
-                override fun contains(it: Any): Boolean = it == value
+                override fun containsGeneric(it: Any): Boolean = it == value
                 override val over: Iterable<Any> by lazy { listOf(value) }
             }
         }
     }
 
-    interface CountablyInfinite : NonEmpty {
-        val cardinality: CardinalNumber get() = CardinalNumber.AlephNought
+    sealed interface Infinite {
+
+        interface Countable : NonEmpty {
+            val cardinality: CardinalNumber get() = CardinalNumber.alephNought
+        }
+
+        interface Uncountable : NonEmpty {
+            val cardinality: CardinalNumber get() = CardinalNumber.cardinalityOfTheContinuum
+        }
     }
 
-    interface Uncountable : NonEmpty {
-        val cardinality: CardinalNumber get() = CardinalNumber.CardinalityOfTheContinuum
+    companion object {
+        fun <T : Any> of(vararg elements: T) =
+            StoredSet<T>(elements.asList())
     }
 }
