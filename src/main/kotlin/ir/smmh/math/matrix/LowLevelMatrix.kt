@@ -67,7 +67,7 @@ sealed class LowLevelMatrix<T : Any> : AbstractMatrix.Mutable<T>() {
         override val columns: kotlin.Int,
         valueFunction: Matrix.ValueFunction.Independent<kotlin.Double>?,
     ) : LowLevelMatrix<kotlin.Double>() {
-        override val structure = Structures.RealDPField
+        override val structure = Structures.FloatingPoint64Field
         override fun createSameStructure(rows: kotlin.Int, columns: kotlin.Int): Matrix.Mutable<kotlin.Double> =
             Double(columns, rows, null)
 
@@ -96,7 +96,7 @@ sealed class LowLevelMatrix<T : Any> : AbstractMatrix.Mutable<T>() {
         override val columns: kotlin.Int,
         valueFunction: Matrix.ValueFunction.Independent<kotlin.Float>?,
     ) : LowLevelMatrix<kotlin.Float>() {
-        override val structure = Structures.RealFPField
+        override val structure = Structures.FloatingPoint32Field
         override fun createSameStructure(rows: kotlin.Int, columns: kotlin.Int): Matrix.Mutable<kotlin.Float> =
             Float(columns, rows, null)
 

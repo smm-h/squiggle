@@ -23,7 +23,7 @@ import ir.smmh.math.settheory.UniversalNumberSets
 object Structures {
     // a field is INVERTIBLE and COMMUTATIVE, but a ring is not
     val Integer32Ring = ring<Int>(
-        UniversalNumberSets.IntIntegers,
+        UniversalNumberSets.Integers32,
         Int::plus,
         Int::unaryMinus,
         0,
@@ -33,8 +33,9 @@ object Structures {
         Int::minus,
         Int::div,
     )
+
     val Integer64Ring = ring<Long>(
-        UniversalNumberSets.LongIntegers,
+        UniversalNumberSets.Integers64,
         Long::plus,
         Long::unaryMinus,
         0L,
@@ -44,19 +45,9 @@ object Structures {
         Long::minus,
         Long::div,
     )
-    val RealDPField = field<Double>(
-        UniversalNumberSets.DoubleRealNumbers,
-        Double::plus,
-        Double::unaryMinus,
-        0.0,
-        Double::times,
-        { a -> if (a == 0.0) null else 1.0 / a },
-        1.0,
-        Double::minus,
-        Double::div,
-    )
-    val RealFPField = field<Float>(
-        UniversalNumberSets.FloatRealNumbers,
+
+    val FloatingPoint32Field = field<Float>(
+        UniversalNumberSets.FloatingPointNumbers32,
         Float::plus,
         Float::unaryMinus,
         0.0F,
@@ -66,6 +57,19 @@ object Structures {
         Float::minus,
         Float::div,
     )
+
+    val FloatingPoint64Field = field<Double>(
+        UniversalNumberSets.FloatingPointNumbers64,
+        Double::plus,
+        Double::unaryMinus,
+        0.0,
+        Double::times,
+        { a -> if (a == 0.0) null else 1.0 / a },
+        1.0,
+        Double::minus,
+        Double::div,
+    )
+
     val RationalField = field<Rational>(
         UniversalNumberSets.RationalNumbers,
         Rational::add,
@@ -77,6 +81,7 @@ object Structures {
         Rational::subtract,
         Rational::divide,
     )
+
     val ComplexField = field<Complex>(
         UniversalNumberSets.ComplexNumbers,
         Complex::add,
@@ -88,6 +93,7 @@ object Structures {
         Complex::subtract,
         Complex::divide,
     )
+
     val BooleanRing = RingLike<Boolean>(
         UniversalNumberSets.Booleans,
         GroupLike(

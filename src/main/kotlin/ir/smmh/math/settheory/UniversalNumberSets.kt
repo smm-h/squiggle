@@ -11,16 +11,16 @@ object UniversalNumberSets {
 
     val Booleans =
         Set.Specific.Finite.Universal<Boolean>(listOf(false, true), Random::nextBoolean)
-    val IntIntegers =
+    val Integers32 =
         Set.Specific.Infinite.Countable.Universal<Int>(::randomInt)
-    val LongIntegers =
+    val Integers64 =
         Set.Specific.Infinite.Countable.Universal<Long> { Random.nextLong(1000L) - 500L }
+    val FloatingPointNumbers32 =
+        Set.Specific.Infinite.Uncountable.Universal<Float> { Random.nextFloat() * 1000F - 500F }
+    val FloatingPointNumbers64 =
+        Set.Specific.Infinite.Uncountable.Universal<Double>(::randomDouble)
     val RationalNumbers =
         Set.Specific.Infinite.Countable.Universal<Rational> { Rational.of(randomInt(), randomInt()) }
-    val DoubleRealNumbers =
-        Set.Specific.Infinite.Uncountable.Universal<Double>(::randomDouble)
-    val FloatRealNumbers =
-        Set.Specific.Infinite.Uncountable.Universal<Float> { Random.nextFloat() * 1000F - 500F }
     val ComplexNumbers =
         Set.Specific.Infinite.Uncountable.Universal<Complex> { Complex(randomDouble(), randomDouble()) }
 }

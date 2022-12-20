@@ -7,7 +7,7 @@ import kotlin.test.assertEquals
 class MatrixTest {
 
     val i = Structures.Integer32Ring
-    val r = Structures.RealFPField
+    val r = Structures.FloatingPoint32Field
 
     val i2r: (Matrix<Int>) -> Matrix<Float> = { it.convert(r) { it.toFloat() } }
     val r2i: (Matrix<Float>) -> Matrix<Int> = { it.convert(i) { it.toInt() } }
