@@ -1,9 +1,5 @@
 package ir.smmh.markup
 
-fun Boolean.toOnOff(): String = if (this) "on" else "off"
-
-fun Boolean.toYesNo(): String = if (this) "yes" else "no"
-
 operator fun Int.times(string: String) = string.repeat(this)
 
 enum class TextDirection { LTR, RTL, CENTERED }
