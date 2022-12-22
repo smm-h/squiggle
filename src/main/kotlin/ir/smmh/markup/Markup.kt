@@ -45,6 +45,9 @@ object Markup {
         fun strike(fragment: Fragment): Fragment =
             Fragment.Affected(fragment, Fragment.Effect.STRIKETHROUGH)
 
+        fun tex(fragment: Fragment): Fragment =
+            Fragment.Affected(fragment, Fragment.Effect.TEX)
+
         fun code(codeString: String): Fragment =
             Fragment.InlineCode(codeString)
 
@@ -62,6 +65,9 @@ object Markup {
 
         fun strike(text: String) =
             strike(atom(text))
+
+        fun tex(text: String) =
+            tex(atom(text))
 
         fun link(text: String, url: String, bookmark: String = "") =
             link(atom(text), url, bookmark)
