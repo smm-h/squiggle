@@ -106,7 +106,7 @@ object Markup {
         fun toCode(markupLanguage: Language.Markup) =
             markupLanguage.code(this)
 
-        fun generate(markupLanguage: Language.Markup, metadata: String? = null) =
+        fun generate(markupLanguage: Language.Markup, metadata: String?) =
             markupLanguage.compile(this, metadata)
     }
 
