@@ -55,12 +55,7 @@ object CalculatorSpeller {
             SpellingWay.IF_NO_SPACES_AND_UPPERCASE -> text.uppercase().replace(" ", "")
             SpellingWay.AS_IS -> text
         }.reversed()
-        return StringBuilder(s.length).run {
-            s.forEach {
-                append(map[it])
-            }
-            toString()
-        }
+        return StringBuilder(s.length).apply { s.forEach { append(map[it]) } }.toString()
     }
 }
 
