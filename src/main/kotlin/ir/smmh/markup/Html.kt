@@ -14,6 +14,20 @@ object Html : Language.HasFileExt.Impl("html"), Language.Markup {
 
     val mathJax = "<script async src=\"https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js\"></script>\n"
 
+    val katex = """
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css"
+        integrity="sha384-vKruj+a13U8yHIkAyGgK1J3ArTLzrFGBbBc0tDp4ad/EyewESeXE/Iv67Aj8gKZ0"
+        crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.js"
+        integrity="sha384-PwRUT/YqbnEjkZO0zZxNqcxACrXe+j766U2amXcgMg5457rve2Y7I6ZJSm2A0mS4"
+        crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/contrib/auto-render.min.js"
+        integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+        crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+    
+    """.trimIndent()
+
     val syntaxHighlighting = Code.Aspect<SyntaxHighlighting>("syntax-highlighting")
 
     interface SyntaxHighlighting {
@@ -208,19 +222,17 @@ object Html : Language.HasFileExt.Impl("html"), Language.Markup {
     }.toString()
 
     override fun compile(document: Markup.Document, metadata: String?): String = StringBuilder().apply {
+        append("<!DOCTYPE html>")
         append("<html>\n")
-
         if (metadata != null) {
             append("<head>\n")
             append(metadata)
             append("</head>\n")
         }
-
         append("<body>\n")
         for (topHeading in document)
             append(heading(topHeading, 1))
         append("</body>\n")
-
         append("</html>\n")
     }.toString()
 
