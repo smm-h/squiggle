@@ -1,13 +1,14 @@
 package ir.smmh.markup
 
 import ir.smmh.lingu.Language
+import ir.smmh.markup.Markup.Fragment.Effect.*
 import ir.smmh.nile.or.Or
 import kotlin.math.abs
 import kotlin.math.max
 
 object Markdown : Language.HasFileExt.Impl("md"), Language.Markup {
 
-    override fun compile(document: Markup.Document, metadata: String?): String = StringBuilder().run {
+    override fun compile(document: Markup.Document, metadata: String?): String = StringBuilder().apply {
 //        if (metadata != null) {
 //            append("<head>")
 //            append(metadata)
@@ -18,17 +19,20 @@ object Markdown : Language.HasFileExt.Impl("md"), Language.Markup {
 
         deleteCharAt(length - 1)
 
-        toString()
-    }
+    }.toString()
 
     override fun compile(it: Markup.Text): String = when (it) {
         is Markup.Fragment.Atom -> it.data
         is Markup.Fragment.Unescaped -> it.data
-        is Markup.Fragment.Affected -> when (it.effect) {
-            Markup.Fragment.Effect.BOLD -> "**${compile(it.core)}**"
-            Markup.Fragment.Effect.ITALIC -> "_${compile(it.core)}_"
-            Markup.Fragment.Effect.UNDERLINE -> Html.tag("u", compile(it.core))
-            Markup.Fragment.Effect.STRIKETHROUGH -> "~~${compile(it.core)}~~"
+        is Markup.Fragment.Affected -> {
+            val core = compile(it.core)
+            when (it.effect) {
+                BOLD -> "**$core**"
+                ITALIC -> "_${core}_"
+                UNDERLINE -> Html.tag("u", core)
+                STRIKETHROUGH -> "~~$core~~"
+                TEX -> "$$core$"
+            }
         }
         is Markup.Fragment.InlineCode -> "`${it.codeString}`"
         is Markup.Fragment.Link -> {
@@ -51,7 +55,7 @@ object Markdown : Language.HasFileExt.Impl("md"), Language.Markup {
             val l = it.code.language
             "```${if (l is Language.HasFileExt) l.fileExt else ""}\n${it.code.string}\n```\n\n"
         }
-        is Markup.Section.List -> StringBuilder().run {
+        is Markup.Section.List -> StringBuilder().apply {
             val b = if (it.numbered) "1. " else "- "
             for (item in it) {
                 append(b)
@@ -59,8 +63,7 @@ object Markdown : Language.HasFileExt.Impl("md"), Language.Markup {
                 append('\n')
             }
             append('\n')
-            toString()
-        }
+        }.toString()
         Markup.Section.HorizontalRule -> "***\n\n"
         is Markup.Section.Heading -> heading(it, 1)
         is Markup.Document -> compile(it, "")
@@ -92,6 +95,7 @@ object Markdown : Language.HasFileExt.Impl("md"), Language.Markup {
             }
             t
         }
+        is Markup.Section.TeX -> "$$\n${it.tex}\n$$\n\n"
     }
 
     private fun getColumnWidths(it: Markup.Table): MutableMap<Markup.Table.Column, Int> {
@@ -107,15 +111,14 @@ object Markdown : Language.HasFileExt.Impl("md"), Language.Markup {
         return columnWidths
     }
 
-    private fun heading(heading: Markup.Section.Heading, depth: Int): String = StringBuilder().run {
+    private fun heading(heading: Markup.Section.Heading, depth: Int): String = StringBuilder().apply {
         append("#".repeat(depth))
         append(' ')
         append(compile(heading.heading))
         append("\n\n")
         for (section in heading)
             append(if (section is Markup.Section.Heading) heading(section, depth + 1) else compile(section))
-        toString()
-    }
+    }.toString()
 
     // TODO escaping
 //    val escape = StringReplacer(

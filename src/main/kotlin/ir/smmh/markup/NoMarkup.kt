@@ -15,39 +15,37 @@ object NoMarkup : Language.Markup {
     override fun compile(it: Markup.Text): String = when (it) {
         is Markup.Fragment.Atom -> it.data
         is Markup.Fragment.Unescaped -> it.data
-        is Markup.Fragment.Affected -> this compile it.core
+        is Markup.Fragment.Affected -> compile(it.core)
         is Markup.Fragment.InlineCode -> it.codeString
-        is Markup.Fragment.Link -> this compile it.core
-        is Markup.Fragment.Span -> this compile it.core
-        is Markup.Fragment.Multitude -> it.joinToString("") { this compile it }
-        is Markup.Section.Paragraph -> (this compile it.contents) + "\n\n"
+        is Markup.Fragment.Link -> compile(it.core)
+        is Markup.Fragment.Span -> compile(it.core)
+        is Markup.Fragment.Multitude -> it.joinToString("", transform = ::compile)
+        is Markup.Section.Paragraph -> (compile(it.contents)) + "\n\n"
         is Markup.Section.Comment -> ""
-        is Markup.Section.Quotation -> (this compile it.contents) + if (it.by == null) "" else ("\n\t- " + compile(it.by)) + "\n\n"
+        is Markup.Section.Quotation -> (compile(it.contents)) + if (it.by == null) "" else ("\n\t- " + compile(it.by)) + "\n\n"
         is Markup.Section.CodeBlock -> indent(it.code.string) + "\n\n"
-        is Markup.Section.List -> StringBuilder().run {
+        is Markup.Section.List -> StringBuilder().apply {
             for (item in it) {
                 append(" * ")
-                append(this@NoMarkup compile Or.generalize(item))
+                append(compile(Or.generalize(item)))
                 append('\n')
             }
             append('\n')
-            toString()
             // TODO test nested lists
-        }
+        }.toString()
         Markup.Section.HorizontalRule -> "\n\n***\n\n"
-        is Markup.Section.Heading -> StringBuilder().run {
-            val title = this@NoMarkup compile it.heading
+        is Markup.Section.Heading -> StringBuilder().apply {
+            val title = compile(it.heading)
             append(title)
             append('\n')
             append("-".repeat(title.length))
             append('\n')
             for (section in it) {
                 append('\n')
-                append(this@NoMarkup compile section)
+                append(compile(section))
             }
-            toString()
-        }
-        is Markup.Document -> StringBuilder().run {
+        }.toString()
+        is Markup.Document -> StringBuilder().apply {
             val title = it.name ?: "Untitled"
             append(title)
             append('\n')
@@ -55,10 +53,9 @@ object NoMarkup : Language.Markup {
             append('\n')
             for (topHeading in it) {
                 append('\n')
-                append(this@NoMarkup compile topHeading)
+                append(compile(topHeading))
             }
-            toString()
-        }
+        }.toString()
         is Markup.Table -> {
             val columnWidths: MutableMap<Markup.Table.Column, Int> = getColumnWidths(it)
             var t = it.overColumns().joinToString("┬", "┌", "┐") { (columnWidths[it]!! + 2) * "─" } + "\n│"
@@ -80,6 +77,7 @@ object NoMarkup : Language.Markup {
             t += it.overColumns().joinToString("┴", "└", "┘") { (columnWidths[it]!! + 2) * "─" }
             t
         }
+        is Markup.Section.TeX -> indent(it.tex) + "\n\n"
     }
 
     private fun getColumnWidths(it: Markup.Table): MutableMap<Markup.Table.Column, Int> {

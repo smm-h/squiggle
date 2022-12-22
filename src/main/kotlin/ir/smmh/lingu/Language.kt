@@ -103,7 +103,7 @@ interface Language {
 
     interface Markup : Language {
         abstract fun compile(document: ir.smmh.markup.Markup.Document, metadata: String?): String
-        abstract infix fun compile(it: ir.smmh.markup.Markup.Text): String
+        abstract fun compile(it: ir.smmh.markup.Markup.Text): String
         fun code(document: ir.smmh.markup.Markup.Document): Code = Code(compile(document), this)
     }
 }

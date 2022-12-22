@@ -64,7 +64,7 @@ object Html : Language.HasFileExt.Impl("html"), Language.Markup {
 
             override fun compile() = compile(true, 120)
 
-            fun compile(lineNumbers: Boolean = false, maxLineLength: Int = -1): String = StringBuilder().run {
+            fun compile(lineNumbers: Boolean = false, maxLineLength: Int = -1): String = StringBuilder().apply {
                 val lineNumberMaxDigitCount = if (lineNumbers) lineCount.toString().length else 0
                 val gutterLength = if (lineNumbers) lineNumberMaxDigitCount + 5 else 0
                 append("\n<pre>\n")
@@ -119,8 +119,7 @@ object Html : Language.HasFileExt.Impl("html"), Language.Markup {
                     }
                 }
                 append("</pre>\n")
-                toString()
-            }
+            }.toString()
 
             fun removeLast() {
                 if (sealed) throw Language.Exception("trying to remove from sealed SyntaxHighlighting")
@@ -132,14 +131,16 @@ object Html : Language.HasFileExt.Impl("html"), Language.Markup {
     override fun compile(it: Markup.Text): String = when (it) {
         is Markup.Fragment.Atom -> escape(it.data)
         is Markup.Fragment.Unescaped -> it.data
-        is Markup.Fragment.Affected -> tag(
+        is Markup.Fragment.Affected -> {
+            val core = compile(it.core)
             when (it.effect) {
-                BOLD -> "b"
-                ITALIC -> "i"
-                UNDERLINE -> "u"
-                STRIKETHROUGH -> "s"
-            }, compile(it.core)
-        )
+                BOLD -> tag("b", core)
+                ITALIC -> tag("i", core)
+                UNDERLINE -> tag("u", core)
+                STRIKETHROUGH -> tag("s", core)
+                TEX -> "\\($core\\)"
+            }
+        }
         is Markup.Fragment.InlineCode -> tag("code", it.codeString)
         is Markup.Fragment.Link -> {
             val url = bindFileExt(it.url)
@@ -148,18 +149,18 @@ object Html : Language.HasFileExt.Impl("html"), Language.Markup {
         }
         is Markup.Fragment.Span -> tag("span", compile(it.core), it.attributes)
         is Markup.Fragment.Multitude -> it.joinToString("") { compile(it) }
-        is Markup.Section.Paragraph -> tagLn("p", compile(it.contents))
+        is Markup.Section.Paragraph -> tagln("p", compile(it.contents))
         is Markup.Section.Comment -> "<!-- ${compile(it.contents)} --> \n"
         is Markup.Section.Quotation -> {
             val by = if (it.by == null) "" else "\n\n— " + compile(it.by)
-            tagLn("blockquote", compile(it.contents) + by)
+            tagln("blockquote", compile(it.contents) + by)
         }
         is Markup.Section.CodeBlock -> {
             val sh = it.code.getNullable(syntaxHighlighting)
-            if (sh == null) tagLn("pre", it.code.string)
+            if (sh == null) tagln("pre", it.code.string)
             else sh.compile()
         }
-        is Markup.Section.List -> StringBuilder().run {
+        is Markup.Section.List -> StringBuilder().apply {
             val l = if (it.numbered) "ol" else "ul"
             append("<p>")
             append("<$l>\n")
@@ -170,12 +171,11 @@ object Html : Language.HasFileExt.Impl("html"), Language.Markup {
             }
             append("</$l>")
             append("</p>\n")
-            toString()
-        }
+        }.toString()
         Markup.Section.HorizontalRule -> "<hr>\n"
         is Markup.Section.Heading -> heading(it, 1)
         is Markup.Document -> compile(it, "")
-        is Markup.Table -> StringBuilder().run {
+        is Markup.Table -> StringBuilder().apply {
             append("<table>\n")
             append("<tr>")
             for (c in it.overColumns()) {
@@ -194,21 +194,20 @@ object Html : Language.HasFileExt.Impl("html"), Language.Markup {
                 append("</tr>\n")
             }
             append("</table>\n")
-            toString()
-        }
+        }.toString()
+        is Markup.Section.TeX -> tagln("p", "\n\\[${it.tex}\\]\n")
     }
 
-    private fun heading(heading: Markup.Section.Heading, depth: Int): String = StringBuilder().run {
+    private fun heading(heading: Markup.Section.Heading, depth: Int): String = StringBuilder().apply {
         val i = depth.coerceAtMost(6).toString()
         append("<h$i><span class=\"heading heading$i\">")
         append(compile(heading.heading))
         append("</span></h$i>\n")
         for (section in heading)
             append(if (section is Markup.Section.Heading) heading(section, depth + 1) else compile(section))
-        toString()
-    }
+    }.toString()
 
-    override fun compile(document: Markup.Document, metadata: String?): String = StringBuilder().run {
+    override fun compile(document: Markup.Document, metadata: String?): String = StringBuilder().apply {
         append("<html>\n")
 
         if (metadata != null) {
@@ -223,8 +222,7 @@ object Html : Language.HasFileExt.Impl("html"), Language.Markup {
         append("</body>\n")
 
         append("</html>\n")
-        toString()
-    }
+    }.toString()
 
     fun head(
         title: String? = null,
@@ -233,15 +231,14 @@ object Html : Language.HasFileExt.Impl("html"), Language.Markup {
         meta: String? = null,
         script: String? = null,
         style: String? = null,
-    ): String = StringJoiner("\n").run {
+    ): String = StringJoiner("\n").apply {
         if (title != null) add(tag("title", title))
         if (base != null) add(tag("base", base)) // default address/target for all links
         if (link != null) add(tag("link", link)) // relationship with an external resource
         if (meta != null) add(tag("meta", meta))
         if (script != null) add(tag("script", script))
         if (style != null) add(tag("style", style))
-        toString()
-    }
+    }.toString()
 
     fun attributes(vararg attributes: Pair<String, String>) =
         attributes(mapOf(*attributes))
@@ -252,7 +249,10 @@ object Html : Language.HasFileExt.Impl("html"), Language.Markup {
 
     fun tag(tag: String, data: String, attributes: String? = null) = "<$tag${attributes ?: ""}>$data</$tag>"
 
-    fun tagLn(tag: String, data: String, attributes: String? = null) = tag(tag, data, attributes) + "\n"
+    /**
+     * Same as [tag] but with a linebreak appended to the result.
+     */
+    fun tagln(tag: String, data: String, attributes: String? = null) = tag(tag, data, attributes) + "\n"
 
     val escape = StringReplacer(
         "&" to "&amp;",

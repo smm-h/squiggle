@@ -140,36 +140,39 @@ object Markup {
             }
 
             fun addSection(section: Section) =
-                section.also { sections.add(it) }
+                sections.add(section)
 
             fun heading(heading: Fragment, block: (Section.Heading.() -> Unit)? = null) =
-                Section.Heading(heading, block).also { sections.add(it) }
+                Section.Heading(heading, block).also(::addSection)
 
             fun heading(heading: String, block: (Section.Heading.() -> Unit)? = null) =
                 heading(Fragment.Atom(heading), block)
 
             fun paragraph(contents: String) = paragraph(Fragment.Atom(contents))
             fun paragraph(contents: Fragment) =
-                Section.Paragraph(contents).also { sections.add(it) }
+                Section.Paragraph(contents).also(::addSection)
 
             fun comment(contents: String) = comment(Fragment.Atom(contents))
             fun comment(contents: Fragment) =
-                Section.Comment(contents).also { sections.add(it) }
+                Section.Comment(contents).also(::addSection)
 
             fun codeBlock(contents: String, language: Language? = null) =
                 codeBlock(Code(contents, language))
 
             fun codeBlock(code: Code) =
-                Section.CodeBlock(code).also { sections.add(it) }
+                Section.CodeBlock(code).also(::addSection)
 
             fun quotation(contents: Fragment, by: Fragment? = null, block: (Section.Quotation.() -> Unit)? = null) =
-                Section.Quotation(contents, by, block).also { sections.add(it) }
+                Section.Quotation(contents, by, block).also(::addSection)
 
             override fun list(numbered: Boolean, block: (Section.List.() -> Unit)?) =
-                Section.List(numbered, block).also { sections.add(it) }
+                Section.List(numbered, block).also(::addSection)
 
             fun horizontalRule() =
-                Section.HorizontalRule.also { sections.add(it) }
+                Section.HorizontalRule.also(::addSection)
+
+            fun tex(tex: String) =
+                Section.TeX(tex).also(::addSection)
         }
 
         class Paragraph(val contents: Fragment) : Section() {
@@ -226,6 +229,10 @@ object Markup {
         object HorizontalRule : Section() {
             override fun toString(depth: Int) = "---"
         }
+
+        class TeX(val tex: String) : Section() {
+            override fun toString(depth: Int) = tex
+        }
     }
 
     sealed class Fragment : Text() {
@@ -255,13 +262,14 @@ object Markup {
         }
 
         enum class Effect {
-            BOLD, ITALIC, UNDERLINE, STRIKETHROUGH;
+            BOLD, ITALIC, UNDERLINE, STRIKETHROUGH, TEX;
 
             override fun toString() = when (this) {
                 BOLD -> "b"
                 ITALIC -> "i"
                 UNDERLINE -> "_"
                 STRIKETHROUGH -> "~"
+                TEX -> "$"
             }
         }
 
