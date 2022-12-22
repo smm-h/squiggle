@@ -12,7 +12,8 @@ body {
     background-color: ghostwhite;
 }
 
-code, pre {
+code,
+pre {
     font-family: Consolas, monospace;
 }
 
@@ -20,7 +21,7 @@ th {
     color: silver;
     font-style: italic;
     letter-spacing: 4px;
-    text-transform: uppercase;
+    /* text-transform: uppercase; */
 }
 
 a {
@@ -32,7 +33,9 @@ a {
     font-style: normal;
 }
 
-table, th, td {
+table,
+th,
+td {
     border-collapse: collapse;
     border: 1px dashed silver;
     padding: 16px;
@@ -44,11 +47,16 @@ td:nth-child(even) {
     background-color: rgb(0, 0, 0, 2%);
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
     /*text-align: center;*/
     color: #025;
     letter-spacing: 4px;
-    text-transform: uppercase;
+    /* text-transform: uppercase; */
 }
 
 .heading1 {
@@ -60,7 +68,9 @@ h1, h2, h3, h4, h5, h6 {
     /*border: white dashed 1px;*/
 }
 
-h2, h4, h6 {
+h2,
+h4,
+h6 {
     font-style: italic;
 }
 
@@ -72,7 +82,8 @@ pre {
     line-height: 160%;
 }
 
-.json_constant, .json_structure {
+.json_constant,
+.json_structure {
     font-weight: bold;
     color: indigo;
 }
@@ -95,7 +106,8 @@ pre {
     font-weight: bold;
 }
 
-.json_enum_id, .json_enum_name {
+.json_enum_id,
+.json_enum_name {
     color: darkviolet;
 }
 

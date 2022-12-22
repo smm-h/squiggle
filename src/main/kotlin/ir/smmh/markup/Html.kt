@@ -10,9 +10,9 @@ import java.util.*
 
 object Html : Language.HasFileExt.Impl("html"), Language.Markup {
 
-    val defaultMetadata = """<link rel="stylesheet" href="${
-        File("css/default.css").absolutePath
-    }">"""
+    val defaultMetadata = "<link rel=\"stylesheet\" href=\"file:\\${File("css/default.css").absolutePath}\">\n"
+
+    val mathJax = "<script async src=\"https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js\"></script>\n"
 
     val syntaxHighlighting = Code.Aspect<SyntaxHighlighting>("syntax-highlighting")
 
