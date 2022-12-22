@@ -71,7 +71,7 @@ object Markdown : Language.HasFileExt.Impl("md"), Language.Markup {
             val columnWidths = getColumnWidths(it)
             var t = "|"
             for (c in it.overColumns()) {
-                val f = c.titleFragment.toString(NoMarkup)
+                val f = c.titleFragment.toString(this)
                 val extraSpace = abs(columnWidths[c]!! - f.length)
                 t += " ${f.spaceOut(c.cellDirection, extraSpace)} |"
             }
@@ -93,6 +93,7 @@ object Markdown : Language.HasFileExt.Impl("md"), Language.Markup {
                     t += " ${f.spaceOut(c.cellDirection, extraSpace)} |"
                 }
             }
+            t += "\n\n"
             t
         }
         is Markup.Section.TeX -> "$$\n${it.tex}\n$$\n\n"
