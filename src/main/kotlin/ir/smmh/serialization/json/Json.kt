@@ -322,12 +322,10 @@ object Json : Language.HasFileExt.Impl("json"), Language.Serialization, Language
 
         companion object {
 
-            fun of(data: String): kotlin.Enum<*>? {
-                return try {
-                    cache(data)
-                } catch (e: Cache.Exception) {
-                    null
-                }
+            fun of(data: String): kotlin.Enum<*>? = try {
+                cache(data)
+            } catch (e: Cache.CachingException) {
+                null
             }
 
             private val cache: (String) -> kotlin.Enum<*> = Cache {
