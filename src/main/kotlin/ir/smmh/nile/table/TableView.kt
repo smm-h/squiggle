@@ -13,10 +13,7 @@ abstract class TableView(rows: List<Int>, columns: List<Tabular.Column<*>>) : Ta
     override fun iterator(): Iterator<Int> = rows.iterator()
     override fun containsValue(toCheck: Int): Boolean = rows.contains(toCheck)
     override fun overColumns(): Iterable<Tabular.Column<*>> = columns
-    override fun findNullableColumnByName(name: String): Tabular.Column<*>? = columnsCache(name)
-
-    private val columnsCache: (String) -> Tabular.Column<*>? =
-        Cache.Nullable { name -> overColumns().first { it.name == name } }
+    override fun findNullableColumnByName(name: String): Tabular.Column<*>? = columns.firstOrNull { it.name == name }
 
     override fun view(mut: Mut): Tabular.View.Mutable =
         Mutable(this, rows, columns, mut)
