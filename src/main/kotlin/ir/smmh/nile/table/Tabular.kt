@@ -2,7 +2,7 @@ package ir.smmh.nile.table
 
 import ir.smmh.markup.Markup
 import ir.smmh.nile.Multitude
-import ir.smmh.nile.Mut
+import ir.smmh.nile.Change
 import ir.smmh.nile.Named
 import ir.smmh.nile.verbs.*
 import kotlin.random.Random
@@ -96,7 +96,7 @@ interface Tabular : Multitude, Iterable<Int>, CanGetAtIndex<Int>, CanContainValu
     }
 
     interface MutableSchema : Tabular {
-        val schemaMut: Mut
+        val changesToSchema: Change
         fun <T> addColumn(name: String): Column.Mutable<T>
     }
 
@@ -122,36 +122,36 @@ interface Tabular : Multitude, Iterable<Int>, CanGetAtIndex<Int>, CanContainValu
         /**
          * @return A View with the same rows and columns as this one
          */
-        fun view(mut: Mut = Mut()): Mutable
+        fun view(change: Change = Change()): Mutable
 
         /**
          * @return A new View equal to this one, except the keys are in reverse
          */
-        fun reversed(mut: Mut = Mut()): Mutable
+        fun reversed(change: Change = Change()): Mutable
 
         /**
          * @return A new View equal to this one, except the keys are shuffled
          */
-        fun shuffled(mut: Mut = Mut()): Mutable
+        fun shuffled(change: Change = Change()): Mutable
 
         /**
          * @return A new View equal to this one, except the keys are shuffled
          * using the given Random
          */
-        fun shuffled(random: Random, mut: Mut = Mut()): Mutable
+        fun shuffled(random: Random, change: Change = Change()): Mutable
 
         /**
          * @return A new View equal to this one, except the keys are sorted in
          * the order they were added
          */
-        fun sortedByKey(ascending: Boolean = true, mut: Mut = Mut()): Mutable =
-            sortedBy(ascending, mut) { it }
+        fun sortedByKey(ascending: Boolean = true, change: Change = Change()): Mutable =
+            sortedBy(ascending, change) { it }
 
         /**
          * @return A new View equal to this one, except the keys are sorted in
          * the order described by the given function
          */
-        fun sortedBy(ascending: Boolean = true, mut: Mut = Mut(), sortingFunction: (Int) -> Int): Mutable
+        fun sortedBy(ascending: Boolean = true, change: Change = Change(), sortingFunction: (Int) -> Int): Mutable
 
         /**
          * @return A new View equal to this one, except the keys are sorted so
@@ -168,7 +168,7 @@ interface Tabular : Multitude, Iterable<Int>, CanGetAtIndex<Int>, CanContainValu
          * @return A new View equal to this one, except it only contains the
          * keys that satisfy the given predicate
          */
-        fun filteredBy(mut: Mut = Mut(), predicate: (Int) -> Boolean): Mutable
+        fun filteredBy(change: Change = Change(), predicate: (Int) -> Boolean): Mutable
 
         /**
          * @return A new View equal to this one, except it only contains the
@@ -176,21 +176,21 @@ interface Tabular : Multitude, Iterable<Int>, CanGetAtIndex<Int>, CanContainValu
          * the given data
          */
         @Suppress("UNCHECKED_CAST")
-        fun <T> filteredByColumn(columnName: String, data: T?, mut: Mut = Mut()): Mutable =
-            filteredByColumn(findColumnByName(columnName) as Column<in T>, data, mut)
+        fun <T> filteredByColumn(columnName: String, data: T?, change: Change = Change()): Mutable =
+            filteredByColumn(findColumnByName(columnName) as Column<in T>, data, change)
 
         /**
          * @return A new View equal to this one, except it only contains the
          * keys whose data in the given column are equal (==) to the given data
          */
-        fun <T> filteredByColumn(column: Column<T>, data: T?, mut: Mut = Mut()): Mutable
+        fun <T> filteredByColumn(column: Column<T>, data: T?, change: Change = Change()): Mutable
 
         /**
          * A View whose operations are executed in-place
          */
         interface Mutable : View {
 
-            val viewMut: Mut
+            val changesToView: Change
 
             /**
              * Reverses the order of the keys in this table, in place
@@ -255,7 +255,7 @@ interface Tabular : Multitude, Iterable<Int>, CanGetAtIndex<Int>, CanContainValu
         /**
          * @return an update-able View that is equal to this one
          */
-        fun updateable(mut: Mut = Mut()): Updateable
+        fun updateable(change: Change = Change()): Updateable
 
         /**
          * A View that stores the operations done to it so it can update them
@@ -267,7 +267,7 @@ interface Tabular : Multitude, Iterable<Int>, CanGetAtIndex<Int>, CanContainValu
             fun reset()
             fun update()
             interface Mutable : Updateable {
-                val instructionsMut: Mut
+                val changesToInstructions: Change
                 fun instruct(vararg instructions: (Tabular.View.Mutable) -> Unit)
                 fun toImmutable(): Updateable
             }

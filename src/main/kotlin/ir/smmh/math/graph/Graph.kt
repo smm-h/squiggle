@@ -1,6 +1,6 @@
 package ir.smmh.math.graph
 
-import ir.smmh.nile.Mut
+import ir.smmh.nile.Change
 
 sealed interface Graph<V> {
 
@@ -20,14 +20,14 @@ sealed interface Graph<V> {
     }
 
     interface VerticesMutable<V> : Graph<V> {
-        val verticesMut: Mut
+        val changesToVertices: Change
         fun addVertex(vertex: V)
         fun removeVertex(vertex: V)
         fun clearVertices()
     }
 
     interface EdgesMutable<V> : Graph<V> {
-        val edgesMut: Mut
+        val changesToEdges: Change
         fun addEdge(v1: V, v2: V)
         fun addEdge(edge: Edge<V>)
         fun removeEdge(v1: V, v2: V)
@@ -45,7 +45,7 @@ sealed interface Graph<V> {
 
         interface EdgesMutable<V, W> : Weighted<V, W>, Graph.EdgesMutable<V> {
 
-            val weightsMut: Mut
+            val changesToWeights: Change
 
             operator fun set(v1: V, v2: V, weight: W)
             operator fun set(edge: Edge<V>, weight: W)

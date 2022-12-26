@@ -1,8 +1,7 @@
 package ir.smmh.nile.table
 
 import ir.smmh.markup.NoMarkup
-import ir.smmh.nile.Cache
-import ir.smmh.nile.Mut
+import ir.smmh.nile.Change
 import kotlin.random.Random
 
 abstract class TableView(rows: List<Int>, columns: List<Tabular.Column<*>>) : Tabular.View {
@@ -15,82 +14,82 @@ abstract class TableView(rows: List<Int>, columns: List<Tabular.Column<*>>) : Ta
     override fun overColumns(): Iterable<Tabular.Column<*>> = columns
     override fun findNullableColumnByName(name: String): Tabular.Column<*>? = columns.firstOrNull { it.name == name }
 
-    override fun view(mut: Mut): Tabular.View.Mutable =
-        Mutable(this, rows, columns, mut)
+    override fun view(change: Change): Tabular.View.Mutable =
+        Mutable(this, rows, columns, change)
 
-    override fun reversed(mut: Mut): Tabular.View.Mutable =
-        Mutable(this, rows.reversed(), columns, mut)
+    override fun reversed(change: Change): Tabular.View.Mutable =
+        Mutable(this, rows.reversed(), columns, change)
 
-    override fun shuffled(mut: Mut): Tabular.View.Mutable =
-        Mutable(this, rows.shuffled(), columns, mut)
+    override fun shuffled(change: Change): Tabular.View.Mutable =
+        Mutable(this, rows.shuffled(), columns, change)
 
-    override fun shuffled(random: Random, mut: Mut): Tabular.View.Mutable =
-        Mutable(this, rows.shuffled(random), columns, mut)
+    override fun shuffled(random: Random, change: Change): Tabular.View.Mutable =
+        Mutable(this, rows.shuffled(random), columns, change)
 
     // @formatter:off
-    override fun sortedBy(ascending: Boolean, mut: Mut, sortingFunction: (Int) -> Int): Tabular.View.Mutable =
+    override fun sortedBy(ascending: Boolean, change: Change, sortingFunction: (Int) -> Int): Tabular.View.Mutable =
         Mutable(
             this, (
                     if (ascending) rows.sortedBy(sortingFunction)
-                    else rows.sortedByDescending(sortingFunction)), columns, mut
+                    else rows.sortedByDescending(sortingFunction)), columns, change
         )
     // @formatter:on
 
-    override fun filteredBy(mut: Mut, predicate: (Int) -> Boolean): Tabular.View.Mutable =
-        Mutable(this, rows.filter(predicate), columns, mut)
+    override fun filteredBy(change: Change, predicate: (Int) -> Boolean): Tabular.View.Mutable =
+        Mutable(this, rows.filter(predicate), columns, change)
 
-    override fun <T> filteredByColumn(column: Tabular.Column<T>, data: T?, mut: Mut): Tabular.View.Mutable =
-        Mutable(this, rows.filter { column[it] == data }, columns.minusElement(column), mut)
+    override fun <T> filteredByColumn(column: Tabular.Column<T>, data: T?, change: Change): Tabular.View.Mutable =
+        Mutable(this, rows.filter { column[it] == data }, columns.minusElement(column), change)
 
     class Mutable(
         override val core: Tabular,
         rows: List<Int>,
         columns: List<Tabular.Column<*>>,
-        override val viewMut: Mut = Mut(),
+        override val changesToView: Change = Change(),
     ) :
         TableView(rows, columns), Tabular.View.Mutable {
 
         override fun reverse() {
-            viewMut.preMutate()
+            changesToView.beforeChange()
             rows.reverse()
-            viewMut.mutate()
+            changesToView.afterChange()
         }
 
         override fun shuffle() {
-            viewMut.preMutate()
+            changesToView.beforeChange()
             rows.shuffle()
-            viewMut.mutate()
+            changesToView.afterChange()
         }
 
         override fun shuffle(random: Random) {
-            viewMut.preMutate()
+            changesToView.beforeChange()
             rows.shuffle(random)
-            viewMut.mutate()
+            changesToView.afterChange()
         }
 
         override fun sortBy(ascending: Boolean, sortingFunction: (Int) -> Int) {
-            viewMut.preMutate()
+            changesToView.beforeChange()
             if (ascending) rows.sortBy(sortingFunction)
             else rows.sortByDescending(sortingFunction)
-            viewMut.mutate()
+            changesToView.afterChange()
         }
 
         override fun filterBy(predicate: (Int) -> Boolean) {
-            viewMut.preMutate()
+            changesToView.beforeChange()
             rows.filter(predicate)
-            viewMut.mutate()
+            changesToView.afterChange()
         }
 
         override fun <T> filterByColumn(column: Tabular.Column<T>, data: T?) {
-            viewMut.preMutate()
+            changesToView.beforeChange()
             rows.filter { column[it] == data }
             columns.remove(column)
-            viewMut.mutate()
+            changesToView.afterChange()
         }
     }
 
     override fun toString(): String = toMarkupTable().toString(NoMarkup)
-    override fun updateable(mut: Mut): Tabular.View.Updateable = Updateable.Mutable(this, mut)
+    override fun updateable(change: Change): Tabular.View.Updateable = Updateable.Mutable(this, change)
 
     sealed class Updateable(override val core: TableView, instruction: ((Tabular.View.Mutable) -> Unit)?) :
         Tabular.View.Updateable {
@@ -114,15 +113,15 @@ abstract class TableView(rows: List<Int>, columns: List<Tabular.Column<*>>) : Ta
         class Immutable(core: TableView, instruction: ((Tabular.View.Mutable) -> Unit)?) :
             Updateable(core, instruction)
 
-        class Mutable(core: TableView, override val instructionsMut: Mut) : Updateable(core, null),
+        class Mutable(core: TableView, override val changesToInstructions: Change) : Updateable(core, null),
             Tabular.View.Updateable.Mutable {
             override fun instruct(vararg instructions: (Tabular.View.Mutable) -> Unit) {
-                instructionsMut.preMutate()
+                changesToInstructions.beforeChange()
                 instructions.forEach {
                     this.instructionList.add(it)
                     it(view)
                 }
-                instructionsMut.mutate()
+                changesToInstructions.afterChange()
             }
 
             override fun toImmutable() = Immutable(core) { update() }

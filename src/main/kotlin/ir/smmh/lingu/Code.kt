@@ -1,16 +1,14 @@
 package ir.smmh.lingu
 
-import ir.smmh.nile.Mut
 import ir.smmh.nile.Named
 import java.io.File
 import java.net.URI
 
 class Code private constructor(
-    string: String,
-    language: Language?,
-    file: File?,
-    override val mut: Mut = Mut(),
-) : Mut.Able {
+    val string: String,
+    val language: Language?,
+    val file: File?,
+) {
 
     constructor(string: String, language: Language?) : this(string, language, null)
 
@@ -22,31 +20,6 @@ class Code private constructor(
     // constructor(string: String, langExt: String) : this(string, Language.of(langExt))
     // constructor(file: File) : this(file.readText(), Language.of(file.extension), file)
     // constructor(filename: String) : this(File(filename))
-
-    var string: String = string
-        private set(value) {
-            if (field != value) {
-                mut.preMutate()
-                field = value
-                mut.mutate()
-            }
-        }
-    var language: Language? = language
-        set(value) {
-            if (field != value) {
-                mut.preMutate()
-                field = value
-                mut.mutate()
-            }
-        }
-    var file: File? = file
-        set(value) {
-            if (field != value) {
-                mut.preMutate()
-                field = value
-                mut.mutate()
-            }
-        }
 
     private val aspects: MutableMap<Aspect<*>, Any> = HashMap()
 

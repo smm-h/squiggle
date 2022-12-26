@@ -7,31 +7,31 @@ import ir.smmh.nile.verbs.CanRemoveElementFrom
 import kotlin.collections.MutableCollection
 
 /**
- * A Nilic collection with a Mut backed by a Java collection
+ * A Nilic collection with [Change], backed by a Java collection
  * @see nile.MutableCollection
  */
 class NilizedCollection<T>(
     private val collection: MutableCollection<T>,
-    override val mut: Mut = Mut(),
-) : CanAddTo<T>, CanRemoveElementFrom<T>, CanContainValue<T>, CanClear, Iterable<T>, Mut.Able {
+    override val changesToSize: Change = Change(),
+) : CanAddTo<T>, CanRemoveElementFrom<T>, CanContainValue<T>, CanClear, Iterable<T> {
 
     override fun add(toAdd: T) {
-        mut.preMutate()
+        changesToSize.beforeChange()
         if (collection.add(toAdd))
-            mut.mutate()
+            changesToSize.afterChange()
     }
 
     override fun removeElementFrom(toRemove: T) {
-        mut.preMutate()
+        changesToSize.beforeChange()
         if (collection.remove(toRemove))
-            mut.mutate()
+            changesToSize.afterChange()
     }
 
     override fun clear() {
         if (!isEmpty()) {
-            mut.preMutate()
+            changesToSize.beforeChange()
             collection.clear()
-            mut.mutate()
+            changesToSize.afterChange()
         }
     }
 

@@ -4,6 +4,9 @@ import ir.smmh.math.abstractalgebra.Structures
 
 sealed class LowLevelMatrix<T : Any> : AbstractMatrix.Mutable<T>() {
 
+    override val changesToValues
+        get() = throw UnsupportedOperationException("LowLevelMatrix does not support changesToValues")
+
     class Int(
         override val rows: kotlin.Int,
         override val columns: kotlin.Int,

@@ -1,31 +1,31 @@
 package ir.smmh.nile
 
 /**
- * A Java collection with a Mut backed by a Java collection
+ * A Java collection with a [Change], backed by a Java collection
  * @see nile.NilizedCollection
  */
 class MutableCollection<T>(
     private val collection: kotlin.collections.MutableCollection<T>,
-    override val mut: Mut = Mut()
-) : AbstractMutableCollection<T>(), Mut.Able {
+    val change: Change = Change()
+) : AbstractMutableCollection<T>() {
 
     override val size: Int get() = collection.size
     override fun isEmpty() = collection.isEmpty()
     override fun iterator() = collection.iterator()
 
     override fun add(element: T): Boolean {
-        mut.preMutate()
+        change.beforeChange()
         if (collection.add(element)) {
-            mut.mutate()
+            change.afterChange()
             return true
         }
         return false
     }
 
     override fun addAll(elements: Collection<T>): Boolean {
-        mut.preMutate()
+        change.beforeChange()
         if (collection.addAll(elements)) {
-            mut.mutate()
+            change.afterChange()
             return true
         }
         return false
@@ -33,34 +33,34 @@ class MutableCollection<T>(
 
     override fun clear() {
         if (!isEmpty()) {
-            mut.preMutate()
+            change.beforeChange()
             collection.clear()
-            mut.mutate()
+            change.afterChange()
         }
     }
 
     override fun remove(element: T): Boolean {
-        mut.preMutate()
+        change.beforeChange()
         if (collection.remove(element)) {
-            mut.mutate()
+            change.afterChange()
             return true
         }
         return false
     }
 
     override fun removeAll(elements: Collection<T>): Boolean {
-        mut.preMutate()
+        change.beforeChange()
         if (collection.removeAll(elements.toSet())) {
-            mut.mutate()
+            change.afterChange()
             return true
         }
         return false
     }
 
     override fun retainAll(elements: Collection<T>): Boolean {
-        mut.preMutate()
+        change.beforeChange()
         if (collection.retainAll(elements.toSet())) {
-            mut.mutate()
+            change.afterChange()
             return true
         }
         return false

@@ -1,6 +1,7 @@
 package ir.smmh.tree
 
 import ir.smmh.nile.Sequential
+import ir.smmh.nile.verbs.CanChangeValues
 import ir.smmh.nile.verbs.CanClear
 import ir.smmh.nile.verbs.CanContainValue
 import ir.smmh.tree.impl.InOrderConstructor
@@ -30,7 +31,7 @@ interface Tree<DataType> : CanContainValue<DataType> { // , CanSerialize
     fun getDepthFirstData(): Sequential<DataType?>
     val rootData: DataType?
 
-    interface Mutable<DataType> : Tree<DataType>, CanClear {
+    interface Mutable<DataType> : Tree<DataType>, CanClear, CanChangeValues {
         override var rootData: DataType?
     }
 

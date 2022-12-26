@@ -5,7 +5,7 @@ package ir.smmh.nile
  *
  * @param <T> type of data
  */
-class ArrayQueue<T>(capacity: Int, override val mut: Mut = Mut()) : Order<T>, Mut.Able {
+class ArrayQueue<T>(capacity: Int, override val changesToSize: Change = Change()) : Order<T> {
     @Suppress("UNCHECKED_CAST")
     private val array = arrayOfNulls<Any>(capacity) as Array<T>
     override var size = 0
@@ -20,11 +20,11 @@ class ArrayQueue<T>(capacity: Int, override val mut: Mut = Mut()) : Order<T>, Mu
     @Synchronized
     override fun pollNullable(): T? {
         return if (size > 0) {
-            mut.preMutate()
+            changesToSize.beforeChange()
             val data = array[tail++]
             size--
             if (tail >= array.size) tail = 0
-            mut.mutate()
+            changesToSize.afterChange()
             data
         } else null
     }
@@ -36,19 +36,19 @@ class ArrayQueue<T>(capacity: Int, override val mut: Mut = Mut()) : Order<T>, Mu
     @Synchronized
     override fun enter(toEnter: T) {
         if (canEnter()) {
-            mut.preMutate()
+            changesToSize.beforeChange()
             array[head++] = toEnter
             if (head >= array.size) head = 0
             size++
-            mut.mutate()
+            changesToSize.afterChange()
         }
     }
 
     override fun clear() {
-        mut.preMutate()
+        changesToSize.beforeChange()
         head = 0
         tail = 0
         size = 0
-        mut.mutate()
+        changesToSize.afterChange()
     }
 }

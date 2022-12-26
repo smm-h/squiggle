@@ -2,12 +2,12 @@
 
 package codesmith
 
-import ir.smmh.nile.Mut
+import ir.smmh.nile.Change
 
 class FragmentedString(
     private val chunkSize: Int = 256,
-    override val mut: Mut = Mut()
-) : Typeable, Mut.Able {
+    override val changesToSize: Change = Change()
+) : Typeable {
 
     private val fragments: MutableList<Fragment> = ArrayList()
     private var typeable: TypeableFragment? = null
@@ -61,9 +61,9 @@ class FragmentedString(
     }
 
     override fun clear() {
-        mut.preMutate()
+        changesToSize.beforeChange()
         fragments.clear()
-        mut.mutate()
+        changesToSize.afterChange()
     }
 
     private fun indexOfFragmentContaining(position: Int): Int {
@@ -82,7 +82,7 @@ class FragmentedString(
 
     fun insert(position: Int, string: String) {
 
-        mut.preMutate()
+        changesToSize.beforeChange()
 
         // find out which fragment contains this position
         var p = position
@@ -112,7 +112,7 @@ class FragmentedString(
         // insert the right half
         if (fragment.lengthToEnd(p) != 0) fragments.add(i, fragment.fragmentToEnd(p))
 
-        mut.mutate()
+        changesToSize.afterChange()
     }
 
     override fun toString(): String {
@@ -130,7 +130,7 @@ class FragmentedString(
 
     fun delete(from: Int, to: Int) {
 
-        mut.preMutate()
+        changesToSize.beforeChange()
 
         // find out which fragments each position belongs to
         val indexFirst = indexOfFragmentContaining(from)
@@ -179,7 +179,7 @@ class FragmentedString(
                 fragments.add(indexFirst, fragmentFirst.fragmentFromStart(rFrom))
         }
 
-        mut.mutate()
+        changesToSize.afterChange()
     }
 
     private fun isTyping(): Boolean {
@@ -220,23 +220,23 @@ class FragmentedString(
     }
 
     override fun type(character: Char) {
-        mut.preMutate()
+        changesToSize.beforeChange()
         startTyping()
         val p = caret - getFragmentStart(typeableIndex)
         typeable!!.string = typeable!!.string.substring(0, p) + character + typeable!!.string.substring(p)
         typeable!!.length++
         caret++
-        mut.mutate()
+        changesToSize.afterChange()
     }
 
     override fun pressBackspace() {
-        mut.preMutate()
+        changesToSize.beforeChange()
         startTyping()
         val p = caret - getFragmentStart(typeableIndex)
         typeable!!.string = typeable!!.string.substring(0, p - 1) + typeable!!.string.substring(p)
         typeable!!.length--
         caret--
-        mut.mutate()
+        changesToSize.afterChange()
     }
 
     override var caret: Int = -1

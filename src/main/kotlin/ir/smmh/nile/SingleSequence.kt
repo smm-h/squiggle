@@ -2,13 +2,13 @@ package ir.smmh.nile
 
 import ir.smmh.nile.Sequential.AbstractMutableSequential
 
-class SingleSequence<T>(override var singleton: T, mut: Mut = Mut()) :
-    AbstractMutableSequential<T>(mut) {
+class SingleSequence<T>(override var singleton: T, change: Change = Change()) :
+    AbstractMutableSequential<T>(change) {
     override fun setAtIndex(index: Int, toSet: T) {
         validateIndex(index)
-        mut.preMutate()
+        changesToValues.beforeChange()
         singleton = toSet
-        mut.mutate()
+        changesToValues.afterChange()
     }
 
     override fun getAtIndex(index: Int): T {

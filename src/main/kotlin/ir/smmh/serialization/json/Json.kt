@@ -8,11 +8,13 @@ import ir.smmh.lingu.Language
 import ir.smmh.lingu.TokenizationUtil.toCharSet
 import ir.smmh.markup.Html
 import ir.smmh.nile.Cache
-import ir.smmh.nile.Mut
+import ir.smmh.nile.Dirty
+import ir.smmh.nile.Change
 import ir.smmh.nile.verbs.*
 import ir.smmh.util.FunctionalUtil.map
 import ir.smmh.util.ReflectUtil.intendedName
 import ir.smmh.util.StringUtil.getStringAndClear
+import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.math.pow
 import kotlin.reflect.KClass
 
@@ -525,41 +527,28 @@ object Json : Language.HasFileExt.Impl("json"), Language.Serialization, Language
         }
     }
 
-    private sealed class MutableStructure() :
-        Structure.Mutable, Mut.Able {
+    private sealed class MutableStructure() : Structure.Mutable {
         protected abstract val parent: MutableStructure?
         protected abstract fun serialize(): String
         protected abstract fun deserialize(): Any?
-        override final val mut: Mut = Mut(onMutate = this::refOnMutate)
 
-        private fun refOnMutate() {
-            parent?.mut?.preMutate()
-            serializationMut.taint()
-            deserializationMut.taint()
-            parent?.mut?.mutate()
+        private val dirty = AtomicBoolean()
+
+        override val changesToSize: Change =
+            Change().apply { afterChange.add(::refOnChangesToValues) }
+        val changesToValues: Change =
+            Change().apply { afterChange.add(::refOnChangesToValues) }
+
+        private fun refOnChangesToValues() {
+            parent?.changesToSize?.beforeChange()
+            parent?.changesToValues?.beforeChange()
+            dirty.set(true)
+            parent?.changesToValues?.afterChange()
+            parent?.changesToSize?.afterChange()
         }
 
-        private val serializationMut = Mut(onClean = { this@MutableStructure.cleanSerialization() })
-        private val deserializationMut = Mut(onClean = { this@MutableStructure.cleanDeserialization() })
-
-        override final var serialization: String = ""
-            get() {
-                serializationMut.clean(); return field
-            }
-            private set
-
-        override var deserialization: Any? = null
-            get() {
-                deserializationMut.clean(); return field
-            }
-
-        private fun cleanSerialization() {
-            serialization = serialize()
-        }
-
-        private fun cleanDeserialization() {
-            deserialization = deserialize()
-        }
+        override val serialization: String by Dirty(dirty, ::serialize)
+        override val deserialization: Any? by Dirty(dirty, ::deserialize)
 
         abstract fun clone(deepIfPossible: Boolean, clonedParent: MutableStructure?): MutableStructure
     }
@@ -567,9 +556,9 @@ object Json : Language.HasFileExt.Impl("json"), Language.Serialization, Language
     sealed interface Structure : Value, CanClone<Structure> {
         override fun specificThis() = this
 
-        sealed interface Mutable : Structure, CanClear, CanClone.Mutable<Structure> {
-            override fun clone(deepIfPossible: Boolean): Structure.Mutable
-            override fun clone(deepIfPossible: Boolean, mut: Mut): Structure.Mutable
+        sealed interface Mutable : Structure, CanClear {
+            override fun clone(deepIfPossible: Boolean) = clone(deepIfPossible, Change())
+            fun clone(deepIfPossible: Boolean, changes: Change): Structure.Mutable
         }
     }
 
@@ -583,8 +572,8 @@ object Json : Language.HasFileExt.Impl("json"), Language.Serialization, Language
             CanRemoveAt, CanSwapAtIndices<Any?>, CanRemoveElementFrom<Any?> {
             operator fun set(index: Int, value: Any?) = setAtIndex(index, value)
 
-            override fun clone(deepIfPossible: Boolean): Array.Mutable
-            override fun clone(deepIfPossible: Boolean, mut: Mut): Array.Mutable
+            override fun clone(deepIfPossible: Boolean) = clone(deepIfPossible, Change())
+            override fun clone(deepIfPossible: Boolean, changes: Change): Array.Mutable
 
             companion object {
                 fun of(vararg elements: Any?) = Value.of(listOf(*elements)) as Mutable
@@ -636,8 +625,8 @@ object Json : Language.HasFileExt.Impl("json"), Language.Serialization, Language
 
             operator fun set(key: String, value: Any?) = setAtPlace(key, value)
 
-            override fun clone(deepIfPossible: Boolean): Object.Mutable
-            override fun clone(deepIfPossible: Boolean, mut: Mut): Object.Mutable
+            override fun clone(deepIfPossible: Boolean) = clone(deepIfPossible, Change())
+            override fun clone(deepIfPossible: Boolean, changes: Change): Object.Mutable
 
             companion object {
                 fun of(vararg pairs: Pair<String, Any?>) = Value.of(mapOf(*pairs)) as Mutable
@@ -685,8 +674,7 @@ object Json : Language.HasFileExt.Impl("json"), Language.Serialization, Language
     private class ArrayImpl(
         data: List<Value>,
         override val parent: MutableStructure?,
-    ) : MutableStructure(),
-        Array.Mutable {
+    ) : MutableStructure(), Array.Mutable {
 
         private val data: MutableList<Value> = data.toMutableList()
 
@@ -705,9 +693,9 @@ object Json : Language.HasFileExt.Impl("json"), Language.Serialization, Language
 
         override val size get() = data.size
 
-        override fun clone(deepIfPossible: Boolean) = clone(deepIfPossible, Mut())
-        override fun clone(deepIfPossible: Boolean, mut: Mut) =
-            clone(deepIfPossible, null).also { it.mut.merge(mut) } as Array.Mutable
+        override fun clone(deepIfPossible: Boolean) = clone(deepIfPossible, Change())
+        override fun clone(deepIfPossible: Boolean, changes: Change) =
+            clone(deepIfPossible, null).also { it.changesToSize.merge(changes) } as Array.Mutable
 
         override fun clone(
             deepIfPossible: Boolean,
@@ -720,40 +708,40 @@ object Json : Language.HasFileExt.Impl("json"), Language.Serialization, Language
 
         override fun insertAtIndex(index: Int, toInsert: Any?) {
             validateBetweenIndices(index)
-            mut.preMutate()
+            changesToSize.beforeChange()
             data.add(index, Value.of(toInsert))
-            mut.mutate()
+            changesToSize.afterChange()
         }
 
         override fun removeElementFrom(toRemove: Any?) {
-            mut.preMutate()
+            changesToSize.beforeChange()
             data.remove(Value.of(toRemove))
-            mut.mutate()
+            changesToSize.afterChange()
         }
 
         override fun containsValue(toCheck: Any?) = data.contains(Value.of(toCheck))
 
         override fun removeIndexFrom(toRemove: Int) {
             validateIndex(toRemove)
-            mut.preMutate()
+            changesToSize.beforeChange()
             data.removeAt(toRemove)
-            mut.mutate()
+            changesToSize.afterChange()
         }
 
         override fun getAtIndex(index: Int) = subValue(index).deserialization
 
         override fun setAtIndex(index: Int, toSet: Any?) {
             validateIndex(index)
-            mut.preMutate()
+            changesToValues.beforeChange()
             data[index] = Value.of(toSet)
-            mut.mutate()
+            changesToValues.afterChange()
         }
 
         override fun toString() = "Json.Array:$data"
 
         companion object {
-            fun of(it: Iterable<*>, parent: MutableStructure?, mut: Mut = Mut()): Array.Mutable {
-                val v = ArrayImpl(emptyList(), parent).also { it.mut.merge(mut) }
+            fun of(it: Iterable<*>, parent: MutableStructure?, changes: Change = Change()): Array.Mutable {
+                val v = ArrayImpl(emptyList(), parent).also { it.changesToSize.merge(changes) }
                 for (i in it) v.data.add(valueOfNullable(i, v))
                 return v
             }
@@ -763,8 +751,7 @@ object Json : Language.HasFileExt.Impl("json"), Language.Serialization, Language
     private class ObjectImpl(
         data: Map<String, Value>,
         override val parent: MutableStructure?,
-    ) : MutableStructure(),
-        Object.Mutable {
+    ) : MutableStructure(), Object.Mutable {
         private val data: MutableMap<String, Value> = data.toMutableMap()
 
         override fun serialize() = data.keys.joinToString(",", "{", "}") { "\"$it\":" + data[it]!!.serialization }
@@ -782,9 +769,9 @@ object Json : Language.HasFileExt.Impl("json"), Language.Serialization, Language
 
         override val size get() = data.size
 
-        override fun clone(deepIfPossible: Boolean) = clone(deepIfPossible, Mut())
-        override fun clone(deepIfPossible: Boolean, mut: Mut) =
-            clone(deepIfPossible, null).also { it.mut.merge(mut) } as Object.Mutable
+        override fun clone(deepIfPossible: Boolean) = clone(deepIfPossible, Change())
+        override fun clone(deepIfPossible: Boolean, changes: Change) =
+            clone(deepIfPossible, null).also { it.changesToSize.merge(changes) } as Object.Mutable
 
         override fun clone(
             deepIfPossible: Boolean,
@@ -796,13 +783,13 @@ object Json : Language.HasFileExt.Impl("json"), Language.Serialization, Language
         }
 
         override fun removeElementFrom(toRemove: Any?) {
-            mut.preMutate()
+            changesToSize.beforeChange()
             val elementToRemove = Value.of(toRemove)
             while (true) {
                 val pair = data.entries.find { it.value == elementToRemove }
                 if (pair == null) break else data.remove(pair.key)
             }
-            mut.mutate()
+            changesToSize.afterChange()
         }
 
         override fun containsValue(toCheck: Any?) = data.containsValue(Value.of(toCheck))
@@ -811,25 +798,30 @@ object Json : Language.HasFileExt.Impl("json"), Language.Serialization, Language
         override fun getAtPlace(place: String) = subValue(place)?.deserialization
 
         override fun removeAtPlace(toRemove: String) {
-            mut.preMutate()
+            changesToSize.beforeChange()
             data.remove(toRemove)
-            mut.mutate()
+            changesToSize.afterChange()
         }
 
         override fun setAtPlace(place: String, toSet: Any?) {
-            mut.preMutate()
+            changesToSize.beforeChange()
             data[place] = Value.of(toSet)
-            mut.mutate()
+            changesToSize.afterChange()
         }
 
         override fun toString() = "Json.Object:$data"
 
         companion object {
-            fun of(it: Map<*, *>, parent: MutableStructure?, mut: Mut = Mut()): Object.Mutable {
-                val v = ObjectImpl(emptyMap(), parent).also { it.mut.merge(mut) }
+            fun of(it: Map<*, *>, parent: MutableStructure?, changes: Change = Change()): Object.Mutable {
+                val v = ObjectImpl(emptyMap(), parent).also { it.changesToSize.merge(changes) }
                 for ((k, i) in it) v.data[k as String] = valueOfNullable(i, v)
                 return v
             }
         }
+    }
+
+    fun Change.merge(other: Change) {
+        beforeChange.addAll(other.beforeChange)
+        afterChange.addAll(other.afterChange)
     }
 }

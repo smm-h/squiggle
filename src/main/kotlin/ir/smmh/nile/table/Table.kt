@@ -1,27 +1,29 @@
 package ir.smmh.nile.table
 
-import ir.smmh.nile.Mut
+import ir.smmh.nile.Change
 import java.io.File
 
-class Table(override val mut: Mut = Mut()) :
-    TableView(emptyList(), emptyList()), Tabular.Mutable, Tabular.MutableSchema, Tabular.View, Mut.Able {
+class Table(
+    val changesToValues: Change = Change(),
+    override val changesToSize: Change = Change(),
+) : TableView(emptyList(), emptyList()), Tabular.Mutable, Tabular.MutableSchema, Tabular.View {
     override val core = this
 
-    override val schemaMut: Mut = Mut()
+    override val changesToSchema: Change = Change()
 
     override fun <T> addColumn(name: String): Tabular.Column.Mutable<T> {
         val column = Column<T>(name)
-        schemaMut.preMutate()
+        changesToSchema.beforeChange()
         columns.add(column)
-        schemaMut.mutate()
+        changesToSchema.afterChange()
         return column
     }
 
     fun removeColumn(column: Tabular.Column.Mutable<*>) {
         if (column in columns) {
-            schemaMut.preMutate()
+            changesToSchema.beforeChange()
             columns.remove(column)
-            schemaMut.mutate()
+            changesToSchema.afterChange()
             column.clear()
         } else {
             throw IllegalArgumentException("column not in table")
@@ -35,30 +37,34 @@ class Table(override val mut: Mut = Mut()) :
 
     private inner class Column<T>(
         override val name: String,
-        override val mut: Mut = this.mut
-    ) : Tabular.Column.Mutable<T>, Mut.Able {
+    ) : Tabular.Column.Mutable<T> {
+        override val changesToValues: Change by this@Table::changesToValues
+        override val changesToSize: Change by this@Table::changesToSize
         private val data: MutableMap<Int, T> = HashMap()
         override val size: Int get() = data.size
         override fun iterator(): Iterator<T?> = data.values.iterator()
         override fun getAtIndex(index: Int): T? = data[index]
         override fun containsValue(toCheck: T): Boolean = data.containsValue(toCheck)
+
         override fun setAtIndex(index: Int, toSet: T?) {
+            changesToValues.beforeChange()
             if (toSet == null) data.remove(index) else data[index] = toSet
+            changesToValues.afterChange()
         }
 
         override fun removeIndexFrom(toRemove: Int) {
             if (toRemove in data) {
-                mut.preMutate()
+                changesToValues.beforeChange()
                 data.remove(toRemove)
-                mut.mutate()
+                changesToValues.afterChange()
             }
         }
 
         override fun clear() {
             if (data.isNotEmpty()) {
-                mut.preMutate()
+                changesToValues.beforeChange()
                 data.clear()
-                mut.mutate()
+                changesToValues.afterChange()
             }
         }
     }
@@ -72,53 +78,50 @@ class Table(override val mut: Mut = Mut()) :
     override fun findNullableColumnByName(name: String) =
         super.findNullableColumnByName(name) as Tabular.Column.Mutable<*>?
 
-    override fun removeIndexFrom(toRemove: Int) {
-        mut.preMutate()
+    override fun removeIndexFrom(toRemove: Int) =
         removeElementFrom(rows[toRemove])
-        mut.mutate()
-    }
 
     override fun removeElementFrom(toRemove: Int) {
-        mut.preMutate()
+        changesToSize.beforeChange()
         rows.remove(toRemove)
         overColumns().forEach { it.removeIndexFrom(toRemove) }
-        mut.mutate()
+        changesToSize.afterChange()
     }
 
     override fun clear() {
-        mut.preMutate()
+        changesToSize.beforeChange()
         nextKey = 0
         rows.clear()
-        overColumns().forEach() { it.clear() }
-        mut.mutate()
+        overColumns().forEach { it.clear() }
+        changesToSize.afterChange()
     }
 
     override fun add(toAdd: (Int) -> Unit) {
-        mut.preMutate()
+        changesToSize.beforeChange()
         val k = nextKey++
         this.rows.add(k)
         toAdd(k)
-        mut.mutate()
+        changesToSize.afterChange()
     }
 
     companion object {
-        fun fromCsv(file: File, mut: Mut = Mut()) =
-            fromCsv(file.readText(), mut)
+        fun fromCsv(file: File, change: Change = Change()) =
+            fromCsv(file.readText(), change)
 
-        fun fromCsv(string: String, mut: Mut = Mut()) =
-            fromSv(string, ",", "\n", mut)
+        fun fromCsv(string: String, change: Change = Change()) =
+            fromSv(string, ",", "\n", change)
 
-        fun fromTsv(file: File, mut: Mut = Mut()) =
-            fromTsv(file.readText(), mut)
+        fun fromTsv(file: File, change: Change = Change()) =
+            fromTsv(file.readText(), change)
 
-        fun fromTsv(string: String, mut: Mut = Mut()) =
-            fromSv(string, "\t", "\n", mut)
+        fun fromTsv(string: String, change: Change = Change()) =
+            fromSv(string, "\t", "\n", change)
 
-        fun fromSv(file: File, seperator: String, linebreak: String, mut: Mut = Mut()) =
-            fromSv(file.readText(), seperator, linebreak, mut)
+        fun fromSv(file: File, seperator: String, linebreak: String, change: Change = Change()) =
+            fromSv(file.readText(), seperator, linebreak, change)
 
-        fun fromSv(string: String, seperator: String, linebreak: String, mut: Mut = Mut()): Table {
-            val table = Table(mut)
+        fun fromSv(string: String, seperator: String, linebreak: String, change: Change = Change()): Table {
+            val table = Table(change)
             val columns: MutableList<Tabular.Column.Mutable<String>> = ArrayList()
             var afterFirstLine = false
             string.split(linebreak).forEach {

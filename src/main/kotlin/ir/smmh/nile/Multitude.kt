@@ -9,5 +9,7 @@ interface Multitude {
         assert(size == 1)
     }
 
-    interface VariableSize : Multitude, Mut.Able
+    interface VariableSize : Multitude {
+        val changesToSize: Change
+    }
 }

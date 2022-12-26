@@ -3,9 +3,9 @@ package ir.smmh.nile.verbs
 interface CanSwapAtIndices<T> : CanSetAtIndex<T>, CanGetAtIndex<T> {
     fun swap(i: Int, j: Int) {
         if (i != j) {
-            mut.preMutate()
+            changesToValues.beforeChange()
             uncheckedSwap(i, j)
-            mut.mutate()
+            changesToValues.afterChange()
         }
     }
 
@@ -19,12 +19,12 @@ interface CanSwapAtIndices<T> : CanSetAtIndex<T>, CanGetAtIndex<T> {
         val n = size - 1
         val h = size / 2
         var i = 0
-        mut.preMutate()
+        changesToValues.beforeChange()
         while (i < h) {
             uncheckedSwap(i, n - i)
             i++
         }
-        mut.mutate()
+        changesToValues.afterChange()
     }
 
     companion object {

@@ -24,16 +24,16 @@ object TableTest {
     }
 
     @Test
-    fun testMuts() {
+    fun testChanges() {
         var mutations = 0
         Table().apply {
-            schemaMut.onMutate.add { mutations += 100 }
+            changesToSchema.afterChange.add { mutations += 100 }
             val c = addColumn<Int>("c")
-            mut.onMutate.add { mutations += 1 }
+            changesToSize.afterChange.add { mutations += 1 }
             add { c[it] = 7 }
             add { c[it] = 6 }
             val v = sortedByColumn(c) { it!! }
-            v.viewMut.onMutate.add { mutations += 10 }
+            v.changesToView.afterChange.add { mutations += 10 }
             v.shuffle()
         }
         assertEquals(112, mutations)

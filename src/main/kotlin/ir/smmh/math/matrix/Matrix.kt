@@ -10,6 +10,7 @@ import ir.smmh.math.matrix.Matrix.ValueFunction
 import ir.smmh.math.matrix.Matrix.ValueFunction.Independent
 import ir.smmh.nile.FunctionalSequence
 import ir.smmh.nile.Sequential
+import ir.smmh.nile.verbs.CanChangeValues
 
 
 /**
@@ -182,7 +183,7 @@ interface Matrix<T : Any> {
     private fun remInverse(that: T): Matrix<T> =
         FunctionMatrix.Unmemoized(rows, columns, structure) { i, j -> structure.remainder(that, this[i, j]) }
 
-    interface Mutable<T : Any> : Matrix<T> { //, Mut.Able {
+    interface Mutable<T : Any> : Matrix<T>, CanChangeValues {
 
         override val transpose: Matrix.Mutable<T>
 

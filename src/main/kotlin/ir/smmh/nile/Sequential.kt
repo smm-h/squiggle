@@ -103,13 +103,14 @@ interface Sequential<T> : Iterable<T>, ReverseIterable<T>, CanClone<Sequential<T
      */
     override fun getAtIndex(index: Int): T
 
-    interface Mutable<T> : Sequential<T>, CanSwapAtIndices<T>, CanClone.Mutable<Sequential<T>>, Mut.Able {
+    interface Mutable<T> : Sequential<T>, CanSwapAtIndices<T> {
 
         override fun clone(deepIfPossible: Boolean): Mutable<T>
-        override fun clone(deepIfPossible: Boolean, mut: Mut): Mutable<T>
+        fun clone(deepIfPossible: Boolean, changesToValues: Change): Mutable<T>
 
         /**
-         * Do not call this directly because it does not call preMutate/mutate
+         * Do not call this directly because it does not safely use [Change];
+         * Call [getPermutations] instead.
          */
         fun fillWithPermutations(permutations: CanAppendTo<in Sequential<T>>, first: Int, last: Int) {
             if (first == last) {
@@ -131,17 +132,17 @@ interface Sequential<T> : Iterable<T>, ReverseIterable<T>, CanClone<Sequential<T
 
         fun replaceData(toReplace: (T) -> T) {
             if (isNotEmpty()) {
-                mut.preMutate()
+                changesToValues.beforeChange()
                 for (i in 0 until size) setAtIndex(i, toReplace(getAtIndex(i)))
-                mut.mutate()
+                changesToValues.afterChange()
             }
         }
 
         fun mutateData(toApply: (T) -> Unit) {
             if (isNotEmpty()) {
-                mut.preMutate()
+                changesToValues.beforeChange()
                 for (element in this) toApply(element)
-                mut.mutate()
+                changesToValues.afterChange()
             }
         }
 
@@ -151,7 +152,7 @@ interface Sequential<T> : Iterable<T>, ReverseIterable<T>, CanClone<Sequential<T
         interface VariableSize<T> : Mutable<T>, CanPrependTo<T>, CanAppendTo<T>, CanRemoveAt, CanClear {
 
             override fun clone(deepIfPossible: Boolean): VariableSize<T>
-            override fun clone(deepIfPossible: Boolean, mut: Mut): VariableSize<T>
+            override fun clone(deepIfPossible: Boolean, changesToValues: Change): VariableSize<T>
 
             fun filterInPlace(toTest: (T) -> Boolean) {
                 if (isNotEmpty()) {
@@ -160,28 +161,28 @@ interface Sequential<T> : Iterable<T>, ReverseIterable<T>, CanClone<Sequential<T
                         val element: T = getAtIndex(i)
                         if (!toTest(element)) {
                             if (!mutated) {
-                                mut.preMutate()
+                                changesToSize.beforeChange()
                                 mutated = true
                             }
                             removeIndexFrom(i)
                         }
                     }
                     if (mutated) {
-                        mut.mutate()
+                        changesToSize.afterChange()
                     }
                 }
             }
 
             companion object {
 
-                fun <T> ofArguments(vararg arguments: T, mut: Mut = Mut()): VariableSize<T> =
-                    of(arguments, mut)
+                fun <T> ofArguments(vararg arguments: T, change: Change = Change()): VariableSize<T> =
+                    of(arguments, change)
 
-                fun <T> of(list: List<T>, mut: Mut = Mut()): VariableSize<T> =
-                    SequentialImpl(list, mut)
+                fun <T> of(list: List<T>, change: Change = Change()): VariableSize<T> =
+                    SequentialImpl(list, change)
 
-                fun <T> of(array: Array<out T>, mut: Mut = Mut()): VariableSize<T> =
-                    of(ArrayList<T>(array.size).also { it.addAll(listOf(*array)) }, mut)
+                fun <T> of(array: Array<out T>, change: Change = Change()): VariableSize<T> =
+                    of(ArrayList<T>(array.size).also { it.addAll(listOf(*array)) }, change)
             }
         }
 
@@ -194,8 +195,8 @@ interface Sequential<T> : Iterable<T>, ReverseIterable<T>, CanClone<Sequential<T
                 of(string.toCharArray())
 
             @Suppress("DuplicatedCode")
-            fun <T> of(list: MutableList<T>, mut: Mut = Mut()): Mutable<T> =
-                object : AbstractMutableSequential<T>(mut) {
+            fun <T> of(list: MutableList<T>, change: Change = Change()): Mutable<T> =
+                object : AbstractMutableSequential<T>(change) {
                     override fun getAtIndex(index: Int): T {
                         validateIndex(index)
                         return list[index]
@@ -205,15 +206,15 @@ interface Sequential<T> : Iterable<T>, ReverseIterable<T>, CanClone<Sequential<T
 
                     override fun setAtIndex(index: Int, toSet: T) {
                         validateIndex(index)
-                        mut.preMutate()
+                        change.beforeChange()
                         list[index] = toSet
-                        mut.mutate()
+                        change.afterChange()
                     }
                 }
 
             @Suppress("DuplicatedCode")
-            fun <T> of(array: Array<T>, mut: Mut = Mut()): Mutable<T> =
-                object : AbstractMutableSequential<T>(mut) {
+            fun <T> of(array: Array<T>, changesToSize: Change = Change()): Mutable<T> =
+                object : AbstractMutableSequential<T>(changesToSize) {
                     override fun getAtIndex(index: Int): T {
                         validateIndex(index)
                         return array[index]
@@ -223,14 +224,14 @@ interface Sequential<T> : Iterable<T>, ReverseIterable<T>, CanClone<Sequential<T
 
                     override fun setAtIndex(index: Int, toSet: T) {
                         validateIndex(index)
-                        mut.preMutate()
+                        changesToValues.beforeChange()
                         array[index] = toSet
-                        mut.mutate()
+                        changesToValues.afterChange()
                     }
                 }
 
-            fun of(array: IntArray, mut: Mut = Mut()): Mutable<Int> =
-                object : AbstractMutableSequential<Int>(mut) {
+            fun of(array: IntArray, change: Change = Change()): Mutable<Int> =
+                object : AbstractMutableSequential<Int>(change) {
                     override fun getAtIndex(index: Int): Int {
                         validateIndex(index)
                         return array[index]
@@ -240,14 +241,14 @@ interface Sequential<T> : Iterable<T>, ReverseIterable<T>, CanClone<Sequential<T
 
                     override fun setAtIndex(index: Int, toSet: Int) {
                         validateIndex(index)
-                        mut.preMutate()
+                        change.beforeChange()
                         array[index] = toSet
-                        mut.mutate()
+                        change.afterChange()
                     }
                 }
 
-            fun of(array: FloatArray, mut: Mut = Mut()): Mutable<Float> =
-                object : AbstractMutableSequential<Float>(mut) {
+            fun of(array: FloatArray, change: Change = Change()): Mutable<Float> =
+                object : AbstractMutableSequential<Float>(change) {
                     override fun getAtIndex(index: Int): Float {
                         validateIndex(index)
                         return array[index]
@@ -257,14 +258,14 @@ interface Sequential<T> : Iterable<T>, ReverseIterable<T>, CanClone<Sequential<T
 
                     override fun setAtIndex(index: Int, toSet: Float) {
                         validateIndex(index)
-                        mut.preMutate()
+                        change.beforeChange()
                         array[index] = toSet
-                        mut.mutate()
+                        change.afterChange()
                     }
                 }
 
-            fun of(array: LongArray, mut: Mut = Mut()): Mutable<Long> =
-                object : AbstractMutableSequential<Long>(mut) {
+            fun of(array: LongArray, change: Change = Change()): Mutable<Long> =
+                object : AbstractMutableSequential<Long>(change) {
                     override fun getAtIndex(index: Int): Long {
                         validateIndex(index)
                         return array[index]
@@ -274,14 +275,14 @@ interface Sequential<T> : Iterable<T>, ReverseIterable<T>, CanClone<Sequential<T
 
                     override fun setAtIndex(index: Int, toSet: Long) {
                         validateIndex(index)
-                        mut.preMutate()
+                        change.beforeChange()
                         array[index] = toSet
-                        mut.mutate()
+                        change.afterChange()
                     }
                 }
 
-            fun of(array: DoubleArray, mut: Mut = Mut()): Mutable<Double> =
-                object : AbstractMutableSequential<Double>(mut) {
+            fun of(array: DoubleArray, change: Change = Change()): Mutable<Double> =
+                object : AbstractMutableSequential<Double>(change) {
                     override fun getAtIndex(index: Int): Double {
                         validateIndex(index)
                         return array[index]
@@ -291,14 +292,14 @@ interface Sequential<T> : Iterable<T>, ReverseIterable<T>, CanClone<Sequential<T
 
                     override fun setAtIndex(index: Int, toSet: Double) {
                         validateIndex(index)
-                        mut.preMutate()
+                        change.beforeChange()
                         array[index] = toSet
-                        mut.mutate()
+                        change.afterChange()
                     }
                 }
 
-            fun of(array: ByteArray, mut: Mut = Mut()): Mutable<Byte> =
-                object : AbstractMutableSequential<Byte>(mut) {
+            fun of(array: ByteArray, change: Change = Change()): Mutable<Byte> =
+                object : AbstractMutableSequential<Byte>(change) {
                     override fun getAtIndex(index: Int): Byte {
                         validateIndex(index)
                         return array[index]
@@ -308,14 +309,14 @@ interface Sequential<T> : Iterable<T>, ReverseIterable<T>, CanClone<Sequential<T
 
                     override fun setAtIndex(index: Int, toSet: Byte) {
                         validateIndex(index)
-                        mut.preMutate()
+                        change.beforeChange()
                         array[index] = toSet
-                        mut.mutate()
+                        change.afterChange()
                     }
                 }
 
-            fun of(array: CharArray, mut: Mut = Mut()): Mutable<Char> =
-                object : AbstractMutableSequential<Char>(mut) {
+            fun of(array: CharArray, change: Change = Change()): Mutable<Char> =
+                object : AbstractMutableSequential<Char>(change) {
                     override fun getAtIndex(index: Int): Char {
                         validateIndex(index)
                         return array[index]
@@ -325,14 +326,14 @@ interface Sequential<T> : Iterable<T>, ReverseIterable<T>, CanClone<Sequential<T
 
                     override fun setAtIndex(index: Int, toSet: Char) {
                         validateIndex(index)
-                        mut.preMutate()
+                        change.beforeChange()
                         array[index] = toSet
-                        mut.mutate()
+                        change.afterChange()
                     }
                 }
 
-            fun of(array: BooleanArray, mut: Mut = Mut()): Mutable<Boolean> =
-                object : AbstractMutableSequential<Boolean>(mut) {
+            fun of(array: BooleanArray, change: Change = Change()): Mutable<Boolean> =
+                object : AbstractMutableSequential<Boolean>(change) {
                     override fun getAtIndex(index: Int): Boolean {
                         validateIndex(index)
                         return array[index]
@@ -342,9 +343,9 @@ interface Sequential<T> : Iterable<T>, ReverseIterable<T>, CanClone<Sequential<T
 
                     override fun setAtIndex(index: Int, toSet: Boolean) {
                         validateIndex(index)
-                        mut.preMutate()
+                        change.beforeChange()
                         array[index] = toSet
-                        mut.mutate()
+                        change.afterChange()
                     }
                 }
         }
@@ -354,7 +355,7 @@ interface Sequential<T> : Iterable<T>, ReverseIterable<T>, CanClone<Sequential<T
 ////        fun addExpirationHandler(handler: (Sequential<T>) -> Unit) {
 ////            val core: Sequential<T> = core
 ////            if (core is Mutable<*>) {
-////                val coreOnPreMutate = core.mut.onPreMutate
+////                val coreOnPreMutate = core.change.onPreMutate
 ////                if (coreOnPreMutate is Listeners) {
 ////                    coreOnPreMutate.addDisposable {
 ////                        handler(clone(false))
@@ -492,13 +493,13 @@ interface Sequential<T> : Iterable<T>, ReverseIterable<T>, CanClone<Sequential<T
 ////        override val injected = ir.smmh.nile.View.Impl(sequential, onExpire)
 //    }
 
-    abstract class AbstractMutableSequential<T> protected constructor(override var mut: Mut) :
-        AbstractSequential<T>(), Mutable<T>, Mut.Able {
+    abstract class AbstractMutableSequential<T> protected constructor(override val changesToValues: Change) :
+        AbstractSequential<T>(), Mutable<T> {
 
-        override fun clone(deepIfPossible: Boolean) = clone(deepIfPossible, Mut())
-        override fun clone(deepIfPossible: Boolean, mut: Mut): Mutable<T> {
+        override fun clone(deepIfPossible: Boolean) = clone(deepIfPossible, Change())
+        override fun clone(deepIfPossible: Boolean, changesToValues: Change): Mutable<T> {
             // TODO deep clone
-            return SequentialImpl(asList(), mut)
+            return SequentialImpl(asList(), changesToValues)
         }
     }
 

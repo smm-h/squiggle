@@ -183,23 +183,25 @@ interface NodedSpecificTree<DataType, NodeType : NodedSpecificTree.Node<DataType
     interface Mutable<DataType, NodeType : Mutable.Node<DataType, NodeType, TreeType>, TreeType : Mutable<DataType, NodeType, TreeType>> :
         NodedSpecificTree<DataType, NodeType, TreeType>, SpecificTree.Mutable<DataType, TreeType> {
         fun replaceData(toReplace: Function<in DataType, out DataType>) {
-            mut.preMutate()
+            changesToValues.beforeChange()
             for (node in traverseBreadthFirst().nodes) {
                 node?.replaceData(toReplace)
             }
-            mut.mutate()
+            changesToValues.afterChange()
         }
 
         fun mutateData(toApply: (DataType) -> Unit) {
-            mut.preMutate()
+            changesToValues.beforeChange()
             for (node in traverseBreadthFirst().nodes) {
                 node?.mutateData(toApply)
             }
-            mut.mutate()
+            changesToValues.afterChange()
         }
 
         override fun clear() {
+            changesToSize.beforeChange()
             rootNode = null
+            changesToSize.afterChange()
         }
 
         override var rootNode: NodeType?

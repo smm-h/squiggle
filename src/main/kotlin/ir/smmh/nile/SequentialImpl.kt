@@ -2,43 +2,47 @@ package ir.smmh.nile
 
 import ir.smmh.nile.Sequential.AbstractMutableSequential
 
-class SequentialImpl<T>(initialCapacity: Int = 10, mut: Mut = Mut()) :
-    AbstractMutableSequential<T>(mut),
+class SequentialImpl<T>(
+    initialCapacity: Int = 10,
+    changesToValues: Change = Change(),
+    override val changesToSize: Change = Change(),
+) :
+    AbstractMutableSequential<T>(changesToValues),
     Sequential.Mutable.VariableSize<T> {
     private val list: MutableList<T>
 
-    constructor(collection: Collection<T>, mut: Mut = Mut()) : this(collection.size, mut) {
+    constructor(collection: Collection<T>, change: Change = Change()) : this(collection.size, change) {
         list.addAll(collection)
     }
 
     //    @JvmOverloads
-    constructor(iterable: Iterable<T>, initialCapacity: Int = 20, mut: Mut = Mut()) : this(initialCapacity, mut) {
+    constructor(iterable: Iterable<T>, initialCapacity: Int = 20, change: Change = Change()) : this(initialCapacity, change) {
         for (element in iterable) list.add(element)
     }
 
-    override fun clone(deepIfPossible: Boolean) = clone(deepIfPossible, Mut())
+    override fun clone(deepIfPossible: Boolean) = clone(deepIfPossible, Change())
 
-    override fun clone(deepIfPossible: Boolean, mut: Mut): Sequential.Mutable.VariableSize<T> {
+    override fun clone(deepIfPossible: Boolean, changesToValues: Change): Sequential.Mutable.VariableSize<T> {
         // TODO deep clone
-        return SequentialImpl(asList(), mut)
+        return SequentialImpl(asList(), changesToValues)
     }
 
     override fun removeIndexFrom(toRemove: Int) {
-        mut.preMutate()
+        changesToSize.beforeChange()
         list.removeAt(toRemove)
-        mut.mutate()
+        changesToSize.afterChange()
     }
 
     override fun append(toAppend: T) {
-        mut.preMutate()
+        changesToSize.beforeChange()
         list.add(toAppend)
-        mut.mutate()
+        changesToSize.afterChange()
     }
 
     override fun setAtIndex(index: Int, toSet: T) {
-        mut.preMutate()
+        changesToValues.beforeChange()
         list[index] = toSet
-        mut.mutate()
+        changesToValues.afterChange()
     }
 
     override fun getAtIndex(index: Int): T {
@@ -51,15 +55,15 @@ class SequentialImpl<T>(initialCapacity: Int = 10, mut: Mut = Mut()) :
         }
 
     override fun clear() {
-        mut.preMutate()
+        changesToSize.beforeChange()
         list.clear()
-        mut.mutate()
+        changesToSize.afterChange()
     }
 
     override fun prepend(toPrepend: T) {
-        mut.preMutate()
+        changesToSize.beforeChange()
         list.add(0, toPrepend)
-        mut.mutate()
+        changesToSize.afterChange()
     }
 
     init {

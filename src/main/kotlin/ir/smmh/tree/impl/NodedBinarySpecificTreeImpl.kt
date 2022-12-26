@@ -1,13 +1,16 @@
 package ir.smmh.tree.impl
 
 import ir.smmh.nile.DoubleSequence
-import ir.smmh.nile.Mut
+import ir.smmh.nile.Change
 import ir.smmh.nile.Sequential
 import ir.smmh.nile.verbs.CanContainValue
 import ir.smmh.tree.NodedSpecificTree
 
 
-class NodedBinarySpecificTreeImpl<DataType>(override val mut: Mut = Mut()) :
+class NodedBinarySpecificTreeImpl<DataType>(
+    override val changesToValues: Change = Change(),
+    override val changesToSize: Change = Change(), // TODO add appropriate usages
+) :
     NodedSpecificTree.Binary.Mutable<DataType, NodedBinarySpecificTreeImpl<DataType>.Node, NodedBinarySpecificTreeImpl<DataType>> {
     override var rootNode: Node? = null
     private val nodeContainer: CanContainValue<Node> = object : CanContainValue<Node> {
@@ -92,18 +95,16 @@ class NodedBinarySpecificTreeImpl<DataType>(override val mut: Mut = Mut()) :
         }
 
         override val children: Sequential<Node?>
-            get() {
-                return DoubleSequence(leftChild, rightChild)
-            }
+            get() = DoubleSequence(leftChild, rightChild)
 
         override val indexInParent: Int
             get() {
                 val p = parent
-                if (p != null) {
-                    if (this === p.leftChild) return 0
-                    if (this === p.rightChild) return 1
+                return if (p == null) -1 else when (this) {
+                    p.leftChild -> 0
+                    p.rightChild -> 1
+                    else -> -1
                 }
-                return -1
             }
 
         override val tree: NodedBinarySpecificTreeImpl<DataType>

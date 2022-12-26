@@ -1,9 +1,9 @@
 package ir.smmh.nile.verbs
 
-import ir.smmh.nile.Mut
+import ir.smmh.nile.Multitude
 
 
-interface CanRemoveAtPlace<P> : CanContainPlace<P>, Mut.Able {
+interface CanRemoveAtPlace<P> : CanContainPlace<P>, Multitude.VariableSize {
     fun removeAtPlace(toRemove: P)
 
     companion object {

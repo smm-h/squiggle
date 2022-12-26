@@ -1,6 +1,6 @@
 package ir.smmh.math.graph
 
-import ir.smmh.nile.Mut
+import ir.smmh.nile.Change
 import ir.smmh.nile.verbs.CanClone
 
 sealed class HashGraph<V>(
@@ -75,38 +75,38 @@ sealed class HashGraph<V>(
         directed: Boolean = false,
         vertices: Collection<V> = emptySet(),
         edges: Collection<Graph.Edge<V>> = emptySet(),
-        override val verticesMut: Mut = Mut(),
-        override val edgesMut: Mut = Mut(),
+        override val changesToVertices: Change = Change(),
+        override val changesToEdges: Change = Change(),
     ) : HashGraph<V>(directed, vertices.toMutableSet(), edges.toMutableSet()),
         Graph.VerticesMutable<V>, Graph.EdgesMutable<V> {
 
         override fun specificThis() = this
         override fun clone(deepIfPossible: Boolean) =
-            HashGraph.Mutable<V>(directed, HashSet(vertices), HashSet(edges), Mut(), Mut())
+            HashGraph.Mutable<V>(directed, HashSet(vertices), HashSet(edges), Change(), Change())
 
         override fun addVertex(vertex: V) {
             if (vertex !in vertices) {
-                verticesMut.preMutate()
+                changesToVertices.beforeChange()
                 vertices.add(vertex)
-                verticesMut.mutate()
+                changesToVertices.afterChange()
             }
         }
 
         override fun removeVertex(vertex: V) {
             if (vertex in vertices) {
-                verticesMut.preMutate()
+                changesToVertices.beforeChange()
                 vertices.remove(vertex)
                 edges.removeIf { it.a == vertex || it.b == vertex }
-                verticesMut.mutate()
+                changesToVertices.afterChange()
             }
         }
 
         override fun clearVertices() {
             if (vertices.isNotEmpty()) {
-                verticesMut.preMutate()
+                changesToVertices.beforeChange()
                 vertices.clear()
                 clearEdges()
-                verticesMut.mutate()
+                changesToVertices.afterChange()
             }
         }
 
@@ -115,9 +115,9 @@ sealed class HashGraph<V>(
 
         override fun addEdge(edge: Graph.Edge<V>) {
             if (edge !in edges) {
-                edgesMut.preMutate()
+                changesToEdges.beforeChange()
                 edges.add(edge)
-                edgesMut.mutate()
+                changesToEdges.afterChange()
             }
         }
 
@@ -126,17 +126,17 @@ sealed class HashGraph<V>(
 
         override fun removeEdge(edge: Graph.Edge<V>) {
             if (edge in edges) {
-                edgesMut.preMutate()
+                changesToEdges.beforeChange()
                 edges.remove(edge)
-                edgesMut.mutate()
+                changesToEdges.afterChange()
             }
         }
 
         override fun clearEdges() {
             if (edges.isNotEmpty()) {
-                edgesMut.preMutate()
+                changesToEdges.beforeChange()
                 edges.clear()
-                edgesMut.mutate()
+                changesToEdges.afterChange()
             }
         }
     }

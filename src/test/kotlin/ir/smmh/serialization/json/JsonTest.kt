@@ -134,12 +134,12 @@ object JsonTest {
 
         val oldHashCode = AtomicInteger()
 
-        mut.onPreMutate.add {
+        changesToSize.beforeChange.add {
             // before it mutates, keep the hashCode of the old value
             oldHashCode.set(this[sourceKey].hashCode())
         }
 
-        mut.onMutate.add {
+        changesToSize.afterChange.add {
             // after it has mutated, compare the old hashCode with the new
             val sourceData = this[sourceKey]
             val newHashCode = sourceData.hashCode()

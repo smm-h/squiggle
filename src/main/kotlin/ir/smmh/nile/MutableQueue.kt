@@ -5,22 +5,21 @@ import java.util.*
 import java.util.concurrent.ConcurrentLinkedQueue
 
 /**
- * An `Order` with a Mut backed by a Java queue
- * @see nile.Order
+ * An [Order] with a [Change] backed by a Java queue
  */
 class MutableQueue<T>(
     private val queue: Queue<T> = ConcurrentLinkedQueue(),
-    override val mut: Mut = Mut()
-) : Order<T>, Mut.Able {
+    override val changesToSize: Change = Change(),
+) : Order<T> {
 
     override val size get() = queue.size
 
     override fun iterator() = queue.iterator()
 
     override fun pollNullable() = if (queue.isEmpty()) null else {
-        mut.preMutate()
+        changesToSize.beforeChange()
         val data = queue.poll()
-        mut.mutate()
+        changesToSize.afterChange()
         data
     }
 
@@ -31,16 +30,16 @@ class MutableQueue<T>(
     override fun canEnter() = true
 
     override fun enter(toEnter: T) {
-        mut.preMutate()
+        changesToSize.beforeChange()
         queue.add(toEnter)
-        mut.mutate()
+        changesToSize.afterChange()
     }
 
     override fun clear() {
         if (queue.isNotEmpty()) {
-            mut.preMutate()
+            changesToSize.beforeChange()
             queue.clear()
-            mut.mutate()
+            changesToSize.afterChange()
         }
     }
 

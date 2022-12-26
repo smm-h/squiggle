@@ -1,21 +1,22 @@
 package ir.smmh.math.matrix
 
 import ir.smmh.math.abstractalgebra.RingLike
+import ir.smmh.nile.Change
 
 class ArrayMatrix<T : Any>(
     override val rows: Int,
     override val columns: Int,
     override val structure: RingLike<T>,
-//    override val mut: Mut = Mut(),
+    override val changesToValues: Change = Change(),
     initialValueFunction: Matrix.ValueFunction<T>,
 ) : AbstractMatrix.Mutable<T>() {
     constructor(
         rows: Int,
         columns: Int,
         structure: RingLike<T>,
-//        mut: Mut = Mut(),
+        changesToValues: Change = Change(),
         initialValue: T = structure.addition.identity!!,
-    ) : this(rows, columns, structure, Matrix.ValueFunction.Independent { _, _ -> initialValue })
+    ) : this(rows, columns, structure, changesToValues, Matrix.ValueFunction.Independent { _, _ -> initialValue })
 
     private val array = Array<Array<Any>>(rows) { i -> Array<Any>(columns) { j -> initialValueFunction(this, i, j) } }
 
@@ -24,8 +25,8 @@ class ArrayMatrix<T : Any>(
     @Suppress("UNCHECKED_CAST")
     override fun get(i: Int, j: Int): T = array[i][j] as T
     override fun set(i: Int, j: Int, value: T) {
-//        mut.preMutate()
+        changesToValues.beforeChange()
         array[i][j] = value
-//        mut.mutate()
+        changesToValues.afterChange()
     }
 }

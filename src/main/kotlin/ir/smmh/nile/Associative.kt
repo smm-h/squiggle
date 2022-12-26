@@ -75,29 +75,30 @@ interface Associative<K, V> : CanContainPlace<K>, CanContainValue<V> {
         override fun specificThis(): SingleValue<K, V> = this
     }
 
-    private class SingleValueMutableImpl<K, V> : SingleValueImpl<K, V>, SingleValue.Mutable<K, V>, Mut.Able {
+    private class SingleValueMutableImpl<K, V> : SingleValueImpl<K, V>, SingleValue.Mutable<K, V> {
 
         constructor() : super()
         private constructor(map: MutableMap<K, V>) : super(map)
 
-        override val mut = Mut()
+        override val changesToSize = Change()
+        override val changesToValues = Change()
 
         override fun setAtPlace(place: K, toSet: V) {
-            mut.preMutate()
+            changesToValues.beforeChange()
             map[place] = toSet
-            mut.mutate()
+            changesToValues.afterChange()
         }
 
         override fun removeAtPlace(toRemove: K) {
-            mut.preMutate()
+            changesToSize.beforeChange()
             map.remove(toRemove)
-            mut.mutate()
+            changesToSize.afterChange()
         }
 
         override fun removeAllPlaces() {
-            mut.preMutate()
+            changesToSize.beforeChange()
             map.clear()
-            mut.mutate()
+            changesToSize.afterChange()
         }
 
         override fun clone(deepIfPossible: Boolean): SingleValue.Mutable<K, V> = SingleValueMutableImpl(HashMap(map))
@@ -145,24 +146,25 @@ interface Associative<K, V> : CanContainPlace<K>, CanContainValue<V> {
         override fun specificThis(): MultiValue<K, V> = this
     }
 
-    private class MultiValueMutableImpl<K, V> : MultiValueImpl<K, V>, MultiValue.Mutable<K, V>, Mut.Able {
+    private class MultiValueMutableImpl<K, V> : MultiValueImpl<K, V>, MultiValue.Mutable<K, V> {
 
-        override val mut = Mut()
+        override val changesToSize = Change()
+        override val changesToValues = Change()
 
         constructor() : super()
         private constructor(map: MutableMap<K, Sequential.Mutable.VariableSize<V>>) : super(map)
 
         override fun setAtPlace(place: K, toSet: V) {
-            mut.preMutate()
+            changesToValues.beforeChange()
             val s = map.computeIfAbsent(place) { SequentialImpl(ArrayList()) }
             s.append(toSet)
-            mut.mutate()
+            changesToValues.afterChange()
         }
 
         override fun removeAtPlace(toRemove: K) {
-            mut.preMutate()
+            changesToSize.beforeChange()
             map.remove(toRemove)
-            mut.mutate()
+            changesToSize.afterChange()
         }
 
         override fun removeAtPlace(place: K, toRemove: V) {
@@ -170,9 +172,9 @@ interface Associative<K, V> : CanContainPlace<K>, CanContainValue<V> {
             if (s != null) {
                 val i = s.findFirst(toRemove)
                 if (i != -1) {
-                    mut.preMutate()
+                    changesToValues.beforeChange()
                     s.removeIndexFrom(i)
-                    mut.mutate()
+                    changesToValues.afterChange()
                 }
             }
         }
@@ -180,16 +182,16 @@ interface Associative<K, V> : CanContainPlace<K>, CanContainValue<V> {
         override fun removeAllAtPlace(place: K) {
             val s = map[place]
             if (s != null) {
-                mut.preMutate()
+                changesToValues.beforeChange()
                 s.clear()
-                mut.mutate()
+                changesToValues.afterChange()
             }
         }
 
         override fun removeAllPlaces() {
-            mut.preMutate()
+            changesToSize.beforeChange()
             map.clear()
-            mut.mutate()
+            changesToSize.afterChange()
         }
 
         override fun clone(deepIfPossible: Boolean): MultiValue.Mutable<K, V> = MultiValueMutableImpl(HashMap(map))

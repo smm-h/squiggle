@@ -32,6 +32,7 @@ object CLI {
     private var autoReport: Boolean = true
     private var autoSave: Boolean = true
 
+    // TODO use Change instead
     private fun mutate() {
         if (autoReport) report()
         if (autoSave) save()

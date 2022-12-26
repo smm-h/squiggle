@@ -1,14 +1,15 @@
 package ir.smmh.math.graph
 
 import ir.smmh.math.matrix.Matrix
-import ir.smmh.nile.Mut
+import ir.smmh.nile.Dirty
+import ir.smmh.nile.Change
 
 class MatrixDirectedWeightedGraph<V, W : Any>(
     val vertices: List<V>,
     val matrix: Matrix.Mutable<W>,
     override val nullWeight: W = matrix.structure.addition.identity!!,
-    override val edgesMut: Mut = Mut(),
-    override val weightsMut: Mut = Mut(),
+    override val changesToEdges: Change = Change(),
+    override val changesToWeights: Change = Change(),
 ) : Graph.EdgesMutable<V>, Graph.Weighted.EdgesMutable<V, W> {
 
     override val directed = true
@@ -29,7 +30,7 @@ class MatrixDirectedWeightedGraph<V, W : Any>(
     override fun contains(vertex: V) = vertex in vertices
     override fun contains(edge: Graph.Edge<V>) = areConnected(edge.a, edge.b)
 
-    private val edges: Map<Graph.Edge<V>, W> by lazy {
+    private val edges: Map<Graph.Edge<V>, W> by Dirty(changesToEdges) {
         HashMap<Graph.Edge<V>, W>().apply {
             for (i in 0 until numberOfVertices) {
                 for (j in 0 until numberOfVertices) {
@@ -67,9 +68,9 @@ class MatrixDirectedWeightedGraph<V, W : Any>(
         val i = indexOf(v1)
         val j = indexOf(v2)
         if (matrix[i, j] == nullWeight) {
-            weightsMut.preMutate()
+            changesToWeights.beforeChange()
             matrix[i, j] = weight
-            weightsMut.mutate()
+            changesToWeights.afterChange()
         }
     }
 
@@ -80,9 +81,9 @@ class MatrixDirectedWeightedGraph<V, W : Any>(
         val i = indexOf(v1)
         val j = indexOf(v2)
         if (matrix[i, j] == nullWeight) {
-            edgesMut.preMutate()
+            changesToEdges.beforeChange()
             matrix[i, j] = weight
-            edgesMut.mutate()
+            changesToEdges.afterChange()
         }
     }
 
@@ -93,18 +94,18 @@ class MatrixDirectedWeightedGraph<V, W : Any>(
         val i = indexOf(v1)
         val j = indexOf(v2)
         if (matrix[i, j] != nullWeight) {
-            edgesMut.preMutate()
+            changesToEdges.beforeChange()
             matrix[i, j] = nullWeight
-            edgesMut.mutate()
+            changesToEdges.afterChange()
         }
     }
 
     override fun clearEdges() {
         if (numberOfEdges > 0) {
-            edgesMut.preMutate()
+            changesToEdges.beforeChange()
             numberOfEdges = 0
             matrix.setAll(nullWeight)
-            edgesMut.mutate()
+            changesToEdges.afterChange()
         }
     }
 }

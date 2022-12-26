@@ -4,7 +4,7 @@ import ir.smmh.lingu.Code
 import ir.smmh.lingu.Language
 import ir.smmh.markup.Markup.Table.Builder
 import ir.smmh.nile.Multitude
-import ir.smmh.nile.Mut
+import ir.smmh.nile.Change
 import ir.smmh.nile.or.FatOr
 import ir.smmh.nile.or.Or
 import ir.smmh.nile.table.Tabular
@@ -281,22 +281,22 @@ object Markup {
 
         class Multitude : Fragment(), ir.smmh.nile.Multitude, Iterable<Fragment>, CanAppendTo<Fragment>,
             CanPrependTo<Fragment> {
-            override val mut: Mut = Mut()
+            override val changesToSize: Change = Change()
             override val size get() = list.size
             private val list: MutableList<Fragment> = ArrayList()
             override fun iterator() = list.iterator()
             override fun append(toAppend: Fragment) {
-                mut.preMutate()
+                changesToSize.beforeChange()
                 if (toAppend is Multitude) list.addAll(toAppend.list)
                 else list.add(toAppend)
-                mut.mutate()
+                changesToSize.afterChange()
             }
 
             override fun prepend(toPrepend: Fragment) {
-                mut.preMutate()
+                changesToSize.beforeChange()
                 if (toPrepend is Multitude) list.addAll(0, toPrepend.list)
                 else list.add(0, toPrepend)
-                mut.mutate()
+                changesToSize.afterChange()
             }
 
             override fun toString(depth: Int): String {

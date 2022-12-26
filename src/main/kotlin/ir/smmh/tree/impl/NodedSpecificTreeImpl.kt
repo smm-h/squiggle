@@ -2,7 +2,7 @@
 
 package ir.smmh.tree.impl
 
-import ir.smmh.nile.Mut
+import ir.smmh.nile.Change
 import ir.smmh.nile.Sequential
 import ir.smmh.nile.SequentialImpl
 import ir.smmh.nile.verbs.CanContainValue
@@ -10,7 +10,10 @@ import ir.smmh.tree.NodedSpecificTree
 import java.util.*
 
 
-class NodedSpecificTreeImpl<DataType>(override val mut: Mut = Mut()) :
+class NodedSpecificTreeImpl<DataType>(
+    override val changesToValues: Change = Change(),
+    override val changesToSize: Change = Change(), // TODO add appropriate usages
+) :
     NodedSpecificTree.Mutable<DataType, NodedSpecificTreeImpl<DataType>.Node, NodedSpecificTreeImpl<DataType>> {
     override var rootNode: Node? = null
 

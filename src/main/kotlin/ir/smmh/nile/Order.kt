@@ -24,10 +24,10 @@ interface Order<T> : Multitude, CanClear, Iterable<T> {
         val shortestFirst: (String) -> Int = { it.length }
         val longestFirst: (String) -> Int = { -it.length }
 
-        fun <T> by(order: (T) -> Int) = by(Mut(), order)
-        fun <T> by(comparator: Comparator<T>) = by(Mut(), comparator)
-        fun <T> by(mut: Mut, order: (T) -> Int) = by(mut, Comparator.comparingInt(order))
-        fun <T> by(mut: Mut, comparator: Comparator<T>): Order<T> =
-            MutableQueue(PriorityQueue(comparator), mut)
+        fun <T> by(order: (T) -> Int) = by(Change(), order)
+        fun <T> by(comparator: Comparator<T>) = by(Change(), comparator)
+        fun <T> by(change: Change, order: (T) -> Int) = by(change, Comparator.comparingInt(order))
+        fun <T> by(change: Change, comparator: Comparator<T>): Order<T> =
+            MutableQueue(PriorityQueue(comparator), change)
     }
 }
