@@ -13,7 +13,8 @@ import kotlin.collections.MutableCollection
 class NilizedCollection<T>(
     private val collection: MutableCollection<T>,
     override val changesToSize: Change = Change(),
-) : CanAddTo<T>, CanRemoveElementFrom<T>, CanContainValue<T>, CanClear, Iterable<T> {
+) : CanAddTo<T>, CanRemoveElementFrom<T>, CanContainValue<T>, CanClear,
+    CanIterateOverValues<T>, CanIterateOverValuesInReverse<T> {
 
     override fun add(toAdd: T) {
         changesToSize.beforeChange()
@@ -38,5 +39,7 @@ class NilizedCollection<T>(
     override val size: Int get() = collection.size
     override fun containsValue(toCheck: T) = collection.contains(toCheck)
     override fun isEmpty() = collection.isEmpty()
-    override fun iterator() = collection.iterator()
+
+    override val overValues: Iterable<T> = collection
+    override val overValuesInReverse: Iterable<T> by lazy { collection.reversed() }
 }

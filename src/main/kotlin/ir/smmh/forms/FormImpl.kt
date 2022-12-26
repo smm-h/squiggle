@@ -5,7 +5,7 @@ import ir.smmh.forms.Form.IncompleteFormException
 import ir.smmh.nile.Associative
 import ir.smmh.nile.Dirty
 import ir.smmh.nile.Sequential
-import ir.smmh.nile.SequentialImpl
+import ir.smmh.nile.ListSequential
 import ir.smmh.nile.or.FatOr
 import ir.smmh.nile.or.Or
 import ir.smmh.util.FileUtil.writeTo
@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 class FormImpl private constructor(
     override val title: String,
-    private val sequence: Sequential.Mutable.VariableSize<Or<String, BlankSpace>> = SequentialImpl(),
+    private val sequence: Sequential.Mutable.CanChangeSize<Or<String, BlankSpace>> = ListSequential(),
     private val associative: Associative.MultiValue.Mutable<BlankSpace, String> = Associative.MultiValue.Mutable.empty(),
 ) : Form {
 
@@ -45,8 +45,8 @@ class FormImpl private constructor(
 
     override fun append(blankSpace: BlankSpace) = sequence.append(make(blankSpace))
     override fun prepend(blankSpace: BlankSpace) = sequence.prepend(make(blankSpace))
-    override fun append(other: Form) = sequence.appendAll((other as FormImpl).sequence)
-    override fun prepend(other: Form) = sequence.prependAll((other as FormImpl).sequence)
+    override fun append(other: Form) = sequence.appendAll((other as FormImpl).sequence.overValues)
+    override fun prepend(other: Form) = sequence.prependAll((other as FormImpl).sequence.overValues)
     override fun append(text: String) = sequence.append(make(text))
     override fun prepend(text: String) = sequence.prepend(make(text))
     override fun append(c: Char) = sequence.append(make(c.toString()))
@@ -65,7 +65,7 @@ class FormImpl private constructor(
         associative.addAtPlace(blankSpace, entry)
 
     override fun enter(blankSpace: BlankSpace, entries: Sequential<String>) =
-        associative.addAllAtPlace(blankSpace, entries)
+        associative.addAllAtPlace(blankSpace, entries.overValues)
 
     override fun enter(mappedEntries: Associative.MultiValue<BlankSpace, String>) =
         associative.addAllFrom(mappedEntries)

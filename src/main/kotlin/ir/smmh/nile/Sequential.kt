@@ -8,8 +8,12 @@ import java.util.*
 import java.util.Collections.max
 
 
-interface Sequential<T> : Iterable<T>, ReverseIterable<T>, CanClone<Sequential<T>>, CanGetAtIndex<T>,
-    CanContainValue<T> {
+interface Sequential<T> :
+    CanIterateOverValues<T>,
+    CanIterateOverValuesInReverse<T>,
+    CanGetAtIndex<T>,
+    CanContainValue<T>,
+    CanClone<Sequential<T>> {
 
     val head: T get() = getAtIndex(0)
     val tail: Sequential<T>
@@ -43,10 +47,10 @@ interface Sequential<T> : Iterable<T>, ReverseIterable<T>, CanClone<Sequential<T
     fun toCharArray(toChar: (T) -> Char) = CharArray(size)
         .also { for (i in it.indices) it[i] = toChar(getAtIndex(i)) }
 
-    fun filterOutOfPlace(toTest: (T) -> Boolean): Sequential<T> = Mutable.VariableSize.of<T>(ArrayList(count(toTest)))
+    fun filterOutOfPlace(toTest: (T) -> Boolean): Sequential<T> = Mutable.CanChangeSize.of<T>(ArrayList(count(toTest)))
         .also { for (element in this) if (toTest(element)) it.append(element) }
 
-    fun <R> applyOutOfPlace(toApply: (T) -> R): Sequential<R> = Mutable.VariableSize.of<R>(ArrayList(size))
+    fun <R> applyOutOfPlace(toApply: (T) -> R): Sequential<R> = Mutable.CanChangeSize.of<R>(ArrayList(size))
         .also { for (element in this) it.append(toApply(element)) }
 
     fun asList(): List<T> = object : AbstractList<T>() {
@@ -90,11 +94,13 @@ interface Sequential<T> : Iterable<T>, ReverseIterable<T>, CanClone<Sequential<T
     }
 
     fun findAll(toFind: T, start: Int = 0, end: Int = size): Sequential<Int?> =
-        Mutable.VariableSize.of(ArrayList<Int?>(count(toFind)))
+        Mutable.CanChangeSize.of(ArrayList<Int?>(count(toFind)))
             .also { for (i in start until end) if (getAtIndex(i) == toFind) it.append(i) }
 
-    override fun iterator(): Iterator<T> = ObverseIterator(this)
-    override fun inReverse(): Iterable<T> = Iterable { ReverseIterator(this) }
+    override val overValues: Iterable<T>
+        get() = Iterable { ObverseIterator(this) }
+    override val overValuesInReverse: Iterable<T>
+        get() = Iterable { ReverseIterator(this) }
 
     /**
      * @param index Unsigned integer
@@ -107,28 +113,6 @@ interface Sequential<T> : Iterable<T>, ReverseIterable<T>, CanClone<Sequential<T
 
         override fun clone(deepIfPossible: Boolean): Mutable<T>
         fun clone(deepIfPossible: Boolean, changesToValues: Change): Mutable<T>
-
-        /**
-         * Do not call this directly because it does not safely use [Change];
-         * Call [getPermutations] instead.
-         */
-        fun fillWithPermutations(permutations: CanAppendTo<in Sequential<T>>, first: Int, last: Int) {
-            if (first == last) {
-                permutations.append(clone(false))
-            } else {
-                for (i in first..last) {
-                    swap(first, i)
-                    fillWithPermutations(permutations, first + 1, last)
-                    swap(first, i)
-                }
-            }
-        }
-
-        fun getPermutations(): Sequential<Sequential<T>> {
-            val permutations: VariableSize<Sequential<T>> = SequentialImpl()
-            fillWithPermutations(permutations, 0, size - 1)
-            return permutations
-        }
 
         fun replaceData(toReplace: (T) -> T) {
             if (isNotEmpty()) {
@@ -146,13 +130,15 @@ interface Sequential<T> : Iterable<T>, ReverseIterable<T>, CanClone<Sequential<T
             }
         }
 
-        override fun iterator(): Iterator<T> = ObverseIterator.Mutable(this)
-        override fun inReverse(): Iterable<T> = Iterable { ReverseIterator.Mutable(this) }
+        override val overValues: Iterable<T>
+            get() = Iterable { ObverseIterator.Mutable(this) }
+        override val overValuesInReverse: Iterable<T>
+            get() = Iterable { ReverseIterator.Mutable(this) }
 
-        interface VariableSize<T> : Mutable<T>, CanPrependTo<T>, CanAppendTo<T>, CanRemoveAt, CanClear {
+        interface CanChangeSize<T> : Mutable<T>, CanPrependTo<T>, CanAppendTo<T>, CanRemoveAt, CanClear {
 
-            override fun clone(deepIfPossible: Boolean): VariableSize<T>
-            override fun clone(deepIfPossible: Boolean, changesToValues: Change): VariableSize<T>
+            override fun clone(deepIfPossible: Boolean): CanChangeSize<T>
+            override fun clone(deepIfPossible: Boolean, changesToValues: Change): CanChangeSize<T>
 
             fun filterInPlace(toTest: (T) -> Boolean) {
                 if (isNotEmpty()) {
@@ -175,13 +161,13 @@ interface Sequential<T> : Iterable<T>, ReverseIterable<T>, CanClone<Sequential<T
 
             companion object {
 
-                fun <T> ofArguments(vararg arguments: T, change: Change = Change()): VariableSize<T> =
+                fun <T> ofArguments(vararg arguments: T, change: Change = Change()): CanChangeSize<T> =
                     of(arguments, change)
 
-                fun <T> of(list: List<T>, change: Change = Change()): VariableSize<T> =
-                    SequentialImpl(list, change)
+                fun <T> of(list: List<T>, change: Change = Change()): CanChangeSize<T> =
+                    ListSequential(list, change)
 
-                fun <T> of(array: Array<out T>, change: Change = Change()): VariableSize<T> =
+                fun <T> of(array: Array<out T>, change: Change = Change()): CanChangeSize<T> =
                     of(ArrayList<T>(array.size).also { it.addAll(listOf(*array)) }, change)
             }
         }
@@ -499,7 +485,7 @@ interface Sequential<T> : Iterable<T>, ReverseIterable<T>, CanClone<Sequential<T
         override fun clone(deepIfPossible: Boolean) = clone(deepIfPossible, Change())
         override fun clone(deepIfPossible: Boolean, changesToValues: Change): Mutable<T> {
             // TODO deep clone
-            return SequentialImpl(asList(), changesToValues)
+            return ListSequential(asList(), changesToValues)
         }
     }
 
@@ -508,7 +494,7 @@ interface Sequential<T> : Iterable<T>, ReverseIterable<T>, CanClone<Sequential<T
         override fun specificThis(): Sequential<T> = this
         override fun clone(deepIfPossible: Boolean): Sequential<T> {
             // TODO deep clone
-            return SequentialImpl(asList())
+            return ListSequential(asList())
         }
 
         override fun toString() = this.joinToString(", ", "[", "]")
@@ -534,7 +520,7 @@ interface Sequential<T> : Iterable<T>, ReverseIterable<T>, CanClone<Sequential<T
         override fun hasNext() = i < sequential.size
         override fun next(): T = sequential.getAtIndex(i++)
         internal open class Mutable<S : Sequential.Mutable<T>, T>(sequential: S) : ObverseIterator<S, T>(sequential) {
-            class VariableSize<S : Sequential.Mutable.VariableSize<T>, T>(sequential: S) :
+            class VariableSize<S : Sequential.Mutable.CanChangeSize<T>, T>(sequential: S) :
                 Mutable<S, T>(sequential), MutableIterator<T> {
                 override fun remove() {
                     sequential.removeIndexFrom(i)
@@ -548,7 +534,7 @@ interface Sequential<T> : Iterable<T>, ReverseIterable<T>, CanClone<Sequential<T
         override fun hasNext() = index > 0
         override fun next(): T = sequential.getAtIndex(--index)
         internal open class Mutable<S : Sequential.Mutable<T>, T>(sequential: S) : ReverseIterator<S, T>(sequential) {
-            class VariableSize<S : Sequential.Mutable.VariableSize<T>, T>(sequential: S) :
+            class VariableSize<S : Sequential.Mutable.CanChangeSize<T>, T>(sequential: S) :
                 Mutable<S, T>(sequential), MutableIterator<T> {
                 override fun remove() {
                     sequential.removeIndexFrom(index)
@@ -566,7 +552,7 @@ interface Sequential<T> : Iterable<T>, ReverseIterable<T>, CanClone<Sequential<T
             override val size by list::size
         }
 
-        fun <T> of(map: Map<Int, T>, maxCount: Int? = null): Sequential<T?> = SequentialImpl<T?>().apply {
+        fun <T> of(map: Map<Int, T>, maxCount: Int? = null): Sequential<T?> = ListSequential<T?>().apply {
             for (key in 0..(maxCount ?: max(map.keys))) append(map[key])
         }
 

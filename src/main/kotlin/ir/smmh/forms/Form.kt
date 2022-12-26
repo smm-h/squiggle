@@ -3,7 +3,6 @@
 package ir.smmh.forms
 
 import ir.smmh.nile.*
-import ir.smmh.nile.or.Or
 import ir.smmh.nile.verbs.CanClone
 import java.io.File
 import java.io.IOException
@@ -84,7 +83,7 @@ interface Form : CanClone<Form> {
             append(" instead")
         }.toString()
 
-        fun compose(values: Sequential<String>): String
+        fun compose(sequential: Sequential<String>): String
         fun compose(): String {
             return compose(Sequential.empty())
         }
@@ -112,7 +111,7 @@ interface Form : CanClone<Form> {
         companion object {
             fun itself(title: String): BlankSpace {
                 return object : ExactlyOne(title) {
-                    override fun compose(values: Sequential<String>) = values.singleton
+                    override fun compose(sequential: Sequential<String>) = sequential.singleton
                 }
             }
 

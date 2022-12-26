@@ -3,7 +3,7 @@ package ir.smmh.markup
 import ir.smmh.lingu.Code
 import ir.smmh.lingu.Language
 import ir.smmh.markup.Markup.Table.Builder
-import ir.smmh.nile.Multitude
+import ir.smmh.nile.HasSize
 import ir.smmh.nile.Change
 import ir.smmh.nile.or.FatOr
 import ir.smmh.nile.or.Or
@@ -279,7 +279,7 @@ object Markup {
             }
         }
 
-        class Multitude : Fragment(), ir.smmh.nile.Multitude, Iterable<Fragment>, CanAppendTo<Fragment>,
+        class Multitude : Fragment(), ir.smmh.nile.HasSize, Iterable<Fragment>, CanAppendTo<Fragment>,
             CanPrependTo<Fragment> {
             override val changesToSize: Change = Change()
             override val size get() = list.size
@@ -355,7 +355,7 @@ object Markup {
         val showIndexColumn: Boolean = false,
         val rowHyperdata: Map<Int, String> = HashMap(),
         val rowHyperdataIfNull: String = "",
-    ) : Markup.Section(), Multitude, Iterable<Int> {
+    ) : Markup.Section(), HasSize, Iterable<Int> {
 
         inner class Column(
             val titleFragment: Markup.Fragment,

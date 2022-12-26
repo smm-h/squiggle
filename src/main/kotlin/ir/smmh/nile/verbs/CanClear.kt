@@ -1,7 +1,7 @@
 package ir.smmh.nile.verbs
 
-import ir.smmh.nile.Multitude
+import ir.smmh.nile.CanChangeSize
 
-interface CanClear : Multitude.VariableSize {
+interface CanClear : CanChangeSize {
     fun clear()
 }

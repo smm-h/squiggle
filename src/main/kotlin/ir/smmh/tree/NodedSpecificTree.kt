@@ -49,7 +49,7 @@ interface NodedSpecificTree<DataType, NodeType : NodedSpecificTree.Node<DataType
     }
 
     fun getNodesAtLevel(level: Int): Sequential<NodeType> {
-        val nodes: Sequential.Mutable.VariableSize<NodeType> = SequentialImpl()
+        val nodes: Sequential.Mutable.CanChangeSize<NodeType> = ListSequential()
         rootNode?.fillDescendantsAtExactDepth(nodes, 0, level)
         return nodes
     }
@@ -225,7 +225,7 @@ interface NodedSpecificTree<DataType, NodeType : NodedSpecificTree.Node<DataType
          * @return parent and children
          */
         fun getNeighbors(): Sequential<NodeType> {
-            val neighbors: Sequential.Mutable.VariableSize<NodeType> = SequentialImpl()
+            val neighbors: Sequential.Mutable.CanChangeSize<NodeType> = ListSequential()
             val parent = parent
             if (parent != null) neighbors.append(parent)
             for (child in children) if (child != null) neighbors.append(child)
@@ -233,7 +233,7 @@ interface NodedSpecificTree<DataType, NodeType : NodedSpecificTree.Node<DataType
         }
 
         fun getDescendants(): Sequential<NodeType> {
-            val descendants: Sequential.Mutable.VariableSize<NodeType> = SequentialImpl()
+            val descendants: Sequential.Mutable.CanChangeSize<NodeType> = ListSequential()
             for (child in children) {
                 fillDescendants(descendants)
             }
@@ -241,7 +241,7 @@ interface NodedSpecificTree<DataType, NodeType : NodedSpecificTree.Node<DataType
         }
 
         fun getDescendantsAndSelf(): Sequential<NodeType> {
-            val descendants: Sequential.Mutable.VariableSize<NodeType> = SequentialImpl()
+            val descendants: Sequential.Mutable.CanChangeSize<NodeType> = ListSequential()
             fillDescendants(descendants)
             return descendants
         }
@@ -254,7 +254,7 @@ interface NodedSpecificTree<DataType, NodeType : NodedSpecificTree.Node<DataType
         }
 
         fun getAncestors(): Sequential<NodeType?> {
-            val ancestors: Sequential.Mutable.VariableSize<NodeType?> = SequentialImpl()
+            val ancestors: Sequential.Mutable.CanChangeSize<NodeType?> = ListSequential()
             var r = parent
             while (r != null) {
                 ancestors.append(r)
@@ -264,7 +264,7 @@ interface NodedSpecificTree<DataType, NodeType : NodedSpecificTree.Node<DataType
         }
 
         fun getAncestorsAndSelf(): Sequential<NodeType> {
-            val ancestors: Sequential.Mutable.VariableSize<NodeType> = SequentialImpl()
+            val ancestors: Sequential.Mutable.CanChangeSize<NodeType> = ListSequential()
             var r: NodeType? = specificThis()
             while (r != null) {
                 ancestors.append(r)
@@ -334,12 +334,12 @@ interface NodedSpecificTree<DataType, NodeType : NodedSpecificTree.Node<DataType
         fun getSiblings(): Sequential<NodeType?> {
             val parent = parent
             return if (parent == null) Sequential.empty()
-            else SequentialImpl(parent.children).apply { removeIndexFrom(indexInParent) }
+            else ListSequential(parent.children).apply { removeIndexFrom(indexInParent) }
         }
 
         fun asTree(): TreeType
         fun getImmediateSubtrees(): Sequential<TreeType> {
-            val subtrees: Sequential.Mutable.VariableSize<TreeType> = SequentialImpl()
+            val subtrees: Sequential.Mutable.CanChangeSize<TreeType> = ListSequential()
             for (child in children) {
                 subtrees.append(child!!.asTree())
             }
@@ -450,7 +450,7 @@ interface NodedSpecificTree<DataType, NodeType : NodedSpecificTree.Node<DataType
         interface Conditional<DataType, NodeType : Node<DataType, NodeType, TreeType>, TreeType : NodedSpecificTree<DataType, NodeType, TreeType>> :
             Traversal<DataType, NodeType, TreeType> {
             override fun traverse(root: NodeType): Traversed<DataType, NodeType, TreeType> {
-                val seq: Sequential.Mutable.VariableSize<NodeType?> = SequentialImpl()
+                val seq: Sequential.Mutable.CanChangeSize<NodeType?> = ListSequential()
                 fillNodes(root.specificThis(), seq, condition)
                 return Traversed.of(seq, this)
             }
@@ -472,7 +472,7 @@ interface NodedSpecificTree<DataType, NodeType : NodedSpecificTree.Node<DataType
         interface ByOrder<DataType, NodeType : Node<DataType, NodeType, TreeType>, TreeType : NodedSpecificTree<DataType, NodeType, TreeType>> :
             Traversal<DataType, NodeType, TreeType> {
             override fun traverse(root: NodeType): Traversed<DataType, NodeType, TreeType> {
-                val seq: Sequential.Mutable.VariableSize<NodeType?> = SequentialImpl()
+                val seq: Sequential.Mutable.CanChangeSize<NodeType?> = ListSequential()
                 val order = makeOrder(root.count)
                 order.enter(root)
                 while (true) {
@@ -494,7 +494,7 @@ interface NodedSpecificTree<DataType, NodeType : NodedSpecificTree.Node<DataType
         interface ByOrderReverseChildren<DataType, NodeType : Node<DataType, NodeType, TreeType>, TreeType : NodedSpecificTree<DataType, NodeType, TreeType>> :
             Traversal<DataType, NodeType, TreeType> {
             override fun traverse(root: NodeType): Traversed<DataType, NodeType, TreeType> {
-                val seq: Sequential.Mutable.VariableSize<NodeType?> = SequentialImpl()
+                val seq: Sequential.Mutable.CanChangeSize<NodeType?> = ListSequential()
                 val order = makeOrder(root.count)
                 order.enter(root)
                 while (true) {
@@ -514,7 +514,7 @@ interface NodedSpecificTree<DataType, NodeType : NodedSpecificTree.Node<DataType
 
         abstract class Binary<DataType, NodeType : NodedSpecificTree.Binary.Node<DataType, NodeType, TreeType>, TreeType : NodedSpecificTree.Binary<DataType, NodeType, TreeType>> :
             Traversal<DataType, NodeType, TreeType> {
-            protected val seq: Sequential.Mutable.VariableSize<NodeType?> = SequentialImpl()
+            protected val seq: Sequential.Mutable.CanChangeSize<NodeType?> = ListSequential()
 
             // USE INT-KEY MAPS INSTEAD OF SEQUENTIALS
 

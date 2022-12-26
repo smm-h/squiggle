@@ -104,10 +104,10 @@ interface Associative<K, V> : CanContainPlace<K>, CanContainValue<V> {
         override fun clone(deepIfPossible: Boolean): SingleValue.Mutable<K, V> = SingleValueMutableImpl(HashMap(map))
     }
 
-    private open class MultiValueImpl<K, V> protected constructor(protected val map: MutableMap<K, Sequential.Mutable.VariableSize<V>>) :
+    private open class MultiValueImpl<K, V> protected constructor(protected val map: MutableMap<K, Sequential.Mutable.CanChangeSize<V>>) :
         Associative.Impl<K, V>(), MultiValue<K, V> {
 
-        constructor() : this(HashMap<K, Sequential.Mutable.VariableSize<V>>())
+        constructor() : this(HashMap<K, Sequential.Mutable.CanChangeSize<V>>())
 
         override fun toString(): String {
             val joiner = StringJoiner(", ", "Map: {", "}")
@@ -141,7 +141,7 @@ interface Associative<K, V> : CanContainPlace<K>, CanContainValue<V> {
         override fun getAtPlace(place: K): Sequential<V> = map[place] ?: Sequential.empty()
         override val size: Int get() = map.size
         override fun clone(deepIfPossible: Boolean): MultiValue<K, V> =
-            MultiValueImpl(HashMap<K, Sequential.Mutable.VariableSize<V>>(map))
+            MultiValueImpl(HashMap<K, Sequential.Mutable.CanChangeSize<V>>(map))
 
         override fun specificThis(): MultiValue<K, V> = this
     }
@@ -152,11 +152,11 @@ interface Associative<K, V> : CanContainPlace<K>, CanContainValue<V> {
         override val changesToValues = Change()
 
         constructor() : super()
-        private constructor(map: MutableMap<K, Sequential.Mutable.VariableSize<V>>) : super(map)
+        private constructor(map: MutableMap<K, Sequential.Mutable.CanChangeSize<V>>) : super(map)
 
         override fun setAtPlace(place: K, toSet: V) {
             changesToValues.beforeChange()
-            val s = map.computeIfAbsent(place) { SequentialImpl(ArrayList()) }
+            val s = map.computeIfAbsent(place) { ListSequential(ArrayList()) }
             s.append(toSet)
             changesToValues.afterChange()
         }

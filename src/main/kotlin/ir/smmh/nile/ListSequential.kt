@@ -2,13 +2,13 @@ package ir.smmh.nile
 
 import ir.smmh.nile.Sequential.AbstractMutableSequential
 
-class SequentialImpl<T>(
+class ListSequential<T>(
     initialCapacity: Int = 10,
     changesToValues: Change = Change(),
     override val changesToSize: Change = Change(),
 ) :
     AbstractMutableSequential<T>(changesToValues),
-    Sequential.Mutable.VariableSize<T> {
+    Sequential.Mutable.CanChangeSize<T> {
     private val list: MutableList<T>
 
     constructor(collection: Collection<T>, change: Change = Change()) : this(collection.size, change) {
@@ -22,9 +22,9 @@ class SequentialImpl<T>(
 
     override fun clone(deepIfPossible: Boolean) = clone(deepIfPossible, Change())
 
-    override fun clone(deepIfPossible: Boolean, changesToValues: Change): Sequential.Mutable.VariableSize<T> {
+    override fun clone(deepIfPossible: Boolean, changesToValues: Change): Sequential.Mutable.CanChangeSize<T> {
         // TODO deep clone
-        return SequentialImpl(asList(), changesToValues)
+        return ListSequential(asList(), changesToValues)
     }
 
     override fun removeIndexFrom(toRemove: Int) {

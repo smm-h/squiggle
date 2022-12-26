@@ -1,9 +1,9 @@
 package ir.smmh.nile.verbs
 
+import ir.smmh.nile.CanChangeSize
 import ir.smmh.nile.Indexible
-import ir.smmh.nile.Multitude
 
-interface CanInsertAtIndex<T> : Indexible, Multitude.VariableSize, CanPrependTo<T>, CanAppendTo<T> {
+interface CanInsertAtIndex<T> : Indexible, CanChangeSize, CanPrependTo<T>, CanAppendTo<T> {
     /**
      * @param index    Index
      * @param toInsert The object to insert at that index

@@ -4,7 +4,7 @@ package ir.smmh.tree.impl
 
 import ir.smmh.nile.Change
 import ir.smmh.nile.Sequential
-import ir.smmh.nile.SequentialImpl
+import ir.smmh.nile.ListSequential
 import ir.smmh.nile.verbs.CanContainValue
 import ir.smmh.tree.NodedSpecificTree
 import java.util.*
@@ -62,7 +62,7 @@ class NodedSpecificTreeImpl<DataType>(
     inner class Node internal constructor(override var data: DataType, parent: Node?) :
         NodedSpecificTree.Mutable.Node<DataType, Node, NodedSpecificTreeImpl<DataType>> {
         // TODO Tree.VariableDegree
-        override val children: Sequential.Mutable.VariableSize<Node?> = SequentialImpl()
+        override val children: Sequential.Mutable.CanChangeSize<Node?> = ListSequential()
         override var parent: Node? = parent
         override fun toString(): String {
             return "<$data>" + if (this.children.isEmpty()) "" else this.children.toString()

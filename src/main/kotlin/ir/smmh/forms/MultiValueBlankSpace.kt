@@ -74,12 +74,13 @@ class MultiValueBlankSpace : ZeroOrMore {
         this.ifLeftBlank = ifLeftBlank
     }
 
-    override fun compose(values: Sequential<String>): String {
-        return if (values.isEmpty()) {
+    override fun compose(sequential: Sequential<String>): String {
+        return if (sequential.isEmpty()) {
             ifLeftBlank
         } else {
             val j = StringJoiner(betweenEach, beforeAll, afterAll)
-            for (value in values) j.add(beforeEach + value + afterEach)
+            for (value in sequential.overValues)
+                j.add(beforeEach + value + afterEach)
             j.toString()
         }
     }

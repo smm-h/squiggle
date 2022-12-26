@@ -35,22 +35,22 @@ interface Set {
             fun singletonNullable(): T?
             fun singleton(): T = singletonNullable() ?: throw Exception("set is not a singleton")
 
-            override val over: Iterable<T>
+            override val overElements: Iterable<T>
 
             class Singleton<T : Any>(val value: T) : AbstractSet(), Finite<T> {
                 override fun singletonNullable(): T = value
                 override val cardinality: Int get() = 1
                 override val choose: () -> T = { value }
                 override fun containsSpecific(it: T): Boolean = it == value
-                override val over: Iterable<T> by lazy { listOf(value) }
+                override val overElements: Iterable<T> by lazy { listOf(value) }
             }
 
             class Universal<T : Any>(
-                override val over: List<T>,
+                override val overElements: List<T>,
                 override val choose: () -> T,
             ) : AbstractSet(), Finite<T> {
                 override fun singletonNullable(): T? = null
-                override val cardinality: Int = over.size
+                override val cardinality: Int = overElements.size
                 override fun containsSpecific(it: T): Boolean = true
             }
         }
@@ -123,13 +123,13 @@ interface Set {
         val cardinality: Int
 
         interface NonEmpty : Finite, Set.NonEmpty {
-            val over: Iterable<Any>
+            val overElements: Iterable<Any>
 
             class Singleton(val value: Any) : AbstractSet(), NonEmpty {
                 override val cardinality: Int get() = 1
                 override val choose: () -> Any = { value }
                 override fun containsGeneric(it: Any): Boolean = it == value
-                override val over: Iterable<Any> by lazy { listOf(value) }
+                override val overElements: Iterable<Any> by lazy { listOf(value) }
             }
         }
     }

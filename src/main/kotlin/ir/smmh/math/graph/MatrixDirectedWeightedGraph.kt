@@ -10,7 +10,7 @@ class MatrixDirectedWeightedGraph<V, W : Any>(
     override val nullWeight: W = matrix.structure.addition.identity!!,
     override val changesToEdges: Change = Change(),
     override val changesToWeights: Change = Change(),
-) : Graph.EdgesMutable<V>, Graph.Weighted.EdgesMutable<V, W> {
+) : Graph.CanChangeEdges<V>, Graph.Weighted.EdgesMutable<V, W> {
 
     override val directed = true
 

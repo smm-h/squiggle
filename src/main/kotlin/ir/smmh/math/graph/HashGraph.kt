@@ -78,7 +78,7 @@ sealed class HashGraph<V>(
         override val changesToVertices: Change = Change(),
         override val changesToEdges: Change = Change(),
     ) : HashGraph<V>(directed, vertices.toMutableSet(), edges.toMutableSet()),
-        Graph.VerticesMutable<V>, Graph.EdgesMutable<V> {
+        Graph.CanChangeVertices<V>, Graph.CanChangeEdges<V> {
 
         override fun specificThis() = this
         override fun clone(deepIfPossible: Boolean) =

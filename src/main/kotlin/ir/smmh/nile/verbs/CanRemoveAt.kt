@@ -1,9 +1,9 @@
 package ir.smmh.nile.verbs
 
+import ir.smmh.nile.CanChangeSize
 import ir.smmh.nile.Indexible
-import ir.smmh.nile.Multitude
 
-interface CanRemoveAt : Indexible, Multitude.VariableSize {
+interface CanRemoveAt : Indexible, CanChangeSize {
     /**
      * @param toRemove Index to remove
      * @throws IndexOutOfBoundsException If index is invalid

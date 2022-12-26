@@ -11,7 +11,6 @@ import ir.smmh.nile.Cache
 import ir.smmh.nile.Dirty
 import ir.smmh.nile.Change
 import ir.smmh.nile.verbs.*
-import ir.smmh.util.FunctionalUtil.map
 import ir.smmh.util.ReflectUtil.intendedName
 import ir.smmh.util.StringUtil.getStringAndClear
 import java.util.concurrent.atomic.AtomicBoolean
@@ -271,7 +270,7 @@ object Json : Language.HasFileExt.Impl("json"), Language.Serialization, Language
 
         override fun overSubValues(): Iterable<Value> = data
         override val serialization = "[$inside]"
-        override fun iterator() = data.iterator().map { it.deserialization }
+        override fun iterator() = data.map { it.deserialization }.iterator()
         override fun getAtIndex(index: Int) = subValue(index).deserialization
         override val size get() = data.size
         override fun clone(deepIfPossible: Boolean) = LazyArray(inside)
@@ -680,7 +679,7 @@ object Json : Language.HasFileExt.Impl("json"), Language.Serialization, Language
 
         override fun serialize() = data.joinToString(",", "[", "]") { it.serialization }
         override fun deserialize() = data.map { it.deserialization }
-        override fun iterator(): Iterator<Any?> = data.iterator().map { it.deserialization }
+        override fun iterator(): Iterator<Any?> = data.map { it.deserialization }.iterator()
 
         override fun subValue(index: Int): Value {
             validateIndex(index)

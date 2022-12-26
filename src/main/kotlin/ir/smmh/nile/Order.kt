@@ -4,10 +4,10 @@ import ir.smmh.nile.verbs.CanClear
 import java.util.*
 
 /**
- * A [Multitude] whose elements [enter] and exit ([poll]) it with a predefined
+ * A [HasSize] whose elements [enter] and exit ([poll]) it with a predefined
  * order, much like a priority queue.
  */
-interface Order<T> : Multitude, CanClear, Iterable<T> {
+interface Order<T> : HasSize, CanClear, Iterable<T> {
     fun peekNullable(): T?
     fun pollNullable(): T?
     fun peek(): T = peekNullable() ?: throw NullPointerException()

@@ -19,14 +19,14 @@ sealed interface Graph<V> {
         val b: V
     }
 
-    interface VerticesMutable<V> : Graph<V> {
+    interface CanChangeVertices<V> : CanChangeEdges<V> {
         val changesToVertices: Change
         fun addVertex(vertex: V)
         fun removeVertex(vertex: V)
         fun clearVertices()
     }
 
-    interface EdgesMutable<V> : Graph<V> {
+    interface CanChangeEdges<V> : Graph<V> {
         val changesToEdges: Change
         fun addEdge(v1: V, v2: V)
         fun addEdge(edge: Edge<V>)
@@ -43,7 +43,7 @@ sealed interface Graph<V> {
 
         val nullWeight: W
 
-        interface EdgesMutable<V, W> : Weighted<V, W>, Graph.EdgesMutable<V> {
+        interface EdgesMutable<V, W> : Weighted<V, W>, Graph.CanChangeEdges<V> {
 
             val changesToWeights: Change
 

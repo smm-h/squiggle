@@ -14,12 +14,12 @@ class SingleValueBlankSpace(
     override val minimumCount = if (ifLeftBlank == null) 1 else 0
     override val maximumCount = 1
 
-    override fun compose(values: Sequential<String>): String {
-        return if (values.isEmpty()) {
+    override fun compose(sequential: Sequential<String>): String {
+        return if (sequential.isEmpty()) {
             if (ifLeftBlank == null) throw IncompleteFormException(this, "cannot be left blank")
             ifLeftBlank
         } else {
-            prefix + values.singleton + suffix
+            prefix + sequential.singleton + suffix
         }
     }
 }

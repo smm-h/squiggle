@@ -1,7 +1,7 @@
 package ir.smmh.nile.verbs
 
-import ir.smmh.nile.Multitude
+import ir.smmh.nile.CanChangeSize
 
-interface CanRemoveElementFrom<T> : Multitude.VariableSize {
+interface CanRemoveElementFrom<T> : CanChangeSize {
     fun removeElementFrom(toRemove: T)
 }
