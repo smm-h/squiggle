@@ -13,7 +13,7 @@ interface Associative<K, V> : CanContainPlace<K>, CanContainValue<V> {
     }
 
     interface SingleValue<K, V> : Associative<K, V>, CanGetAtPlace<K, V>, CanClone<SingleValue<K, V>> {
-        override fun containsPlace(toCheck: K) = getAtPlace(toCheck) != null
+        override fun containsPlace(toCheck: K) = getNullableAtPlace(toCheck) != null
         fun overValues(): Iterable<V>
         interface Mutable<K, V> : Associative.Mutable<K, V>, SingleValue<K, V> {
             override fun clone(deepIfPossible: Boolean): Mutable<K, V>
@@ -29,9 +29,9 @@ interface Associative<K, V> : CanContainPlace<K>, CanContainValue<V> {
     }
 
     interface MultiValue<K, V> : Associative<K, V>, CanGetAtPlace<K, Sequential<V>>, CanClone<MultiValue<K, V>> {
-        override fun getAtPlace(place: K): Sequential<V>
+        override fun getNullableAtPlace(place: K): Sequential<V>?
         override fun containsPlace(toCheck: K) = count(toCheck) > 0
-        fun count(key: K) = getAtPlace(key).size
+        fun count(key: K) = getNullableAtPlace(key)?.size ?: 0
         fun containingKey(toCheck: V): K?
 
         interface Mutable<K, V> : Associative.Mutable<K, V>, MultiValue<K, V> {
@@ -45,7 +45,7 @@ interface Associative<K, V> : CanContainPlace<K>, CanContainValue<V> {
             }
 
             fun addAllFrom(map: MultiValue<K, V>) {
-                for (key in map.overKeys()) addAllAtPlace(key, map.getAtPlace(key))
+                for (key in map.overKeys()) addAllAtPlace(key, map.getAtPlace(key).overValues)
             }
 
             companion object {
@@ -67,7 +67,7 @@ interface Associative<K, V> : CanContainPlace<K>, CanContainValue<V> {
         override val size get() = map.size
         override fun isEmpty() = map.isEmpty()
         override fun overKeys(): Iterable<K> = map.keys
-        override fun getAtPlace(place: K): V = map[place]!!
+        override fun getNullableAtPlace(place: K): V? = map[place]
         override fun containsPlace(toCheck: K) = map.containsKey(toCheck)
         override fun containsValue(toCheck: V) = map.containsValue(toCheck)
         override fun overValues(): Iterable<V> = map.values
@@ -138,7 +138,7 @@ interface Associative<K, V> : CanContainPlace<K>, CanContainValue<V> {
         override fun containsPlace(toCheck: K): Boolean = map.containsKey(toCheck)
         override fun isEmpty(): Boolean = map.isEmpty()
         override fun overKeys(): Iterable<K> = map.keys
-        override fun getAtPlace(place: K): Sequential<V> = map[place] ?: Sequential.empty()
+        override fun getNullableAtPlace(place: K): Sequential<V>? = map[place]
         override val size: Int get() = map.size
         override fun clone(deepIfPossible: Boolean): MultiValue<K, V> =
             MultiValueImpl(HashMap<K, Sequential.Mutable.CanChangeSize<V>>(map))

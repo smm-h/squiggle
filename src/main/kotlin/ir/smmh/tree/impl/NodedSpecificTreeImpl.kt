@@ -3,8 +3,8 @@
 package ir.smmh.tree.impl
 
 import ir.smmh.nile.Change
-import ir.smmh.nile.Sequential
 import ir.smmh.nile.ListSequential
+import ir.smmh.nile.Sequential
 import ir.smmh.nile.verbs.CanContainValue
 import ir.smmh.tree.NodedSpecificTree
 import java.util.*
@@ -30,7 +30,7 @@ class NodedSpecificTreeImpl<DataType>(
     private fun contains(root: Node?, data: DataType?): Boolean {
         if (root == null) return false
         if (root.data == data) return true
-        for (child in root.children) {
+        for (child in root.children.overValues) {
             if (contains(child, data)) return true
         }
         return false
@@ -39,7 +39,7 @@ class NodedSpecificTreeImpl<DataType>(
     private fun contains(root: Node?, node: Node): Boolean {
         if (root == null) return false
         if (root == node) return true
-        for (child in root.children) {
+        for (child in root.children.overValues) {
             if (contains(child, node)) return true
         }
         return false
@@ -72,7 +72,7 @@ class NodedSpecificTreeImpl<DataType>(
             var childrenString = ""
             if (!this.children.isEmpty()) {
                 val joiner = StringJoiner(", ", ":(", ")")
-                for (child in this.children) {
+                for (child in children.overValues) {
                     joiner.add(child?.nodeToString() ?: "-")
                 }
                 childrenString = joiner.toString()

@@ -7,8 +7,10 @@ import ir.smmh.lingu.Language.Companion.lateFileExt
 import ir.smmh.markup.Html.defaultMetadata
 import ir.smmh.markup.Markup
 import ir.smmh.markup.Markup.joinToFragment
-import ir.smmh.nile.table.Table
+import ir.smmh.markup.TableBuilder
+import ir.smmh.markup.TableBuilder.Companion.toMarkupTable
 import ir.smmh.serialization.json.Json
+import ir.smmh.table.*
 import ir.smmh.util.FileUtil.touch
 import ir.smmh.util.FileUtil.writeTo
 import java.io.File
@@ -176,7 +178,9 @@ object Nitron : Iterable<String> {
         }
 
         fun toTable(): Markup.Table = idea.getInstanceTable(index).run {
-            sortedByColumn(findColumnByName("address")) { it.hashCode() }.toMarkupTable {}
+            view().apply {
+                keySet.sortedByColumn((schema as Idea.Schema).address) { it.hashCode() }
+            }.toMarkupTable()
         }
 
         infix fun isq(general: Idea): Boolean {
@@ -444,7 +448,7 @@ object Nitron : Iterable<String> {
                         }
                     }
                     heading("Data") {
-                        addSection(toBunch().toTable())
+                        addSection(toBunch().toMarkupTable())
                     }
                 }
             }
@@ -469,26 +473,34 @@ object Nitron : Iterable<String> {
         override val typeName = name
         override val fragment = Markup.Tools.link(name, url)
 
-        fun report(): String = toBunch().toTable().toString()
+        fun report(): String = toBunch().toMarkupTable().toString()
 
         fun getIntension(name: String) = intensions[name]
         fun getProperty(name: String) = properties[name]
         fun getReifiedValue(key: Int) = reifiedValues[key]
         fun getReification(key: Int) = reifications[key]
         fun getResolution(name: String) = resolutions[name]
-        fun overProperties() = Iterable { properties.values.iterator() }
-        fun overIntensions() = Iterable { intensions.values.iterator() }
+        val overProperties = Iterable { properties.values.iterator() }
+        val overIntensions = Iterable { intensions.values.iterator() }
 
-        fun getInstanceTable(index: Int) = Table().apply {
-            val address = addColumn<String>("address")
-            val value = addColumn<Value>("value")
-            for ((name, resolution) in resolutions) {
-                this += {
-                    address[it] = name
-                    value[it] = resolution[index]
-                }
+        class Schema : SealableSchema.Delegated<Int, Any>() {
+            val address = createColumnIn<String>() // ("address")
+            val value = createColumnIn<Value>() // ("value")
+
+            init {
+                seal()
             }
         }
+
+        fun getInstanceTable(index: Int): Table<Int> =
+            Schema().run {
+                IntKeyedTable(this).apply {
+                    for ((name, resolution) in resolutions) add {
+                        address[it] = name
+                        value[it] = resolution[index]!!
+                    }
+                }
+            }
 
         fun getInstanceResolutions(index: Int): Iterable<String> =
             resolutions.keys.toList().filter { resolutions[it]!![index] != null }
@@ -546,27 +558,20 @@ object Nitron : Iterable<String> {
             }
         }
 
-        fun toTable(): Markup.Table = Table().let { table ->
+        class Schema(val idea: Idea) : SealableSchema.Delegated<Int, Any>(),
+            TableBuilder.CanCreateTableBuilder<Int, Any> {
+            val properties: List<Property> = idea.overProperties.toList()
+            val intensions: List<Intension> = idea.overIntensions.toList()
+            val keysColumn = createColumnIn<Int>() // "#"
+            val reificationsColumn = createColumnIn<Instance>() // "@"
+            val columnsOfProperties = properties.map { createColumnIn<Value>() } // it.name
+            val columnsOfIntensions = intensions.map { createColumnIn<Int>() } // it.idea.name
 
-            val keys = table.addColumn<Int>("#")
-            val reifications = table.addColumn<Instance>("@")
-            val properties = idea.overProperties().toList()
-            val intensions = idea.overIntensions().toList()
-            val columnsOfProperties = properties.map { table.addColumn<Value>(it.name) }
-            val columnsOfIntensions = intensions.map { table.addColumn<Int>(it.idea.name) }
-
-            for (key in this@Bunch.keys) table += {
-                keys[it] = key
-                reifications[it] = idea.getReification(key)!!
-                for (i in properties.indices) columnsOfProperties[i][it] = properties[i][key]
-                for (i in intensions.indices) columnsOfIntensions[i][it] = intensions[i].getLink(key)
-            }
-            val view = table.view()
-            view.toMarkupTable {
-                view.forEach { k ->
+            override fun createTableBuilder(table: Table<Int>) = TableBuilder<Int, Any>().apply {
+                table.keySet.overValues.forEach { k ->
                     rowHyperdata[k] = "id=\"$k\"" // ${idea.name}_
                 }
-                makeFragment(reifications) {
+                makeFragment(reificationsColumn) {
                     Markup.Tools.link(it.toString(), it.idea.url, it.index.toString())
                 }
                 properties.forEachIndexed { i, it ->
@@ -578,7 +583,24 @@ object Nitron : Iterable<String> {
                     titleFragment[c] = Markup.Tools.link(it.idea.name, it.idea.url)
                     makeFragment(c, idea.mind.makeBookmarker(it.idea))
                 }
-                view.sortByColumn(keys) { it!! }
+            }
+
+            init {
+                seal()
+            }
+        }
+
+        fun toMarkupTable(): Markup.Table = Schema(idea).run {
+            IntKeyedTable(this).run {
+                for (key in keys) add(key) {
+                    keysColumn[key] = key
+                    reificationsColumn[key] = idea.getReification(key)!!
+                    for (i in properties.indices) columnsOfProperties[i][key] = properties[i][key]!!
+                    for (i in intensions.indices) columnsOfIntensions[i][key] = intensions[i].getLink(key)
+                }
+                view().apply {
+                    keySet.sortByKeyHash() // TODO is this necessary?
+                }.toMarkupTable()
             }
         }
 
@@ -821,35 +843,42 @@ object Nitron : Iterable<String> {
                     touch("nitron/$name/mind.${language.fileExt}")
         }
 
+        class Schema : SealableSchema.Delegated<Int, Any>(), TableBuilder.CanCreateTableBuilder<Int, Any> {
+            val idea = createColumnIn<Markup.Fragment>() // "idea"
+            val intensions = createColumnIn<List<Markup.Fragment>>() // "intensions"
+            val properties = createColumnIn<List<Markup.Fragment>>() // "properties"
+            val instances = createColumnIn<List<Markup.Fragment>>() // "instances"
+
+            override fun createTableBuilder(table: Table<Int>) = TableBuilder<Int, Any>().apply {
+                makeFragment(idea) { it }
+                makeFragment(intensions) { it.joinToFragment { it } }
+                makeFragment(properties) { it.joinToFragment { it } }
+                makeFragment(instances) { it.joinToFragment { it } }
+            }
+
+            init {
+                seal()
+            }
+        }
+
         fun generateDocument() = Markup.Document("mind-$name") {
             heading("Mind: ${this@Mind.name}") {
                 heading("Ideas") {
-                    addSection(Table().run {
-                        val idea = addColumn<Markup.Fragment>("idea")
-                        val intensions = addColumn<List<Markup.Fragment>>("intensions")
-                        val properties = addColumn<List<Markup.Fragment>>("properties")
-                        val instances = addColumn<List<Markup.Fragment>>("instances")
-
-                        for (i in ideas.values) {
-                            this += { key ->
+                    val table = Schema().run {
+                        IntKeyedTable(this).also { table ->
+                            for (i in ideas.values) table.add { key ->
                                 idea[key] =
                                     Markup.Tools.link(i.name, i.url)
                                 intensions[key] =
-                                    i.overIntensions().map { Markup.Tools.link(it.idea.name, it.idea.url) }
+                                    i.overIntensions.map { Markup.Tools.link(it.idea.name, it.idea.url) }
                                 properties[key] =
-                                    i.overProperties().map { Markup.Tools.link(it.name, i.url, it.name) }
+                                    i.overProperties.map { Markup.Tools.link(it.name, i.url, it.name) }
                                 instances[key] =
                                     i.map { Markup.Tools.link("#$it", i.url, it.toString()) }
                             }
-                        }
-
-                        toMarkupTable {
-                            makeFragment(idea) { it }
-                            makeFragment(intensions) { it.joinToFragment { it } }
-                            makeFragment(properties) { it.joinToFragment { it } }
-                            makeFragment(instances) { it.joinToFragment { it } }
-                        }
-                    })
+                        }.toMarkupTable()
+                    }
+                    addSection(table)
                 }
                 heading("Defaults") {
                     paragraph("Coming soon")

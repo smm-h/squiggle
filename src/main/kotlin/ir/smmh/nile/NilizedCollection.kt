@@ -1,9 +1,6 @@
 package ir.smmh.nile
 
-import ir.smmh.nile.verbs.CanAddTo
-import ir.smmh.nile.verbs.CanClear
-import ir.smmh.nile.verbs.CanContainValue
-import ir.smmh.nile.verbs.CanRemoveElementFrom
+import ir.smmh.nile.verbs.*
 import kotlin.collections.MutableCollection
 
 /**

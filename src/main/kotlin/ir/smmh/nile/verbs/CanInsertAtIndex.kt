@@ -1,6 +1,5 @@
 package ir.smmh.nile.verbs
 
-import ir.smmh.nile.CanChangeSize
 import ir.smmh.nile.Indexible
 
 interface CanInsertAtIndex<T> : Indexible, CanChangeSize, CanPrependTo<T>, CanAppendTo<T> {

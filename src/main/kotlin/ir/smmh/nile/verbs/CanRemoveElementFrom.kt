@@ -1,7 +1,7 @@
 package ir.smmh.nile.verbs
 
-import ir.smmh.nile.CanChangeSize
-
 interface CanRemoveElementFrom<T> : CanChangeSize {
     fun removeElementFrom(toRemove: T)
+    fun removeElementsFrom(toRemove: Set<T>) =
+        toRemove.forEach { removeElementFrom(it) }
 }

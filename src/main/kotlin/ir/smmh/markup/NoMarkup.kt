@@ -58,23 +58,23 @@ object NoMarkup : Language.Markup {
         }.toString()
         is Markup.Table -> {
             val columnWidths: MutableMap<Markup.Table.Column, Int> = getColumnWidths(it)
-            var t = it.overColumns().joinToString("┬", "┌", "┐") { (columnWidths[it]!! + 2) * "─" } + "\n│"
-            for (c in it.overColumns()) {
+            var t = it.overColumns.joinToString("┬", "┌", "┐") { (columnWidths[it]!! + 2) * "─" } + "\n│"
+            for (c in it.overColumns) {
                 val f = c.titleFragment.toString(NoMarkup)
                 val extraSpace = abs(columnWidths[c]!! - f.length)
                 t += " ${f.spaceOut(c.titleDirection ?: c.cellDirection, extraSpace)} │"
             }
-            t += it.overColumns().joinToString("┼", "\n├", "┤\n") { (columnWidths[it]!! + 2) * "─" }
+            t += it.overColumns.joinToString("┼", "\n├", "┤\n") { (columnWidths[it]!! + 2) * "─" }
             for (k in it) {
                 t += "│"
-                for (c in it.overColumns()) {
+                for (c in it.overColumns) {
                     val f = c[k].toString(NoMarkup)
                     val extraSpace = abs(columnWidths[c]!! - f.length)
                     t += " ${f.spaceOut(c.cellDirection, extraSpace)} │"
                 }
                 t += "\n"
             }
-            t += it.overColumns().joinToString("┴", "└", "┘") { (columnWidths[it]!! + 2) * "─" }
+            t += it.overColumns.joinToString("┴", "└", "┘") { (columnWidths[it]!! + 2) * "─" }
             t
         }
         is Markup.Section.TeX -> indent(it.tex) + "\n\n"
@@ -82,11 +82,11 @@ object NoMarkup : Language.Markup {
 
     private fun getColumnWidths(it: Markup.Table): MutableMap<Markup.Table.Column, Int> {
         val columnWidths: MutableMap<Markup.Table.Column, Int> = HashMap()
-        for (c in it.overColumns()) {
+        for (c in it.overColumns) {
             columnWidths[c] = max(3, c.titleFragment.toString(NoMarkup).length)
         }
         for (k in it) {
-            for (c in it.overColumns()) {
+            for (c in it.overColumns) {
                 columnWidths[c] = max(columnWidths[c]!!, c[k].toString(NoMarkup).length)
             }
         }

@@ -2,12 +2,10 @@ package ir.smmh.markup
 
 import ir.smmh.lingu.Code
 import ir.smmh.lingu.Language
-import ir.smmh.markup.Markup.Table.Builder
-import ir.smmh.nile.HasSize
 import ir.smmh.nile.Change
+import ir.smmh.nile.HasSize
 import ir.smmh.nile.or.FatOr
 import ir.smmh.nile.or.Or
-import ir.smmh.nile.table.Tabular
 import ir.smmh.nile.verbs.CanAppendTo
 import ir.smmh.nile.verbs.CanPrependTo
 
@@ -343,14 +341,6 @@ object Markup {
         return buffer
     }
 
-    /**
-     * Unlike `Tabular`, this class does not allow columns of arbitrary types,
-     * sorting, shuffling, filtering, data mutation, schema mutation, etc. If
-     * you want to build an object of this class using a table that has those
-     * qualities, try `Builder`
-     * @see Tabular
-     * @see Builder
-     */
     class Table(
         val showIndexColumn: Boolean = false,
         val rowHyperdata: Map<Int, String> = HashMap(),
@@ -374,88 +364,19 @@ object Markup {
             }
         }
 
-        /**
-         * Makes it easy to build a `Markup.Table` from a `Tabular`
-         * @see Tabular
-         */
-        class Builder {
-
-            // table settings
-            var showIndexColumn: Boolean = false
-            val rowHyperdata: MutableMap<Int, String> = HashMap()
-            var rowHyperdataIfNull: String = ""
-
-            // column settings
-            val titleFragment: MutableMap<Tabular.Column<*>, Fragment> = HashMap()
-            val titleHyperdata: MutableMap<Tabular.Column<*>, String> = HashMap()
-            val cellFragmentIfNull: MutableMap<Tabular.Column<*>, Markup.Fragment> = HashMap()
-            val cellHyperdataIfNull: MutableMap<Tabular.Column<*>, String> = HashMap()
-            val cellDirection: MutableMap<Tabular.Column<*>, TextDirection> = HashMap()
-            val titleDirection: MutableMap<Tabular.Column<*>, TextDirection?> = HashMap()
-
-            private val fragmentMakers: MutableMap<Tabular.Column<*>, Any> = HashMap()
-            private val hyperdataMakers: MutableMap<Tabular.Column<*>, Any> = HashMap()
-
-            fun <T> makeFragment(column: Tabular.Column<T>, function: (T) -> Fragment) {
-                fragmentMakers[column] = function
-            }
-
-            fun <T> makeHyperdata(column: Tabular.Column<T>, function: (T) -> String?) {
-                hyperdataMakers[column] = function
-            }
-
-            fun build(tabular: Tabular) = Table(
-                showIndexColumn,
-                rowHyperdata,
-                rowHyperdataIfNull,
-            ).apply {
-
-                // add the pre-ordered row keys
-                tabular.forEach { rows.add(it) }
-
-                // add the index column if it necessary
-                if (showIndexColumn) {
-                    var k = 0
-                    Column(
-                        Markup.Tools.atom("#"),
-                        cellFragments = tabular.associateWith { Markup.Tools.atom((k++).toString()) },
-                        cellDirection = TextDirection.RTL,
-                    )
-                }
-
-                // add the columns
-                @Suppress("UNCHECKED_CAST")
-                tabular.overColumns().forEach { c ->
-                    val fragmentMaker = (fragmentMakers[c] ?: ::defaultFragmentMaker) as (Any) -> Fragment
-                    val hyperdataMaker = (hyperdataMakers[c] ?: ::defaultHyperdataMaker) as (Any) -> String
-                    val tf = titleFragment[c] ?: Markup.Tools.atom(c.name)
-                    val th = titleHyperdata[c]
-                    Column(
-                        if (th == null) tf else Tools.span(tf, th),
-                        cellFragments = tabular.filter { c[it] != null }.associateWith { fragmentMaker(c[it]!!) },
-                        cellHyperdata = tabular.filter { c[it] != null }.associateWith { hyperdataMaker(c[it]!!) },
-                    )
-                }
-            }
-
-            companion object {
-                private fun defaultFragmentMaker(it: Any): Fragment =
-                    if (it is Fragment) it else Markup.Tools.atom(it.toString())
-
-                @Suppress("UNUSED_PARAMETER")
-                private fun defaultHyperdataMaker(it: Any): String? = null
-            }
-        }
-
         private val rows: MutableList<Int> = ArrayList()
         private val columns: MutableList<Column> = ArrayList()
 
-        override val size get() = rows.size
+        fun addRow(key: Int) {
+            rows.add(key)
+        }
+
+        override val size by rows::size
 
         override fun toString(depth: Int): String = toString()
         override fun toString(): String = NoMarkup.compile(this)
 
         override fun iterator() = rows.iterator()
-        fun overColumns() = Iterable { columns.iterator() }
+        val overColumns = Iterable { columns.iterator() }
     }
 }

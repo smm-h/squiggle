@@ -1,7 +1,7 @@
 package ir.smmh.tree.impl
 
-import ir.smmh.nile.DoubleSequence
 import ir.smmh.nile.Change
+import ir.smmh.nile.DoubleSequence
 import ir.smmh.nile.Sequential
 import ir.smmh.nile.verbs.CanContainValue
 import ir.smmh.tree.NodedSpecificTree
@@ -32,7 +32,7 @@ class NodedBinarySpecificTreeImpl<DataType>(
 
     private fun contains(root: Node, data: DataType): Boolean {
         if (root.data == data) return true
-        for (child in root.children) {
+        for (child in root.children.overValues) {
             if (child != null) {
                 if (contains(child, data)) return true
             }
@@ -42,7 +42,7 @@ class NodedBinarySpecificTreeImpl<DataType>(
 
     private fun contains(root: Node, node: Node): Boolean {
         if (root == node) return true
-        for (child in root.children) {
+        for (child in root.children.overValues) {
             if (child != null) {
                 if (contains(child, node)) return true
             }

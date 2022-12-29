@@ -11,20 +11,11 @@ interface CanGetAtIndex<T> : Indexible {
      */
     fun getAtIndex(index: Int): T
 
-    fun getNullableAtIndex(index: Int): T? =
-        if (hasIndex(index)) getAtIndex(index) else null
-
     fun getAtFirstIndex(): T =
         getAtIndex(0)
 
-    fun getNullableAtFirstIndex(): T? =
-        getNullableAtIndex(0)
-
     fun getAtLastIndex(): T =
         getAtIndex(lastIndex)
-
-    fun getNullableAtLastIndex(): T? =
-        getNullableAtIndex(lastIndex)
 
     val singleton: T
         get() {

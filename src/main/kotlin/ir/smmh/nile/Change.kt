@@ -10,6 +10,6 @@ package ir.smmh.nile
 class Change {
     val beforeChange: MutableList<() -> Unit> = ArrayList()
     val afterChange: MutableList<() -> Unit> = ArrayList()
-    fun beforeChange() = beforeChange.forEach { it() }
+    fun beforeChange() = beforeChange.forEach { it() } // .also { println(this@Change) }
     fun afterChange() = afterChange.forEach { it() }
 }

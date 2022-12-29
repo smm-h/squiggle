@@ -70,13 +70,13 @@ object Markdown : Language.HasFileExt.Impl("md"), Language.Markup {
         is Markup.Table -> {
             val columnWidths = getColumnWidths(it)
             var t = "|"
-            for (c in it.overColumns()) {
+            for (c in it.overColumns) {
                 val f = c.titleFragment.toString(this)
                 val extraSpace = abs(columnWidths[c]!! - f.length)
                 t += " ${f.spaceOut(c.cellDirection, extraSpace)} |"
             }
             t += "\n|"
-            for (c in it.overColumns()) {
+            for (c in it.overColumns) {
                 var f = (columnWidths[c]!! - 2) * "-"
                 when (c.cellDirection) {
                     TextDirection.LTR -> f = ":-$f"
@@ -87,7 +87,7 @@ object Markdown : Language.HasFileExt.Impl("md"), Language.Markup {
             }
             for (k in it) {
                 t += "\n|"
-                for (c in it.overColumns()) {
+                for (c in it.overColumns) {
                     val f = c[k].toString(Markdown)
                     val extraSpace = abs(columnWidths[c]!! - f.length)
                     t += " ${f.spaceOut(c.cellDirection, extraSpace)} |"
@@ -101,11 +101,11 @@ object Markdown : Language.HasFileExt.Impl("md"), Language.Markup {
 
     private fun getColumnWidths(it: Markup.Table): MutableMap<Markup.Table.Column, Int> {
         val columnWidths: MutableMap<Markup.Table.Column, Int> = HashMap()
-        for (c in it.overColumns()) {
+        for (c in it.overColumns) {
             columnWidths[c] = max(3, c.titleFragment.toString(Markdown).length)
         }
         for (k in it) {
-            for (c in it.overColumns()) {
+            for (c in it.overColumns) {
                 columnWidths[c] = max(columnWidths[c]!!, c[k].toString(Markdown).length)
             }
         }

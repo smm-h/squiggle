@@ -112,7 +112,7 @@ interface NodedSpecificTree<DataType, NodeType : NodedSpecificTree.Node<DataType
         var curr: NodedBinarySpecificTreeImpl<DataType>.Node?
         val otherChild: NodedBinarySpecificTreeImpl<DataType>.Node = otherTree.Node(node.data, parent)
         var leftMost = true
-        for (child in node.children) {
+        for (child in node.children.overValues) {
             curr = if (child == null) null else toBinary(child, otherTree, otherChild)
             if (leftMost) {
                 leftMost = false
@@ -184,7 +184,7 @@ interface NodedSpecificTree<DataType, NodeType : NodedSpecificTree.Node<DataType
         NodedSpecificTree<DataType, NodeType, TreeType>, SpecificTree.Mutable<DataType, TreeType> {
         fun replaceData(toReplace: Function<in DataType, out DataType>) {
             changesToValues.beforeChange()
-            for (node in traverseBreadthFirst().nodes) {
+            for (node in traverseBreadthFirst().nodes.overValues) {
                 node?.replaceData(toReplace)
             }
             changesToValues.afterChange()
@@ -192,7 +192,7 @@ interface NodedSpecificTree<DataType, NodeType : NodedSpecificTree.Node<DataType
 
         fun mutateData(toApply: (DataType) -> Unit) {
             changesToValues.beforeChange()
-            for (node in traverseBreadthFirst().nodes) {
+            for (node in traverseBreadthFirst().nodes.overValues) {
                 node?.mutateData(toApply)
             }
             changesToValues.afterChange()
@@ -228,13 +228,13 @@ interface NodedSpecificTree<DataType, NodeType : NodedSpecificTree.Node<DataType
             val neighbors: Sequential.Mutable.CanChangeSize<NodeType> = ListSequential()
             val parent = parent
             if (parent != null) neighbors.append(parent)
-            for (child in children) if (child != null) neighbors.append(child)
+            for (child in children.overValues) if (child != null) neighbors.append(child)
             return neighbors
         }
 
         fun getDescendants(): Sequential<NodeType> {
             val descendants: Sequential.Mutable.CanChangeSize<NodeType> = ListSequential()
-            for (child in children) {
+            for (child in children.overValues) {
                 fillDescendants(descendants)
             }
             return descendants
@@ -248,7 +248,7 @@ interface NodedSpecificTree<DataType, NodeType : NodedSpecificTree.Node<DataType
 
         fun fillDescendants(canAppendTo: CanAppendTo<NodeType>) {
             canAppendTo.append(specificThis())
-            for (child in children) {
+            for (child in children.overValues) {
                 child!!.fillDescendants(canAppendTo)
             }
         }
@@ -278,7 +278,7 @@ interface NodedSpecificTree<DataType, NodeType : NodedSpecificTree.Node<DataType
             if (nextDepth == exactDepth) {
                 canAppendTo.append(specificThis())
             } else {
-                for (child in children) {
+                for (child in children.overValues) {
                     child!!.fillDescendantsAtExactDepth(canAppendTo, nextDepth, exactDepth)
                 }
             }
@@ -290,7 +290,7 @@ interface NodedSpecificTree<DataType, NodeType : NodedSpecificTree.Node<DataType
             toTest: (NodeType) -> Boolean
         ): NodedSpecificTreeImpl<DataType>.Node? {
             val otherChild: NodedSpecificTreeImpl<DataType>.Node = otherTree.Node(data, parent)
-            for (child in children) {
+            for (child in children.overValues) {
                 if (child != null && toTest(child)) {
                     (otherChild.children).append(child.pruneOutOfPlace(otherTree, otherChild, toTest))
                 }
@@ -304,7 +304,7 @@ interface NodedSpecificTree<DataType, NodeType : NodedSpecificTree.Node<DataType
             toApply: (DataType) -> OtherDataType
         ): NodedSpecificTreeImpl<OtherDataType>.Node? {
             val otherChild: NodedSpecificTreeImpl<OtherDataType>.Node = otherTree.Node(toApply(data), parent)
-            for (child in children) {
+            for (child in children.overValues) {
                 (otherChild.children).append(child?.applyOutOfPlace(otherTree, otherChild, toApply))
             }
             return otherChild
@@ -321,7 +321,7 @@ interface NodedSpecificTree<DataType, NodeType : NodedSpecificTree.Node<DataType
                 data = (data as CanClone<DataType>).clone(true)
             }
             val otherChild: NodedSpecificTreeImpl<DataType>.Node = otherTree.Node(data, parent)
-            for (child in children) {
+            for (child in children.overValues) {
                 (otherChild.children).append(child!!.clone(otherTree, otherChild, deep))
             }
             return otherChild
@@ -334,13 +334,13 @@ interface NodedSpecificTree<DataType, NodeType : NodedSpecificTree.Node<DataType
         fun getSiblings(): Sequential<NodeType?> {
             val parent = parent
             return if (parent == null) Sequential.empty()
-            else ListSequential(parent.children).apply { removeIndexFrom(indexInParent) }
+            else ListSequential(parent.children.overValues).apply { removeIndexFrom(indexInParent) }
         }
 
         fun asTree(): TreeType
         fun getImmediateSubtrees(): Sequential<TreeType> {
             val subtrees: Sequential.Mutable.CanChangeSize<TreeType> = ListSequential()
-            for (child in children) {
+            for (child in children.overValues) {
                 subtrees.append(child!!.asTree())
             }
             return subtrees
@@ -369,7 +369,7 @@ interface NodedSpecificTree<DataType, NodeType : NodedSpecificTree.Node<DataType
             get() {
                 return if (children.isEmpty()) 0 else {
                     var degree = children.size
-                    for (child in children) {
+                    for (child in children.overValues) {
                         degree = degree.coerceAtLeast(child?.degree ?: 0)
                     }
                     degree
@@ -379,7 +379,7 @@ interface NodedSpecificTree<DataType, NodeType : NodedSpecificTree.Node<DataType
         val height: Int
             get() = if (children.isEmpty()) 0 else {
                 var height = 0
-                for (child in children) {
+                for (child in children.overValues) {
                     height = height.coerceAtLeast(child?.height ?: 0)
                     height = height.coerceAtLeast(child?.height ?: 0)
                 }
@@ -389,7 +389,7 @@ interface NodedSpecificTree<DataType, NodeType : NodedSpecificTree.Node<DataType
         val count: Int
             get() = if (children.isEmpty()) 1 else {
                 var count = 0
-                for (child in children) {
+                for (child in children.overValues) {
                     count += child?.count ?: 0
                 }
                 count
@@ -397,7 +397,7 @@ interface NodedSpecificTree<DataType, NodeType : NodedSpecificTree.Node<DataType
 
         fun getLeafCount(): Int = if (children.isEmpty()) 1 else {
             var leafCount = 0
-            for (child in children) {
+            for (child in children.overValues) {
                 leafCount += child?.getLeafCount() ?: 0
             }
             leafCount
@@ -460,7 +460,7 @@ interface NodedSpecificTree<DataType, NodeType : NodedSpecificTree.Node<DataType
                 if (condition.test(node)) {
                     canAppendTo.add(node)
                 }
-                for (child in node.children) {
+                for (child in node.children.overValues) {
                     if (child != null) {
                         fillNodes(child, canAppendTo, condition)
                     }
@@ -478,7 +478,7 @@ interface NodedSpecificTree<DataType, NodeType : NodedSpecificTree.Node<DataType
                 while (true) {
                     val node = order.pollNullable() ?: break
                     seq.append(node)
-                    for (child in node.children) {
+                    for (child in node.children.overValues) {
                         if (child != null) {
                             order.enter(child)
                         }
@@ -500,7 +500,7 @@ interface NodedSpecificTree<DataType, NodeType : NodedSpecificTree.Node<DataType
                 while (true) {
                     val node = order.pollNullable() ?: break
                     seq.append(node)
-                    for (child in node.children.inReverse()) {
+                    for (child in node.children.overValuesInReverse) {
                         if (child != null) {
                             order.enter(child)
                         }

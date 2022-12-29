@@ -192,7 +192,7 @@ object Html : Language.HasFileExt.Impl("html"), Language.Markup {
         is Markup.Table -> StringBuilder().apply {
             append("<table>\n")
             append("<tr>")
-            for (c in it.overColumns()) {
+            for (c in it.overColumns) {
                 append(c.titleHyperdata?.let { "<th $it>" } ?: "<th>")
                 append(c.titleFragment.toString(Html))
                 append("</th>")
@@ -200,7 +200,7 @@ object Html : Language.HasFileExt.Impl("html"), Language.Markup {
             append("</tr>\n")
             for (k in it) {
                 append(it.rowHyperdata[k]?.let { "<tr $it>" } ?: "<tr>")
-                for (c in it.overColumns()) {
+                for (c in it.overColumns) {
                     append(c.cellHyperdata[k]?.let { "<td $it>" } ?: "<td>")
                     append(c[k].toString(Html))
                     append("</td>")

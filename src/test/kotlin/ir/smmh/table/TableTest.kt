@@ -1,4 +1,4 @@
-package ir.smmh.nile.table
+package ir.smmh.table
 
 import ir.smmh.lingu.Language
 import ir.smmh.lingu.Language.Companion.lateFileExt
@@ -6,6 +6,7 @@ import ir.smmh.markup.Html
 import ir.smmh.markup.Html.defaultMetadata
 import ir.smmh.markup.Markdown
 import ir.smmh.markup.NoMarkup
+import ir.smmh.markup.TableBuilder.Companion.toMarkupTable
 import ir.smmh.util.FileUtil.touch
 import ir.smmh.util.FileUtil.writeTo
 import org.junit.jupiter.api.Test
@@ -15,36 +16,39 @@ import kotlin.test.assertEquals
 object TableTest {
     @Test
     fun testBasics() {
-        Table().apply {
-            val c = addColumn<Int>("c")
-            add { c[it] = 7 }
-            add { c[it] = 6 }
+        val schema = ListSealableSchema<Int, Int>()
+        val column = schema.createColumnIn<Int>()
+        IntKeyedTable(schema).apply {
+            add { column[it] = 7 }
+            add { column[it] = 6 }
             println(this)
         }
     }
 
     @Test
     fun testChanges() {
-        var mutations = 0
-        Table().apply {
-            changesToSchema.afterChange.add { mutations += 100 }
-            val c = addColumn<Int>("c")
-            changesToSize.afterChange.add { mutations += 1 }
-            add { c[it] = 7 }
-            add { c[it] = 6 }
-            val v = sortedByColumn(c) { it!! }
-            v.changesToView.afterChange.add { mutations += 10 }
-            v.shuffle()
+        var changes = 0
+        val schema = ListSealableSchema<Int, Int>()
+        val column = schema.createColumnIn<Int>()
+        IntKeyedTable(schema).apply {
+            //schema.changesToSize.afterChange.add { changes += 100 }
+            changesToSize
+                .afterChange.add { changes += 1 }
+            add { column[it] = 7 }
+            add { column[it] = 6 }
+//            keySet.sortedByColumn(column) { it!! }
+//            keySet.changesToOrder
+//                .afterChange.add { changes += 10 }
+//            keySet.shuffle()
         }
-        assertEquals(112, mutations)
+        assertEquals(2, changes)
     }
 
     @Test
     fun testSv() {
         setOf("test", "customers").forEach { title ->
-            val table = Table.fromTsv(File("res/tsv/$title.tsv"))
+            val table = StringTable.tsv(File("res/tsv/$title.tsv"))
             setOf(NoMarkup, Markdown, Html).forEach { ml ->
-//                println(table.toMarkupTable().toString(ml))
                 val fileExt = if (ml is Language.HasFileExt) ml.fileExt else "txt"
                 val filename = Language.HasFileExt.bindFileExt("gen/$lateFileExt/$title.$lateFileExt", fileExt)
                 table.toMarkupTable().toDocument(title).generate(ml, defaultMetadata) writeTo touch(filename) // open ""

@@ -1,7 +1,5 @@
 package ir.smmh.nile.verbs
 
-import ir.smmh.nile.CanChangeSize
-
 
 interface CanRemoveAtPlace<P> : CanContainPlace<P>, CanChangeSize {
     fun removeAtPlace(toRemove: P)

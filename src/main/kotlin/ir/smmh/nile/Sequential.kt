@@ -48,10 +48,10 @@ interface Sequential<T> :
         .also { for (i in it.indices) it[i] = toChar(getAtIndex(i)) }
 
     fun filterOutOfPlace(toTest: (T) -> Boolean): Sequential<T> = Mutable.CanChangeSize.of<T>(ArrayList(count(toTest)))
-        .also { for (element in this) if (toTest(element)) it.append(element) }
+        .also { for (value in overValues) if (toTest(value)) it.append(value) }
 
     fun <R> applyOutOfPlace(toApply: (T) -> R): Sequential<R> = Mutable.CanChangeSize.of<R>(ArrayList(size))
-        .also { for (element in this) it.append(toApply(element)) }
+        .also { for (value in overValues) it.append(toApply(value)) }
 
     fun asList(): List<T> = object : AbstractList<T>() {
         override val size by this@Sequential::size
@@ -125,7 +125,7 @@ interface Sequential<T> :
         fun mutateData(toApply: (T) -> Unit) {
             if (isNotEmpty()) {
                 changesToValues.beforeChange()
-                for (element in this) toApply(element)
+                for (value in overValues) toApply(value)
                 changesToValues.afterChange()
             }
         }
@@ -144,8 +144,8 @@ interface Sequential<T> :
                 if (isNotEmpty()) {
                     var mutated = false
                     for (i in 0 until size) {
-                        val element: T = getAtIndex(i)
-                        if (!toTest(element)) {
+                        val value: T = getAtIndex(i)
+                        if (!toTest(value)) {
                             if (!mutated) {
                                 changesToSize.beforeChange()
                                 mutated = true
@@ -497,10 +497,14 @@ interface Sequential<T> :
             return ListSequential(asList())
         }
 
-        override fun toString() = this.joinToString(", ", "[", "]")
-        override fun hashCode() = size.hashCode() xor
-                (getNullableAtFirstIndex().hashCode()) xor
-                (getNullableAtLastIndex().hashCode())
+        override fun toString() = overValues.joinToString(", ", "[", "]")
+        override fun hashCode() = when (size) {
+            0 -> 0
+            1 -> getAtFirstIndex().hashCode()
+            else -> size.hashCode() xor
+                    (getAtFirstIndex().hashCode()) xor
+                    (getAtLastIndex().hashCode())
+        }
 
         override fun equals(other: Any?): Boolean {
             if (this === other)

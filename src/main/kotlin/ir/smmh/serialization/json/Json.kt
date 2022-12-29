@@ -289,7 +289,7 @@ object Json : Language.HasFileExt.Impl("json"), Language.Serialization, Language
         override fun subValue(key: String) = data[key]
         override val serialization = "{$inside}"
         override fun iterator(): Iterator<String> = data.keys.iterator()
-        override fun getAtPlace(place: String) = subValue(place)?.deserialization
+        override fun getNullableAtPlace(place: String) = subValue(place)?.deserialization
         override fun containsPlace(toCheck: String) = toCheck in data
         override val size get() = data.size
         override fun clone(deepIfPossible: Boolean) = LazyObject(inside)
@@ -563,7 +563,7 @@ object Json : Language.HasFileExt.Impl("json"), Language.Serialization, Language
 
     sealed interface Array : Structure, Iterable<Any?>, CanGetAtIndex<Any?>, CanContainValue<Any?> {
 
-        operator fun get(index: Int): Any? = getNullableAtIndex(index)
+        operator fun get(index: Int): Any? = getAtIndex(index)
 
         override fun clone(deepIfPossible: Boolean): Array
 
@@ -794,7 +794,7 @@ object Json : Language.HasFileExt.Impl("json"), Language.Serialization, Language
         override fun containsValue(toCheck: Any?) = data.containsValue(Value.of(toCheck))
         override fun containsPlace(toCheck: String) = data.containsKey(toCheck)
 
-        override fun getAtPlace(place: String) = subValue(place)?.deserialization
+        override fun getNullableAtPlace(place: String) = subValue(place)?.deserialization
 
         override fun removeAtPlace(toRemove: String) {
             changesToSize.beforeChange()
