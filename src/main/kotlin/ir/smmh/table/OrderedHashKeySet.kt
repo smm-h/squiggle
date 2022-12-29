@@ -4,7 +4,7 @@ import ir.smmh.nile.Change
 import ir.smmh.util.FunctionalUtil.not
 import kotlin.random.Random
 
-class MutableListOrderedKeyHashSet<K : Any>(
+class OrderedHashKeySet<K : Any>(
     override val changesToSize: Change = Change(),
     override val changesToOrder: Change = Change(),
 ) : KeySet.Mutable<K> {

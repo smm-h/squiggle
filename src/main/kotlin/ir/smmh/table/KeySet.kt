@@ -17,13 +17,13 @@ interface KeySet<K : Any> : CanContainValue<K>, CanIterateOverValues<K> {
         fun sortedByKeyHash(ascending: Boolean = true) =
             sortedBy(ascending) { it.hashCode() }
 
-        fun <T> sortedByColumn(column: Table.Column<K, T>, ascending: Boolean = true, sortingFunction: (T?) -> Int) =
+        fun <T> sortedByColumn(column: Column<K, T>, ascending: Boolean = true, sortingFunction: (T?) -> Int) =
             sortedBy(ascending) { sortingFunction(column[it]) }
 
-        fun <T> filteredByColumn(column: Table.Column<K, T>, predicate: (T?) -> Boolean) =
+        fun <T> filteredByColumn(column: Column<K, T>, predicate: (T?) -> Boolean) =
             filteredBy { predicate(column[it]) }
 
-        fun <T> filteredByColumn(column: Table.Column<K, T>, data: T?) =
+        fun <T> filteredByColumn(column: Column<K, T>, data: T?) =
             filteredBy { column[it] == data }
 
         interface CanChangeOrder<K : Any> : HasOrder<K> {
@@ -46,7 +46,7 @@ interface KeySet<K : Any> : CanContainValue<K>, CanIterateOverValues<K> {
             fun sortByKeyHash(ascending: Boolean = true) =
                 sortBy(ascending) { it.hashCode() }
 
-            fun <T> sortByColumn(column: Table.Column<K, T>, ascending: Boolean = true, sortingFunction: (T?) -> Int) =
+            fun <T> sortByColumn(column: Column<K, T>, ascending: Boolean = true, sortingFunction: (T?) -> Int) =
                 sortBy(ascending) { sortingFunction(column[it]) }
         }
     }
@@ -55,10 +55,10 @@ interface KeySet<K : Any> : CanContainValue<K>, CanIterateOverValues<K> {
 
         fun filterBy(predicate: (K) -> Boolean)
 
-        fun <T> filterByColumn(column: Table.Column<K, T>, predicate: (T?) -> Boolean) =
+        fun <T> filterByColumn(column: Column<K, T>, predicate: (T?) -> Boolean) =
             filterBy { predicate(column[it]) }
 
-        fun <T> filterByColumn(column: Table.Column<K, T>, data: T?) =
+        fun <T> filterByColumn(column: Column<K, T>, data: T?) =
             filterBy { column[it] == data }
     }
 

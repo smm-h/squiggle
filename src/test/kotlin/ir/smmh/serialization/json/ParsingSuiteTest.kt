@@ -8,6 +8,7 @@ import ir.smmh.markup.TableBuilder.Companion.toMarkupTable
 import ir.smmh.table.IntKeyedTable
 import ir.smmh.table.SealableSchema
 import ir.smmh.table.Table
+import ir.smmh.table.View.Companion.view
 import ir.smmh.util.FileUtil.open
 import ir.smmh.util.FileUtil.touch
 import ir.smmh.util.FileUtil.writeTo

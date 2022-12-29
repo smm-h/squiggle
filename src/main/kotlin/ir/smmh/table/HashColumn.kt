@@ -4,7 +4,7 @@ import ir.smmh.nile.Change
 
 class HashColumn<K : Any, T>(
     override val changesToValues: Change = Change(),
-) : Table.Column.Mutable<K, T> {
+) : Column.Mutable<K, T> {
     private val map: MutableMap<K, T> = HashMap()
 
     override val size by map::size

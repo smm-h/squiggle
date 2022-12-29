@@ -1,13 +1,42 @@
 package ir.smmh.table
 
 import ir.smmh.nile.Change
+import ir.smmh.nile.verbs.CanUnsetAtPlace
 import ir.smmh.util.FunctionalUtil.not
 
 
 open class BaseTable<K : Any>(
-    override val schema: Table.Schema.CanChangeValues<K, *>,
+    override val schema: Schema.CanChangeValues<K, *>,
     override val changesToSize: Change = Change(),
 ) : Table.CanChangeValues<K> {
+
+    override val size get() = keySet.size
+
+    fun add(key: K, toAdd: (K) -> Unit) {
+        changesToSize.beforeChange()
+        keySet.add(key)
+        toAdd(key)
+        changesToSize.afterChange()
+    }
+
+    override fun add(toAdd: K) {
+        changesToSize.beforeChange()
+        keySet.add(toAdd)
+        changesToSize.afterChange()
+    }
+
+    override fun removeElementFrom(toRemove: K) {
+        changesToSize.beforeChange()
+        keySet.removeElementFrom(toRemove)
+        schema.overValues.forEach { it.unsetAtPlace(toRemove) }
+        changesToSize.afterChange()
+    }
+
+    override fun clear() {
+        changesToSize.beforeChange()
+        schema.overValues.forEach(CanUnsetAtPlace<K>::unsetAll)
+        changesToSize.afterChange()
+    }
 
     override val keySet = object : KeySet.CanChangeSize<K> {
 

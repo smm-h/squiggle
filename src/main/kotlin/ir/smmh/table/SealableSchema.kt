@@ -5,7 +5,7 @@ package ir.smmh.table
  * are done adding columns to, so that its columns can no longer be modified.
  * Once [sealed], it cannot be unsealed. Always seal it before creating a table.
  */
-interface SealableSchema<K : Any, V> : Table.Schema.Mutable<K, V> {
+interface SealableSchema<K : Any, V> : Schema.Mutable<K, V> {
     val sealed: Boolean
     fun seal()
 

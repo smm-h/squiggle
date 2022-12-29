@@ -6,12 +6,12 @@ class NamedSchema<K : Any, V>(val names: List<String>) : SealableSchema.Delegate
 
     val columns = names.map { createColumnIn<V>() }
 
-    private val map: BiDirectionalMap<String, Table.Column<K, V>> = BiDirectionalMap(names, columns)
+    private val map: BiDirectionalMap<String, Column<K, V>> = BiDirectionalMap(names, columns)
 
     fun findColumnByName(name: String) =
         map.forward[name]
 
-    fun findNameOfColumn(column: Table.Column<K, V>) =
+    fun findNameOfColumn(column: Column<K, V>) =
         map.backward[column]
 
     init {

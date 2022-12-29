@@ -1,11 +1,13 @@
 package ir.smmh.markup
 
+import ir.smmh.table.Column
 import ir.smmh.table.NamedSchema
+import ir.smmh.table.Schema
 import ir.smmh.table.Table
 
 class TableBuilder<K : Any, V>(val convertKey: (K) -> Int = Any::hashCode) {
 
-    interface CanCreateTableBuilder<K : Any, V> : Table.Schema<K, V> {
+    interface CanCreateTableBuilder<K : Any, V> : Schema<K, V> {
         fun createTableBuilder(table: Table<K>): TableBuilder<K, V>
     }
 
@@ -17,28 +19,28 @@ class TableBuilder<K : Any, V>(val convertKey: (K) -> Int = Any::hashCode) {
 
     // column settings
     val titleFragment:
-            MutableMap<Table.Column<K, *>, Markup.Fragment> = HashMap()
+            MutableMap<Column<K, *>, Markup.Fragment> = HashMap()
     val titleHyperdata:
-            MutableMap<Table.Column<K, *>, String> = HashMap()
+            MutableMap<Column<K, *>, String> = HashMap()
     val cellFragmentIfNull:
-            MutableMap<Table.Column<K, *>, Markup.Fragment> = HashMap()
+            MutableMap<Column<K, *>, Markup.Fragment> = HashMap()
     val cellHyperdataIfNull:
-            MutableMap<Table.Column<K, *>, String> = HashMap()
+            MutableMap<Column<K, *>, String> = HashMap()
     val cellDirection:
-            MutableMap<Table.Column<K, *>, TextDirection> = HashMap()
+            MutableMap<Column<K, *>, TextDirection> = HashMap()
     val titleDirection:
-            MutableMap<Table.Column<K, *>, TextDirection?> = HashMap()
+            MutableMap<Column<K, *>, TextDirection?> = HashMap()
 
     private val fragmentMakers:
-            MutableMap<Table.Column<K, *>, Any> = HashMap()
+            MutableMap<Column<K, *>, Any> = HashMap()
     private val hyperdataMakers:
-            MutableMap<Table.Column<K, *>, Any> = HashMap()
+            MutableMap<Column<K, *>, Any> = HashMap()
 
-    fun <T> makeFragment(column: Table.Column<K, T>, function: (T) -> Markup.Fragment) {
+    fun <T> makeFragment(column: Column<K, T>, function: (T) -> Markup.Fragment) {
         fragmentMakers[column] = function
     }
 
-    fun <T> makeHyperdata(column: Table.Column<K, T>, function: (T) -> String?) {
+    fun <T> makeHyperdata(column: Column<K, T>, function: (T) -> String?) {
         hyperdataMakers[column] = function
     }
 
@@ -67,7 +69,7 @@ class TableBuilder<K : Any, V>(val convertKey: (K) -> Int = Any::hashCode) {
                 val th = titleHyperdata[c]
                 val tf = titleFragment[c] ?: Markup.Tools.atom(
                     (table.schema as NamedSchema<K, V>)
-                        .findNameOfColumn(c as Table.Column<K, V>)!!
+                        .findNameOfColumn(c as Column<K, V>)!!
                 )
                 Column(
                     if (th == null) tf else Markup.Tools.span(tf, th),
@@ -86,7 +88,7 @@ class TableBuilder<K : Any, V>(val convertKey: (K) -> Int = Any::hashCode) {
         @Suppress("UNUSED_PARAMETER")
         private fun defaultHyperdataMaker(it: Any): String? = null
 
-        fun <K : Any, V> Table.Schema<K, V>.createTableBuilder(table: Table<K>): TableBuilder<K, V> =
+        fun <K : Any, V> Schema<K, V>.createTableBuilder(table: Table<K>): TableBuilder<K, V> =
             if (this is CanCreateTableBuilder<K, V>) createTableBuilder(table) else TableBuilder<K, V>()
 
         fun <K : Any> Table<K>.toMarkupTable(): Markup.Table =

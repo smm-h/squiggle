@@ -6,11 +6,11 @@ import ir.smmh.nile.verbs.CanUnsetAtPlace
 class ListSealableSchema<K : Any, V>(
     override val changesToSize: Change = Change(),
 ) : SealableSchema<K, V> {
-    private val list: MutableList<Table.Column.Mutable<K, *>> = ArrayList()
+    private val list: MutableList<Column.Mutable<K, *>> = ArrayList()
 
     override val size: Int by list::size
 
-    val columns: List<Table.Column.Mutable<K, *>> get() = list
+    val columns: List<Column.Mutable<K, *>> get() = list
 
     override var sealed: Boolean = false
         private set
@@ -20,10 +20,10 @@ class ListSealableSchema<K : Any, V>(
             sealed = true
     }
 
-    override val overValues: Iterable<Table.Column.Mutable<K, *>> get() = list
-    override val overValuesMutably: MutableIterable<Table.Column<K, *>> get() = list
+    override val overValues: Iterable<Column.Mutable<K, *>> get() = list
+    override val overValuesMutably: MutableIterable<Column<K, *>> get() = list
 
-    override fun <T : V> createColumnIn(changesToValues: Change): Table.Column.Mutable<K, T> =
+    override fun <T : V> createColumnIn(changesToValues: Change): Column.Mutable<K, T> =
         HashColumn<K, T>(changesToValues).also {
             if (sealed) throw Exception("cannot createColumnIn sealed SealableListSchema") else {
                 changesToSize.beforeChange()
@@ -32,11 +32,13 @@ class ListSealableSchema<K : Any, V>(
             }
         }
 
-    override fun removeElementFrom(toRemove: Table.Column.Mutable<K, *>) {
+    override fun removeElementFrom(toRemove: Column<K, *>) {
         if (sealed) throw Exception("cannot removeElementFrom sealed SealableListSchema") else {
             val index = list.indexOf(toRemove)
             if (index == -1) throw IllegalArgumentException("column not in table") else {
-                toRemove.unsetAll()
+                if (toRemove is Column.Mutable<K, *>) {
+                    toRemove.unsetAll()
+                }
                 changesToSize.beforeChange()
                 list.removeAt(index)
                 changesToSize.afterChange()

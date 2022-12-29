@@ -11,6 +11,7 @@ import ir.smmh.markup.TableBuilder
 import ir.smmh.markup.TableBuilder.Companion.toMarkupTable
 import ir.smmh.serialization.json.Json
 import ir.smmh.table.*
+import ir.smmh.table.View.Companion.view
 import ir.smmh.util.FileUtil.touch
 import ir.smmh.util.FileUtil.writeTo
 import java.io.File
