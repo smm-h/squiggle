@@ -287,4 +287,15 @@ object StringUtil {
         clear()
         return temp
     }
+
+    fun spaceOut(string: String, extraSpace: Int, direction: Float): String {
+        val i = (extraSpace * direction).toInt()
+        return " ".repeat(i) + string + " ".repeat(extraSpace - i)
+    }
+
+    fun truncate(string: String, maxLength: Int, left: Double = 0.6): String =
+        if (string.length <= maxLength) string else {
+            val x = Math.ceil((maxLength - 4) * left).toInt()
+            string.substring(0, x) + "..." + string.substring(string.length - (maxLength - 3 - x))
+        }
 }

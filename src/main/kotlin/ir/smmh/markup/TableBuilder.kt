@@ -53,7 +53,7 @@ class TableBuilder<K : Any, V>(val convertKey: (K) -> Int = Any::hashCode) {
                 var k = 0
                 Column(
                     Markup.Tools.atom("#"),
-                    cellDirection = TextDirection.RTL,
+                    cellDirection = TextDirection.RIGHT_TO_LEFT,
                     cellFragments = table.keySet.overValues
                         .associateBy(convertKey) { Markup.Tools.atom((k++).toString()) },
                 )

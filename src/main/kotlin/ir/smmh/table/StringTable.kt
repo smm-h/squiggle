@@ -1,6 +1,5 @@
 package ir.smmh.table
 
-import ir.smmh.nile.BiDirectionalMap
 import ir.smmh.nile.Change
 import java.io.File
 

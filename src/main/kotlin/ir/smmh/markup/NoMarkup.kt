@@ -58,23 +58,23 @@ object NoMarkup : Language.Markup {
         }.toString()
         is Markup.Table -> {
             val columnWidths: MutableMap<Markup.Table.Column, Int> = getColumnWidths(it)
-            var t = it.overColumns.joinToString("┬", "┌", "┐") { (columnWidths[it]!! + 2) * "─" } + "\n│"
+            var t = it.overColumns.joinToString("┬", "┌", "┐") { "─".repeat(columnWidths[it]!! + 2) } + "\n│"
             for (c in it.overColumns) {
                 val f = c.titleFragment.toString(NoMarkup)
                 val extraSpace = abs(columnWidths[c]!! - f.length)
-                t += " ${f.spaceOut(c.titleDirection ?: c.cellDirection, extraSpace)} │"
+                t += " ${(c.titleDirection ?: c.cellDirection).spaceOut(f, extraSpace)} │"
             }
-            t += it.overColumns.joinToString("┼", "\n├", "┤\n") { (columnWidths[it]!! + 2) * "─" }
+            t += it.overColumns.joinToString("┼", "\n├", "┤\n") { "─".repeat(columnWidths[it]!! + 2) }
             for (k in it) {
                 t += "│"
                 for (c in it.overColumns) {
                     val f = c[k].toString(NoMarkup)
                     val extraSpace = abs(columnWidths[c]!! - f.length)
-                    t += " ${f.spaceOut(c.cellDirection, extraSpace)} │"
+                    t += " ${c.cellDirection.spaceOut(f, extraSpace)} │"
                 }
                 t += "\n"
             }
-            t += it.overColumns.joinToString("┴", "└", "┘") { (columnWidths[it]!! + 2) * "─" }
+            t += it.overColumns.joinToString("┴", "└", "┘") { "─".repeat(columnWidths[it]!! + 2) }
             t
         }
         is Markup.Section.TeX -> indent(it.tex) + "\n\n"

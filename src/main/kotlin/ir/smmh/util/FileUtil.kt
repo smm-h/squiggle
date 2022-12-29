@@ -1,6 +1,5 @@
 package ir.smmh.util
 
-import org.jetbrains.annotations.Contract
 import java.awt.Desktop
 import java.io.File
 import java.io.IOException
@@ -19,12 +18,7 @@ object FileUtil {
      * @throws IOException          if the directories cannot be created
      * @throws InvalidPathException if the filename provided is not a valid path
      */
-    @Contract("_->_")
-    @Throws(IOException::class)
-    fun touch(filename: String): String {
-        Path.of(filename).parent?.also { Files.createDirectories(it) }
-        return filename
-    }
+    fun touch(filename: String) = filename.also { Path.of(it).parent?.also { Files.createDirectories(it) } }
 
     fun getExt(filename: String) = filename.substring(filename.lastIndexOf('.') + 1).lowercase(Locale.getDefault())
 

@@ -9,6 +9,7 @@ interface CanContainValue<T> : HasSize {
         for (i in toCheck) if (containsValue(i)) return true
         return false
     }
+
     fun containsNoneOfValues(toCheck: Iterable<T>): Boolean {
         for (i in toCheck) if (!containsValue(i)) return false
         return true

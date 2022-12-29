@@ -1,8 +1,8 @@
 package ir.smmh.util
 
-import ir.smmh.nile.CanIterateOverValues
 import ir.smmh.nile.Change
 import ir.smmh.nile.verbs.CanAddTo
+import ir.smmh.nile.verbs.CanIterateOverValues
 
 class Bag<T>(override val changesToSize: Change = Change()) :
     CanIterateOverValues<T>, CanAddTo<T> {

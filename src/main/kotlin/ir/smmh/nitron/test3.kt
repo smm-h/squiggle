@@ -38,18 +38,12 @@ fun main() {
                 keySet.overValues.forEach { k ->
                     Customers.let {
                         it.create().apply {
-                            set("name",
-                                Value.of(CustomerName[k]))
-                            set("contact",
-                                Value.of(ContactName[k]))
-                            set("address",
-                                Value.of(Address[k]))
-                            set("city",
-                                Value.of(City[k]))
-                            set("postalCode",
-                                Value.of(PostalCode[k]))
-                            set("country",
-                                Value.of(Country[k]))
+                            set("name", Value.of(CustomerName[k]))
+                            set("contact", Value.of(ContactName[k]))
+                            set("address", Value.of(Address[k]))
+                            set("city", Value.of(City[k]))
+                            set("postalCode", Value.of(PostalCode[k]))
+                            set("country", Value.of(Country[k]))
                         }
                     }
                 }

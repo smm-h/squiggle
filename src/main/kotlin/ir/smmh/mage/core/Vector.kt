@@ -58,6 +58,7 @@ sealed interface Vector {
             this * vector.x,
             this * vector.y
         )
+
         operator fun Double.div(vector: Vector): Vector = towards(
             this / vector.x,
             this / vector.y

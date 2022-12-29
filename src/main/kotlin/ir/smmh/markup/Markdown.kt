@@ -73,14 +73,14 @@ object Markdown : Language.HasFileExt.Impl("md"), Language.Markup {
             for (c in it.overColumns) {
                 val f = c.titleFragment.toString(this)
                 val extraSpace = abs(columnWidths[c]!! - f.length)
-                t += " ${f.spaceOut(c.cellDirection, extraSpace)} |"
+                t += " ${c.cellDirection.spaceOut(f, extraSpace)} |"
             }
             t += "\n|"
             for (c in it.overColumns) {
-                var f = (columnWidths[c]!! - 2) * "-"
+                var f = "-".repeat(columnWidths[c]!! - 2)
                 when (c.cellDirection) {
-                    TextDirection.LTR -> f = ":-$f"
-                    TextDirection.RTL -> f += "-:"
+                    TextDirection.LEFT_TO_RIGHT -> f = ":-$f"
+                    TextDirection.RIGHT_TO_LEFT -> f += "-:"
                     TextDirection.CENTERED -> f = ":$f:"
                 }
                 t += " $f |"
@@ -90,7 +90,7 @@ object Markdown : Language.HasFileExt.Impl("md"), Language.Markup {
                 for (c in it.overColumns) {
                     val f = c[k].toString(Markdown)
                     val extraSpace = abs(columnWidths[c]!! - f.length)
-                    t += " ${f.spaceOut(c.cellDirection, extraSpace)} |"
+                    t += " ${c.cellDirection.spaceOut(f, extraSpace)} |"
                 }
             }
             t += "\n\n"

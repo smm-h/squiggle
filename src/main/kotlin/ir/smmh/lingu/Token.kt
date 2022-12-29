@@ -1,7 +1,6 @@
 package ir.smmh.lingu
 
 import ir.smmh.lingu.TokenizationUtil.visualizeWhitespace
-import ir.smmh.nile.Named
 import ir.smmh.nilex.NiLexTokenizer.Companion.v
 
 data class Token(
@@ -18,7 +17,7 @@ data class Token(
         else "($data)") + " as ") + "${type.name} @$position" +
                 if (length > 1) "-${position + length}" else ""
 
-    sealed class Type(override val name: String) : Named {
+    sealed class Type(val name: String) {
         override fun toString() = name
 
         private val tags: MutableSet<String> = HashSet()

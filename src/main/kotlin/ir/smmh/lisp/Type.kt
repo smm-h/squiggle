@@ -1,13 +1,13 @@
 package ir.smmh.lisp
 
-import ir.smmh.nile.Named
 import kotlin.reflect.KClass
 
-sealed class Type : Named, Value() {
+sealed class Type : Value() {
+
+    abstract val name: String
+    override val type: Type = _Type
 
     override fun toString(): String = "type $name"
-
-    override val type: Type = _Type
 
     abstract fun isSubtypeOf(other: Type): Boolean
 

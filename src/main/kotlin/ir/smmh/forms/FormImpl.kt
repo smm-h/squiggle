@@ -4,8 +4,8 @@ import ir.smmh.forms.Form.BlankSpace
 import ir.smmh.forms.Form.IncompleteFormException
 import ir.smmh.nile.Associative
 import ir.smmh.nile.Dirty
-import ir.smmh.nile.Sequential
 import ir.smmh.nile.ListSequential
+import ir.smmh.nile.Sequential
 import ir.smmh.nile.or.FatOr
 import ir.smmh.nile.or.Or
 import ir.smmh.util.FileUtil.writeTo
@@ -18,7 +18,7 @@ class FormImpl private constructor(
     private val associative: Associative.MultiValue.Mutable<BlankSpace, String> = Associative.MultiValue.Mutable.empty(),
 ) : Form {
 
-    private val string: String by Dirty(AtomicBoolean().also{
+    private val string: String by Dirty(AtomicBoolean().also {
         sequence.changesToValues
     }) {
         StringBuilder().apply {

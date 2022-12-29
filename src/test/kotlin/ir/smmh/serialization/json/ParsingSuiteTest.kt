@@ -5,13 +5,13 @@ import ir.smmh.markup.Html.defaultMetadata
 import ir.smmh.markup.Markup
 import ir.smmh.markup.TableBuilder
 import ir.smmh.markup.TableBuilder.Companion.toMarkupTable
-import ir.smmh.markup.truncate
 import ir.smmh.table.IntKeyedTable
 import ir.smmh.table.SealableSchema
 import ir.smmh.table.Table
 import ir.smmh.util.FileUtil.open
 import ir.smmh.util.FileUtil.touch
 import ir.smmh.util.FileUtil.writeTo
+import ir.smmh.util.StringUtil
 import java.io.File
 
 private class Schema : SealableSchema.Delegated<Int, Any?>(), TableBuilder.CanCreateTableBuilder<Int, Any?> {
@@ -30,9 +30,9 @@ private class Schema : SealableSchema.Delegated<Int, Any?>(), TableBuilder.CanCr
     override fun createTableBuilder(table: Table<Int>) = TableBuilder<Int, Any?>().apply {
         Markup.Tools.apply {
             makeFragment(files) { link(it.name, it.toURI().toString()) }
-            makeFragment(texts) { code(it.truncate(64)) }
+            makeFragment(texts) { code(StringUtil.truncate(it, 64)) }
             makeFragment(serializations) { atom(it, false) } // code(it.truncate(64))
-            makeFragment(deserializations) { code(it.toString().truncate(64)) }
+            makeFragment(deserializations) { code(StringUtil.truncate(it.toString(), 64)) }
             makeFragment(errors) { span(it.toString(), if (it is Json.Exception) orange else red) }
             makeFragment(status) { atom(it.message) }
             makeHyperdata(status) { "style=\"background-color:${it.color}\"" }

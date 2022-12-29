@@ -1,8 +1,5 @@
 package ir.smmh.table
 
-import ir.smmh.markup.Markup
-import ir.smmh.markup.TableBuilder
-
 class IntKeyedTable(schema: SealableSchema<Int, *>) :
     BaseTable<Int>(schema) {
 

@@ -354,7 +354,7 @@ object Markup {
             val cellHyperdata: Map<Int, String> = HashMap(),
             val cellFragmentIfNull: Markup.Fragment = dash,
             val cellHyperdataIfNull: String = "",
-            val cellDirection: TextDirection = TextDirection.LTR,
+            val cellDirection: TextDirection = TextDirection.LEFT_TO_RIGHT,
             val titleDirection: TextDirection? = TextDirection.CENTERED,
         ) {
             operator fun get(key: Int): Fragment = cellFragments[key] ?: cellFragmentIfNull

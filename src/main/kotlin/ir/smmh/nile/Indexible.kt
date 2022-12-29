@@ -24,7 +24,7 @@ interface Indexible : CanContainPlace<Int> {
     }
 
     fun validateBetweenIndices(index: Int) {
-        if (index !in 0 .. size) throw IndexOutOfBoundsException("$index/$size")
+        if (index !in 0..size) throw IndexOutOfBoundsException("$index/$size")
     }
 
     override fun containsPlace(toCheck: Int) = hasIndex(toCheck)

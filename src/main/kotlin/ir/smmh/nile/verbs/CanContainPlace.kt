@@ -9,6 +9,7 @@ interface CanContainPlace<P> : HasSize {
         for (i in toCheck) if (containsPlace(i)) return true
         return false
     }
+
     fun containsNoneOfPlaces(toCheck: Iterable<P>): Boolean {
         for (i in toCheck) if (!containsPlace(i)) return false
         return true

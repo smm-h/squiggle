@@ -16,7 +16,10 @@ class ListSequential<T>(
     }
 
     //    @JvmOverloads
-    constructor(iterable: Iterable<T>, initialCapacity: Int = 20, change: Change = Change()) : this(initialCapacity, change) {
+    constructor(iterable: Iterable<T>, initialCapacity: Int = 20, change: Change = Change()) : this(
+        initialCapacity,
+        change
+    ) {
         for (element in iterable) list.add(element)
     }
 

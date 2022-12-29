@@ -1,6 +1,5 @@
 package ir.smmh.lingu
 
-import ir.smmh.nile.Named
 import java.io.File
 import java.net.URI
 
@@ -72,7 +71,7 @@ class Code private constructor(
         }
     }
 
-    class Aspect<T : Any>(override val name: String) : Named {
+    class Aspect<T : Any>(val name: String) {
         override fun toString() = name
     }
 
@@ -119,7 +118,8 @@ class Code private constructor(
      *
      * Depends on the language
      */
-    interface Defined : Named {
+    interface Defined {
+        val name: String
         val code: Code
         val position: Int
     }
