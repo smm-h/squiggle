@@ -493,7 +493,7 @@ object Nitron : Iterable<String> {
             }
         }
 
-        fun getInstanceTable(index: Int): Table<Int> =
+        fun getInstanceTable(index: Int): Table<Int, Any> =
             Schema().run {
                 IntKeyedTable(this).apply {
                     for ((name, resolution) in resolutions) add {
@@ -568,7 +568,7 @@ object Nitron : Iterable<String> {
             val columnsOfProperties = properties.map { createColumnIn<Value>() } // it.name
             val columnsOfIntensions = intensions.map { createColumnIn<Int>() } // it.idea.name
 
-            override fun createTableBuilder(table: Table<Int>) = TableBuilder<Int, Any>().apply {
+            override fun createTableBuilder(table: Table<Int, Any>) = TableBuilder<Int, Any>().apply {
                 table.keySet.overValues.forEach { k ->
                     rowHyperdata[k] = "id=\"$k\"" // ${idea.name}_
                 }
@@ -850,7 +850,7 @@ object Nitron : Iterable<String> {
             val properties = createColumnIn<List<Markup.Fragment>>() // "properties"
             val instances = createColumnIn<List<Markup.Fragment>>() // "instances"
 
-            override fun createTableBuilder(table: Table<Int>) = TableBuilder<Int, Any>().apply {
+            override fun createTableBuilder(table: Table<Int, Any>) = TableBuilder<Int, Any>().apply {
                 makeFragment(idea) { it }
                 makeFragment(intensions) { it.joinToFragment { it } }
                 makeFragment(properties) { it.joinToFragment { it } }

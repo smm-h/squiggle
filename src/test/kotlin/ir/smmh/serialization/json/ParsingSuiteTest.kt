@@ -28,7 +28,7 @@ private class Schema : SealableSchema.Delegated<Int, Any?>(), TableBuilder.CanCr
     private val red =
         Html.attributes("style" to "color:red")
 
-    override fun createTableBuilder(table: Table<Int>) = TableBuilder<Int, Any?>().apply {
+    override fun createTableBuilder(table: Table<Int, Any?>) = TableBuilder<Int, Any?>().apply {
         Markup.Tools.apply {
             makeFragment(files) { link(it.name, it.toURI().toString()) }
             makeFragment(texts) { code(StringUtil.truncate(it, 64)) }

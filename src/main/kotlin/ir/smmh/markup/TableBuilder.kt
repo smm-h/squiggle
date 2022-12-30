@@ -7,10 +7,6 @@ import ir.smmh.table.Table
 
 class TableBuilder<K : Any, V>(val convertKey: (K) -> Int = Any::hashCode) {
 
-    interface CanCreateTableBuilder<K : Any, V> : Schema<K, V> {
-        fun createTableBuilder(table: Table<K>): TableBuilder<K, V>
-    }
-
     // table settings
     var showIndexColumn: Boolean = false
     val rowHyperdata:
@@ -44,7 +40,7 @@ class TableBuilder<K : Any, V>(val convertKey: (K) -> Int = Any::hashCode) {
         hyperdataMakers[column] = function
     }
 
-    fun build(table: Table<K>) =
+    fun build(table: Table<K, V>) =
         Markup.Table(showIndexColumn, rowHyperdata, rowHyperdataIfNull).apply {
 
             // add the pre-ordered row keys
@@ -81,6 +77,10 @@ class TableBuilder<K : Any, V>(val convertKey: (K) -> Int = Any::hashCode) {
             }
         }
 
+    interface CanCreateTableBuilder<K : Any, V> : Schema<K, V> {
+        fun createTableBuilder(table: Table<K, V>): TableBuilder<K, V>
+    }
+
     companion object {
         private fun defaultFragmentMaker(it: Any): Markup.Fragment =
             if (it is Markup.Fragment) it else Markup.Tools.atom(it.toString())
@@ -88,10 +88,10 @@ class TableBuilder<K : Any, V>(val convertKey: (K) -> Int = Any::hashCode) {
         @Suppress("UNUSED_PARAMETER")
         private fun defaultHyperdataMaker(it: Any): String? = null
 
-        fun <K : Any, V> Schema<K, V>.createTableBuilder(table: Table<K>): TableBuilder<K, V> =
+        fun <K : Any, V> Schema<K, V>.createTableBuilder(table: Table<K, V>): TableBuilder<K, V> =
             if (this is CanCreateTableBuilder<K, V>) createTableBuilder(table) else TableBuilder<K, V>()
 
-        fun <K : Any> Table<K>.toMarkupTable(): Markup.Table =
+        fun <K : Any, V> Table<K, V>.toMarkupTable(): Markup.Table =
             schema.createTableBuilder(this).build(this)
     }
 }

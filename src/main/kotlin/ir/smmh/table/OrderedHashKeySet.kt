@@ -4,12 +4,15 @@ import ir.smmh.nile.Change
 import ir.smmh.util.FunctionalUtil.not
 import kotlin.random.Random
 
-class OrderedHashKeySet<K : Any>(
+class OrderedHashKeySet<K : Any> private constructor(
     override val changesToSize: Change = Change(),
     override val changesToOrder: Change = Change(),
-) : KeySet.Mutable<K> {
-    private val set: MutableSet<K> = HashSet()
-    private val list: MutableList<K> = ArrayList()
+    private val set: MutableSet<K>,
+    private val list: MutableList<K>,
+) : OrderedKeySet.Mutable<K> {
+
+    constructor(changesToSize: Change = Change(), changesToOrder: Change = Change()) :
+            this(changesToSize, changesToOrder, HashSet(), ArrayList())
 
     override val size by set::size
 
@@ -19,6 +22,9 @@ class OrderedHashKeySet<K : Any>(
     override val overValues: Iterable<K> = list
     override val overValuesInReverse: Iterable<K> = list.asReversed()
     override val overValuesMutably: MutableIterable<K> = list
+
+    override fun getMutableCopy(changesToSize: Change, changesToOrder: Change): OrderedKeySet.Mutable<K> =
+        OrderedHashKeySet(changesToSize, changesToOrder, HashSet(set), ArrayList(list))
 
     override fun add(toAdd: K) {
         if (set.contains(toAdd)) throw IllegalArgumentException("duplicate key: $toAdd") else {

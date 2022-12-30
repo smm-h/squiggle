@@ -19,7 +19,7 @@ object StringTable {
     fun of(file: File, cellSeperator: String, rowSeperator: String, change: Change = Change()) =
         of(file.readText(), cellSeperator, rowSeperator, change)
 
-    fun of(string: String, cellSeperator: String, rowSeperator: String, change: Change = Change()): Table<Int> {
+    fun of(string: String, cellSeperator: String, rowSeperator: String, change: Change = Change()): Table<Int, String> {
         val lines = string.split(rowSeperator).iterator()
         val schema = NamedSchema<Int, String>(lines.next().split(cellSeperator))
         return IntKeyedTable(schema).also { table ->

@@ -1,22 +1,31 @@
 package ir.smmh.table
 
-import ir.smmh.nile.verbs.*
+import ir.smmh.nile.verbs.CanAddTo
+import ir.smmh.nile.verbs.CanClear
+import ir.smmh.nile.verbs.CanRemoveElementFrom
 
-
-interface Table<K : Any> { // TODO CanClone<Table>
-    val schema: Schema<K, *>
+/**
+ * A not-necessarily ordered set of keys of non-nullable type [K], paired with
+ * a collection of [Column]s that map those keys to values of type, specified by
+ * the column.
+ */
+interface Table<K : Any, V> { // TODO CanClone<Table>
+    val schema: Schema<K, V>
     val keySet: KeySet<K>
 
-    interface CanChangeValues<K : Any> : Table<K>, CanAddTo<K>, CanRemoveElementFrom<K>, CanClear {
-        override val schema: Schema.CanChangeValues<K, *>
+    interface CanChangeValuesInCells<K : Any, V> : Table<K, V> {
+        override val schema: Schema.CanChangeValuesInColumns<K, V>
+    }
+
+    interface CanChangeSizeOfRows<K : Any, V> : Table<K, V>, CanAddTo<K>, CanRemoveElementFrom<K>, CanClear {
         override val keySet: KeySet.CanChangeSize<K>
     }
 
-    interface CanChangeSchema<K : Any> : Table<K> {
-        override val schema: Schema.CanChangeSize<K, *>
+    interface CanChangeSizeOfColumns<K : Any, V> : Table<K, V> {
+        override val schema: Schema.CanChangeColumns<K, V>
     }
 
-    interface Mutable<K : Any> : CanChangeValues<K>, CanChangeSchema<K> {
-        override val schema: Schema.Mutable<K, *>
+    interface CanChangeEverything<K : Any, V> : CanChangeValuesInCells<K, V>, CanChangeSizeOfColumns<K, V> {
+        override val schema: Schema.CanChangeColumnsAndValuesInThem<K, V>
     }
 }

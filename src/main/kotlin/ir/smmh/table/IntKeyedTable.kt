@@ -1,12 +1,12 @@
 package ir.smmh.table
 
-class IntKeyedTable(schema: SealableSchema<Int, *>) :
-    BaseTable<Int>(schema) {
+class IntKeyedTable<V>(schema: SealableSchema<Int, V>) :
+    BaseTable<Int, V>(schema) {
 
     private var key = 0
 
-    fun add(toAdd: (Int) -> Unit) =
-        add(key++, toAdd)
+    fun add(setup: (Int) -> Unit) =
+        add(key++, setup)
 
     override fun clear() {
         key = 0
