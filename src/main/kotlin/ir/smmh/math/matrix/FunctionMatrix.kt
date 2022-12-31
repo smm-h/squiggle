@@ -7,7 +7,7 @@ sealed class FunctionMatrix<T : Any>(
     override val rows: Int,
     override val columns: Int,
     override val structure: RingLike<T>,
-    protected val function: Matrix.ValueFunction.Independent<T>,
+    protected val function: (Int, Int) -> T,
 ) : AbstractMatrix<T>() {
 
     override val transpose: Matrix<T> by lazy {
@@ -18,7 +18,7 @@ sealed class FunctionMatrix<T : Any>(
         rows: Int,
         columns: Int,
         structure: RingLike<T>,
-        function: Matrix.ValueFunction.Independent<T>,
+        function: (Int, Int) -> T,
     ) : FunctionMatrix<T>(rows, columns, structure, function) {
         override fun get(i: Int, j: Int): T = function(i, j)
     }
@@ -27,7 +27,7 @@ sealed class FunctionMatrix<T : Any>(
         rows: Int,
         columns: Int,
         structure: RingLike<T>,
-        function: Matrix.ValueFunction.Independent<T>,
+        function: (Int, Int) -> T,
     ) : FunctionMatrix<T>(rows, columns, structure, function) {
         private val cache = Cache<Int, T> { x -> function(unpairI(x), unpairJ(x)) }
         override fun get(i: Int, j: Int): T = cache(pair(i, j))

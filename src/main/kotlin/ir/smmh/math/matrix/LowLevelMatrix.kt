@@ -10,7 +10,7 @@ sealed class LowLevelMatrix<T : Any> : AbstractMatrix.Mutable<T>() {
     class Int(
         override val rows: kotlin.Int,
         override val columns: kotlin.Int,
-        valueFunction: Matrix.ValueFunction.Independent<kotlin.Int>?,
+        valueFunction: ((kotlin.Int, kotlin.Int) -> kotlin.Int)?,
     ) : LowLevelMatrix<kotlin.Int>() {
         override val structure = Structures.Integer32Ring
         override fun createSameStructure(rows: kotlin.Int, columns: kotlin.Int): Matrix.Mutable<kotlin.Int> =
@@ -26,7 +26,7 @@ sealed class LowLevelMatrix<T : Any> : AbstractMatrix.Mutable<T>() {
             if (valueFunction != null)
                 for (i in 0 until rows)
                     for (j in 0 until columns)
-                        array[i][j] = valueFunction(this, i, j)
+                        array[i][j] = valueFunction(i, j)
         }
 
         override fun multiply(that: Matrix<kotlin.Int>): Matrix<kotlin.Int> = Int(rows, columns) { i, j ->
@@ -39,7 +39,7 @@ sealed class LowLevelMatrix<T : Any> : AbstractMatrix.Mutable<T>() {
     class Long(
         override val rows: kotlin.Int,
         override val columns: kotlin.Int,
-        valueFunction: Matrix.ValueFunction.Independent<kotlin.Long>?,
+        valueFunction: ((kotlin.Int, kotlin.Int) -> kotlin.Long)?,
     ) : LowLevelMatrix<kotlin.Long>() {
         override val structure = Structures.Integer64Ring
         override fun createSameStructure(rows: kotlin.Int, columns: kotlin.Int): Matrix.Mutable<kotlin.Long> =
@@ -55,7 +55,7 @@ sealed class LowLevelMatrix<T : Any> : AbstractMatrix.Mutable<T>() {
             if (valueFunction != null)
                 for (i in 0 until rows)
                     for (j in 0 until columns)
-                        array[i][j] = valueFunction(this, i, j)
+                        array[i][j] = valueFunction(i, j)
         }
 
         override fun multiply(that: Matrix<kotlin.Long>): Matrix<kotlin.Long> = Long(rows, columns) { i, j ->
@@ -68,7 +68,7 @@ sealed class LowLevelMatrix<T : Any> : AbstractMatrix.Mutable<T>() {
     class Double(
         override val rows: kotlin.Int,
         override val columns: kotlin.Int,
-        valueFunction: Matrix.ValueFunction.Independent<kotlin.Double>?,
+        valueFunction: ((kotlin.Int, kotlin.Int) -> kotlin.Double)?,
     ) : LowLevelMatrix<kotlin.Double>() {
         override val structure = Structures.FloatingPoint64Field
         override fun createSameStructure(rows: kotlin.Int, columns: kotlin.Int): Matrix.Mutable<kotlin.Double> =
@@ -84,7 +84,7 @@ sealed class LowLevelMatrix<T : Any> : AbstractMatrix.Mutable<T>() {
             if (valueFunction != null)
                 for (i in 0 until rows)
                     for (j in 0 until columns)
-                        array[i][j] = valueFunction(this, i, j)
+                        array[i][j] = valueFunction(i, j)
         }
 
         override fun multiply(that: Matrix<kotlin.Double>): Matrix<kotlin.Double> = Double(rows, columns) { i, j ->
@@ -97,7 +97,7 @@ sealed class LowLevelMatrix<T : Any> : AbstractMatrix.Mutable<T>() {
     class Float(
         override val rows: kotlin.Int,
         override val columns: kotlin.Int,
-        valueFunction: Matrix.ValueFunction.Independent<kotlin.Float>?,
+        valueFunction: ((kotlin.Int, kotlin.Int) -> kotlin.Float)?,
     ) : LowLevelMatrix<kotlin.Float>() {
         override val structure = Structures.FloatingPoint32Field
         override fun createSameStructure(rows: kotlin.Int, columns: kotlin.Int): Matrix.Mutable<kotlin.Float> =
@@ -113,7 +113,7 @@ sealed class LowLevelMatrix<T : Any> : AbstractMatrix.Mutable<T>() {
             if (valueFunction != null)
                 for (i in 0 until rows)
                     for (j in 0 until columns)
-                        array[i][j] = valueFunction(this, i, j)
+                        array[i][j] = valueFunction(i, j)
         }
 
         override fun multiply(that: Matrix<kotlin.Float>): Matrix<kotlin.Float> = Float(rows, columns) { i, j ->
@@ -126,7 +126,7 @@ sealed class LowLevelMatrix<T : Any> : AbstractMatrix.Mutable<T>() {
     class Boolean(
         override val rows: kotlin.Int,
         override val columns: kotlin.Int,
-        valueFunction: Matrix.ValueFunction.Independent<kotlin.Boolean>?,
+        valueFunction: ((kotlin.Int, kotlin.Int) -> kotlin.Boolean)?,
     ) : LowLevelMatrix<kotlin.Boolean>() {
         override val structure = Structures.BooleanRing
         override fun createSameStructure(rows: kotlin.Int, columns: kotlin.Int): Matrix.Mutable<kotlin.Boolean> =
@@ -142,7 +142,7 @@ sealed class LowLevelMatrix<T : Any> : AbstractMatrix.Mutable<T>() {
             if (valueFunction != null)
                 for (i in 0 until rows)
                     for (j in 0 until columns)
-                        array[i][j] = valueFunction(this, i, j)
+                        array[i][j] = valueFunction(i, j)
         }
 
         override fun multiply(that: Matrix<kotlin.Boolean>): Matrix<kotlin.Boolean> = Boolean(rows, columns) { i, j ->

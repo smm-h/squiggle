@@ -1,6 +1,7 @@
 package ir.smmh.math.matrix
 
 import ir.smmh.math.abstractalgebra.RingLike
+import ir.smmh.math.matrix.Matrix.ValueFunction.constant
 import ir.smmh.nile.Change
 
 class ArrayMatrix<T : Any>(
@@ -8,7 +9,7 @@ class ArrayMatrix<T : Any>(
     override val columns: Int,
     override val structure: RingLike<T>,
     override val changesToValues: Change = Change(),
-    initialValueFunction: Matrix.ValueFunction<T>,
+    initialValueFunction: (Int, Int) -> T,
 ) : AbstractMatrix.Mutable<T>() {
     constructor(
         rows: Int,
@@ -16,9 +17,9 @@ class ArrayMatrix<T : Any>(
         structure: RingLike<T>,
         changesToValues: Change = Change(),
         initialValue: T = structure.addition.identity!!,
-    ) : this(rows, columns, structure, changesToValues, Matrix.ValueFunction.Independent { _, _ -> initialValue })
+    ) : this(rows, columns, structure, changesToValues, constant(initialValue))
 
-    private val array = Array<Array<Any>>(rows) { i -> Array<Any>(columns) { j -> initialValueFunction(this, i, j) } }
+    private val array = Array<Array<Any>>(rows) { i -> Array<Any>(columns) { j -> initialValueFunction(i, j) } }
 
     override fun createSameStructure(rows: Int, columns: Int): Matrix.Mutable<T> = ArrayMatrix(rows, columns, structure)
 

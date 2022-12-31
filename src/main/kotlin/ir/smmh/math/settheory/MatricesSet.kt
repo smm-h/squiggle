@@ -3,6 +3,7 @@ package ir.smmh.math.settheory
 import ir.smmh.math.abstractalgebra.RingLike
 import ir.smmh.math.matrix.FunctionMatrix
 import ir.smmh.math.matrix.Matrix
+import ir.smmh.math.matrix.Matrix.ValueFunction.independent
 import ir.smmh.nile.Cache
 
 class MatricesSet<T : Any> private constructor(
@@ -11,7 +12,7 @@ class MatricesSet<T : Any> private constructor(
     val structure: RingLike<T>,
 ) : Set.Specific<Matrix<T>> {
     override val choose: () -> Matrix<T> =
-        { FunctionMatrix.Memoized(rows, columns, structure) { _, _ -> structure.domain.choose() } }
+        { FunctionMatrix.Memoized(rows, columns, structure, independent(structure.domain.choose::invoke)) }
 
     override fun containsSpecific(it: Matrix<T>): Boolean =
         it.rows == rows && it.columns == columns && it.structure == structure

@@ -6,7 +6,7 @@ fun main() {
 
     // TODO matrices as LaTeX in Markdown
 
-    val i = Structures.Integer32Ring
+    val z = Structures.Integer32Ring
     val r = Structures.FloatingPoint32Field
 
     val i2r: (Matrix<Int>) -> Matrix<Float> = { it.convert(r) { it.toFloat() } }
@@ -14,16 +14,17 @@ fun main() {
     val n = 5
     println("n = $n\n")
 
-    val mi: Matrix<Int> = Matrix.identity(n).convert(i) { x -> if (x) 1 else 0 }
+    val mi: Matrix<Int> = Matrix.identity(n).convert(z) { x -> if (x) 1 else 0 }
     println("Identity matrix:\n$mi\n")
 
-    val mt: Matrix<Int> = FunctionMatrix.Unmemoized(n, n, i, Matrix.multiplicationTable)
+    val multiplicationTable: (Int, Int) -> Int = { i, j -> (i + 1) * (j + 1) }
+    val mt: Matrix<Int> = FunctionMatrix.Unmemoized(n, n, z, multiplicationTable)
     println("Multiplication table:\n$mt\n")
 
-    val mr: Matrix<Int> = MapMatrix(n, n, i).setAll(Matrix.rowMajor)
+    val mr: Matrix<Int> = MapMatrix(n, n, z).setAll(Matrix.getRowMajor(n))
     println("Row-major indices:\n$mr\n")
 
-    val mc: Matrix<Int> = MapMatrix(n, n, i).setAll(Matrix.columnMajor)
+    val mc: Matrix<Int> = MapMatrix(n, n, z).setAll(Matrix.getColumnMajor(n))
     println("Column-major indices:\n$mc\n")
 
     val dr = mr - mt
