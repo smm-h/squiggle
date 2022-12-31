@@ -290,7 +290,8 @@ object Json : Language.HasFileExt.Impl("json"), Language.Serialization, Language
         override val serialization = "{$inside}"
         override fun iterator(): Iterator<String> = data.keys.iterator()
         override fun getNullableAtPlace(place: String) = subValue(place)?.deserialization
-        override fun containsPlace(toCheck: String) = toCheck in data
+        override fun containsPlace(toCheck: String) = data.containsKey(toCheck)
+        override fun containsValue(toCheck: Any?) = data.containsValue(toCheck)
         override val size get() = data.size
         override fun clone(deepIfPossible: Boolean) = LazyObject(inside)
         override fun toString() = "Json.Object:$serialization"
@@ -612,7 +613,7 @@ object Json : Language.HasFileExt.Impl("json"), Language.Serialization, Language
         }
     }
 
-    sealed interface Object : Structure, Iterable<String>, CanGetAtPlace<String, Any?> {
+    sealed interface Object : Structure, Iterable<String>, CanGetAtPlace<String, Any?>, CanContainValue<Any?> {
 
         operator fun get(key: String): Any? = getNullableAtPlace(key)
         operator fun contains(key: String): Boolean = containsPlace(key)
