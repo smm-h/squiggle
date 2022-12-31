@@ -99,7 +99,7 @@ sealed interface Vector {
             get() = towards(scaleX, scaleY)
 
         private fun angle(x: Double, y: Double): Double =
-            -kotlin.math.atan2(y, x)
+            -Math.atan2(y, x)
     }
 
     private data class Impl(override val x: Double, override val y: Double) : Vector

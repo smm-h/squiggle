@@ -3,12 +3,14 @@ package ir.smmh.mage.core
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.math.floor
 
+import ir.smmh.mage.core.Group as GroupGeneral
+
 abstract class Temporal {
 
     abstract class AndVisual : Temporal(), Visual {
         override var visible: Boolean = true
 
-        abstract class Group<T> : AndVisual(), ir.smmh.mage.core.Group<T> where T : Temporal, T : Visual {
+        abstract class Group<T> : AndVisual(), GroupGeneral<T> where T : Temporal, T : Visual {
 
             override fun update() =
                 if (enabled) forEach { it.progress() } else Unit
@@ -68,7 +70,7 @@ abstract class Temporal {
      */
     abstract fun update()
 
-    abstract class Group<T : Temporal> : Temporal(), ir.smmh.mage.core.Group<T> {
+    abstract class Group<T : Temporal> : Temporal(), GroupGeneral<T> {
 
         override fun update() =
             if (enabled) forEach { it.progress() } else Unit

@@ -290,7 +290,7 @@ class NiLexTokenizer() : Tokenizer {
         return output
     }
 
-    private sealed class TokenType(name: String) : ir.smmh.lingu.Token.Type.Atomic(name)
+    private sealed class TokenType(name: String) : Token.Type.Atomic(name)
 
     private object UnknownChar : TokenType("?") {
         class Mishap(override val token: Token) : Code.Mishap() {

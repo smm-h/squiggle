@@ -72,8 +72,7 @@ class Splitter(private val delimiters: Set<Char> = "\t\n\r ".toCharSet()) : Toke
         return tokens
     }
 
-    inner class TokenType(name: String, val predicate: (String) -> Boolean) :
-        ir.smmh.lingu.Token.Type.Atomic(name) {
+    inner class TokenType(name: String, val predicate: (String) -> Boolean) : Token.Type.Atomic(name) {
         init {
             types.add(this)
         }

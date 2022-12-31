@@ -11,6 +11,7 @@ package ir.smmh.mage.platforms
 //import ir.smmh.mage.core.Color
 //import ir.smmh.mage.core.Utils.toDegrees
 //import kotlin.math.roundToInt
+//import android.graphics.Color as AndroidColor
 //
 //object AndroidPlatform : Platform {
 //
@@ -21,7 +22,7 @@ package ir.smmh.mage.platforms
 //        get() = Size.OneOne // TODO screen size
 //
 //    override fun createColor(hue: Float, saturation: Float, brightness: Float): Color.Packed =
-//        Color.packedInt(android.graphics.Color.HSVToColor(FloatArray(hue, saturation, brightness)))
+//        Color.packedInt(AndroidColor.HSVToColor(FloatArray(hue, saturation, brightness)))
 //
 //    override fun createGraphics(size: Size): Graphics =
 //        AndroidGraphics(size)
@@ -155,7 +156,7 @@ package ir.smmh.mage.platforms
 //
 //        private val paint = Paint().apply {
 //            style = Paint.Style.STROKE
-//            color = android.graphics.Color.BLACK
+//            color = AndroidColor.BLACK
 //        }
 //
 //        override var fill: Boolean = false
@@ -242,5 +243,5 @@ package ir.smmh.mage.platforms
 //        }
 //    }
 //
-//    private val MotionEvent.point get() = ir.smmh.mage.core.Point.of(x, y)
+//    private val MotionEvent.point get() = Point.of(x, y)
 //}

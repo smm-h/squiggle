@@ -337,7 +337,7 @@ interface Sequential<T> :
         }
     }
 
-//    interface View<T> : Sequential<T> { // ir.smmh.nile.View<Sequential<T>>,
+//    interface View<T> : Sequential<T> { // View<Sequential<T>>,
 ////        fun addExpirationHandler(handler: (Sequential<T>) -> Unit) {
 ////            val core: Sequential<T> = core
 ////            if (core is Mutable<*>) {
@@ -350,7 +350,7 @@ interface Sequential<T> :
 ////            }
 ////        }
 //
-//        //        @Throws(ir.smmh.nile.View.CoreExpiredException::class)
+//        //        @Throws(View.CoreExpiredException::class)
 //        override fun getAtIndex(index: Int): T {
 //            return core.getAtIndex(transformIndex(index))
 //        }
@@ -475,8 +475,8 @@ interface Sequential<T> :
 //     */
 //    abstract class AbstractView<T> protected constructor(sequential: Sequential<T>, onExpire: (() -> Unit)?) :
 //        AbstractSequential<T>(),
-//        View<T> { // , ir.smmh.nile.View.Injected<Sequential<T>> {
-////        override val injected = ir.smmh.nile.View.Impl(sequential, onExpire)
+//        View<T> { // View.Injected<Sequential<T>> {
+////        override val injected = View.Impl(sequential, onExpire)
 //    }
 
     abstract class AbstractMutableSequential<T> protected constructor(override val changesToValues: Change) :

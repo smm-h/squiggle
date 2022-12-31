@@ -10,13 +10,15 @@ package ir.smmh.mage.newton
 //import kotlin.math.roundToInt
 //import kotlin.random.Random
 //
+//import java.awt.Point as AwtPoint
+//
 //interface Mask {
 //    var mx: Double
 //    var my: Double
 //
 //    val cx: Double get() = x + mx
 //    val cy: Double get() = y + my
-//    val c: Point get() = java.awt.Point(cx, cy)
+//    val c: Point get() = AwtPoint(cx, cy)
 //
 //    val perimeter: Double
 //    val area: Double

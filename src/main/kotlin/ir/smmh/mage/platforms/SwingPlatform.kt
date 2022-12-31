@@ -24,11 +24,14 @@ import javax.swing.JPanel
 import kotlin.math.abs
 import kotlin.math.roundToInt
 import kotlin.system.exitProcess
-
+import java.awt.Color as AwtColor
+import java.awt.Graphics as AwtGraphics
+import java.awt.Image as AwtImage
+import java.awt.Point as AwtPoint
 
 object SwingPlatform : Platform {
 
-    private val lastMousePoint = java.awt.Point(-1, -1)
+    private val lastMousePoint = AwtPoint(-1, -1)
 
     fun mousePoint(process: Process): Point? {
         val p = MouseInfo.getPointerInfo().location
@@ -43,7 +46,7 @@ object SwingPlatform : Platform {
     private fun dimensionToSize(d: Dimension) = Size.of(d.width, d.height)
 
     override fun createColor(hue: Float, saturation: Float, brightness: Float): Color.Packed =
-        Color.packedInt(java.awt.Color.HSBtoRGB(hue, saturation, brightness))
+        Color.packedInt(AwtColor.HSBtoRGB(hue, saturation, brightness))
 
     override fun createProcess(dispatch: Event.Dispatch, draw: Graphics.Draw): Process =
         SwingProcess(dispatch, draw)
@@ -55,11 +58,11 @@ object SwingPlatform : Platform {
 
         override val platform: Platform get() = SwingPlatform
 
-        val location: java.awt.Point get() = panel.locationOnScreen
+        val location: AwtPoint get() = panel.locationOnScreen
 
         private val frame = JFrame()
         private val panel = object : JPanel(null) {
-            override fun paint(g: java.awt.Graphics) {
+            override fun paint(g: AwtGraphics) {
                 super.paint(g)
                 this@SwingProcess.draw(this@SwingProcess.graphics)
                 g.drawImage(this@SwingProcess.graphics.image, 0, 0, null)
@@ -160,9 +163,9 @@ object SwingPlatform : Platform {
         }
     }
 
-    fun createImage(image: java.awt.Image): Image = SwingImage(image)
+    fun createImage(image: AwtImage): Image = SwingImage(image)
 
-    private class SwingImage(val image: java.awt.Image) : ir.smmh.mage.core.Image {
+    private class SwingImage(val image: AwtImage) : Image {
         override val platform: Platform get() = SwingPlatform
         override val size: Size by lazy { Size.of(image.getWidth(null), image.getHeight(null)) }
     }
@@ -230,7 +233,7 @@ object SwingPlatform : Platform {
             graphics.drawImage((image as SwingImage).image, x.roundToInt(), y.roundToInt(), null)
         }
 
-        override fun toImage(): ir.smmh.mage.core.Image {
+        override fun toImage(): Image {
             return SwingImage(image) // TODO recreate image
         }
     }
@@ -336,7 +339,7 @@ object SwingPlatform : Platform {
     }
 
     private fun Color.toSwingColor() =
-        java.awt.Color(rgba, true)
+        AwtColor(rgba, true)
 
     override fun renderTeX(tex: String, scale: Float, foreground: Color, background: Color): Image =
         createImage(TeXFormula(tex).createBufferedImage(0, scale, foreground.toSwingColor(), background.toSwingColor()))

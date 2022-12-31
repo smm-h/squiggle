@@ -58,7 +58,7 @@ interface Tree<DataType> : CanContainValue<DataType> { // , CanSerialize
             fun getTree(): Binary<DataType>
 
             companion object {
-                @kotlin.jvm.JvmStatic
+                @JvmStatic
                 fun <DataType> targetPreOrder(
                     inOrder: Sequential<DataType>,
                     postOrder: Sequential<DataType>
@@ -66,7 +66,7 @@ interface Tree<DataType> : CanContainValue<DataType> { // , CanSerialize
                     return PreOrderConstructor(inOrder, postOrder)
                 }
 
-                @kotlin.jvm.JvmStatic
+                @JvmStatic
                 fun <DataType> targetInOrder(
                     preOrder: Sequential<DataType>,
                     postOrder: Sequential<DataType>
@@ -74,7 +74,7 @@ interface Tree<DataType> : CanContainValue<DataType> { // , CanSerialize
                     return InOrderConstructor(preOrder, postOrder)
                 }
 
-                @kotlin.jvm.JvmStatic
+                @JvmStatic
                 fun <DataType> targetPostOrder(
                     preOrder: Sequential<DataType>,
                     inOrder: Sequential<DataType>

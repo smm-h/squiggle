@@ -7,6 +7,8 @@ import ir.smmh.markup.Markdown
 import ir.smmh.serialization.json.Json
 import java.io.File
 
+import ir.smmh.markup.Markup as MarkupObject
+
 /**
  * A [Language] is a formal way to employ your computer to accomplish a certain
  * goal. All languages operate on [Code] objects which are abstractions over
@@ -102,8 +104,8 @@ interface Language {
     }
 
     interface Markup : Language {
-        abstract fun compile(document: ir.smmh.markup.Markup.Document, metadata: String?): String
-        abstract fun compile(it: ir.smmh.markup.Markup.Text): String
-        fun code(document: ir.smmh.markup.Markup.Document): Code = Code(compile(document), this)
+        abstract fun compile(document: MarkupObject.Document, metadata: String?): String
+        abstract fun compile(it: MarkupObject.Text): String
+        fun code(document: MarkupObject.Document): Code = Code(compile(document), this)
     }
 }

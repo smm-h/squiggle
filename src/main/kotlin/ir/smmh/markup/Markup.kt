@@ -277,7 +277,7 @@ object Markup {
             }
         }
 
-        class Multitude : Fragment(), ir.smmh.nile.HasSize, Iterable<Fragment>, CanAppendTo<Fragment>,
+        class Multitude : Fragment(), HasSize, Iterable<Fragment>, CanAppendTo<Fragment>,
             CanPrependTo<Fragment> {
             override val changesToSize: Change = Change()
             override val size get() = list.size
