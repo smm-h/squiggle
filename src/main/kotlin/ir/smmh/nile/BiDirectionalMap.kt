@@ -1,22 +1,17 @@
 package ir.smmh.nile
 
-class BiDirectionalMap<T, R>(original: List<T>, mapped: List<R>) : HasSize {
-    //constructor(original: List<T>, map: (T) -> R) : this(original, original.map(map))
-    //constructor(original: Iterable<T>, map: (T) -> R) : this(original.toList(), original.map(map))
+interface BiDirectionalMap<K, V> : Map<K, V> {
+    val reverse: Map<V, K>
 
-    override val size = original.size
+    private class Impl<K, V>(private val map: Map<K, V>) : BiDirectionalMap<K, V>, Map<K, V> by map {
+        override val reverse: Map<V, K> by lazy { HashMap<V, K>(map.size).apply { for ((k, v) in map) put(v, k) } }
+    }
 
-    private val f = HashMap<T, R>()
-    private val b = HashMap<R, T>()
-
-    val forward: Map<T, R> get() = f
-    val backward: Map<R, T> get() = b
-
-    init {
-        require(size == mapped.size)
-        (0 until size).forEach { i ->
-            f.put(original[i], mapped[i])
-            b.put(mapped[i], original[i])
+    companion object {
+        fun <K, V> of(map: Map<K, V>): BiDirectionalMap<K, V> = Impl(map)
+        fun <T> indexMapOf(iterable: Iterable<T>): BiDirectionalMap<T, Int> {
+            var i = 0
+            return of(iterable.associateWith { i++ })
         }
     }
 }

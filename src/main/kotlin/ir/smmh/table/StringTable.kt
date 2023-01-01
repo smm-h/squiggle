@@ -26,7 +26,7 @@ object StringTable {
             lines.forEach { line ->
                 table.add { key ->
                     line.split(cellSeperator).forEachIndexed { index, value ->
-                        schema.columns[index][key] = value
+                        schema.getAtIndex(index)[key] = value
                     }
                 }
             }
