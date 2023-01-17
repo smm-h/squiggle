@@ -2,7 +2,7 @@ package ir.smmh.mage.core
 
 import java.util.concurrent.CopyOnWriteArrayList
 
-import ir.smmh.mage.core.Group as GroupGeneral
+import ir.smmh.mage.core.Group as GroupInGeneral
 
 interface Visual {
 
@@ -17,7 +17,7 @@ interface Visual {
         override fun draw(g: Graphics) = onDraw(g)
     }
 
-    abstract class Group<T : Visual> : Abstract(), GroupGeneral<T> {
+    abstract class Group<T : Visual> : Abstract(), GroupInGeneral<T> {
         override fun draw(g: Graphics) =
             if (visible) forEach { it.draw(g) } else Unit
 
