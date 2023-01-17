@@ -1,0 +1,89 @@
+package ir.smmh.math
+
+import ir.smmh.math.MathematicalCollection.*
+
+
+/**
+ * A [MathematicalCollection] is a collection of [MathematicalObject]s of type
+ * [T].
+ *
+ * - The order of its elements do not matter unless [OrderMatters]
+ * - Duplicate elements are allowed unless it [DisallowsDuplicates]
+ * - The collection is either [Finite] or [Infinite]
+ *
+ * While you can mix and mash these properties to define your own collection
+ * type, it is strongly recommended that you use one of the already defined
+ * types of [Sequence], [Set], [Set.Ordered], and [Bag].
+ */
+interface MathematicalCollection<T : MathematicalObject> : MathematicalObject {
+
+    // TODO val cardinality: Numbers.Cardinal
+    operator fun contains(element: T): Boolean
+    fun count(element: T): Int
+    fun isEmpty(): Boolean
+    fun isNotEmpty() = !isEmpty()
+    val overElements: Iterable<T>? get() = null
+
+    fun containsAny(them: Iterable<T>): Boolean = them.fold(false) { a, e -> a || contains(e) }
+    fun containsAll(them: Iterable<T>): Boolean = them.fold(true) { a, e -> a && contains(e) }
+
+    /**
+     * [Sequence]/[Set.Ordered]
+     */
+    interface OrderMatters<T : MathematicalObject> : MathematicalCollection<T> {
+
+        fun compare(a: T, b: T): Int
+
+        // Measureable, Measure, measure(it: T): Int/Double/...
+
+        interface Countable<T : MathematicalObject> {
+            val first: T
+            fun next(after: T): T
+            fun nth(n: Int): T
+        }
+    }
+
+    /**
+     * [Set]
+     */
+    interface DisallowsDuplicates<T : MathematicalObject> : MathematicalCollection<T> {
+        override fun count(element: T) = if (contains(element)) 1 else 0
+    }
+
+    /**
+     * [Sequence.Finite], [Bag.Finite], [Set.Finite], [Set.Ordered.Finite]
+     */
+    interface Finite<T : MathematicalObject> : MathematicalCollection<T> {
+        val cardinality: Int
+        override fun isEmpty() = cardinality == 0
+        override fun isNotEmpty() = cardinality > 0
+
+        fun singletonOrNull(): T?
+        fun singleton(): T = singletonOrNull() ?: throw Exception("set is not a singleton")
+    }
+
+    /**
+     * [Sequence.Infinite], [Bag.Infinite], [Set.Infinite], [Set.Ordered.Infinite]
+     */
+    interface Infinite<T : MathematicalObject> : MathematicalCollection<T> {
+        override fun isEmpty() = false
+        override fun isNotEmpty() = true
+        override val overElements: InfinitelyIterable<T>? get() = null
+    }
+
+    interface InfinitelyIterable<T> : Iterable<T> {
+        override fun iterator(): Iterator<T>
+
+        fun interface Iterator<T> : kotlin.collections.Iterator<T> {
+            override fun hasNext() = true
+        }
+    }
+
+    interface CanPickRandomElement<T : MathematicalObject> : MathematicalCollection<T> {
+        fun pick(): T
+
+        fun pickTwo(): Pair<T, T> = pick() to pick()
+        fun pickThree(): Triple<T, T, T> = Triple(pick(), pick(), pick())
+        fun pickN(n: Int): List<T> = ArrayList<T>(n).apply { repeat(n) { add(pick()) } }
+    }
+}
