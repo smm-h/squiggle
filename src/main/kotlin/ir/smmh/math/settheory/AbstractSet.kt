@@ -1,6 +1,9 @@
 package ir.smmh.math.settheory
 
-abstract class AbstractSet : Set.Finite.NonEmpty {
-    override fun toString() = string
-    private val string by lazy { overElements.joinToString(", ", "{", "}") }
+import ir.smmh.math.MathematicalObject
+
+abstract class AbstractSet<T : MathematicalObject> : MathematicalObject.Abstract(), Set<T> {
+    override val debugText by lazy {
+        overElements?.joinToString(", ", "{", "}", limit = if (this is Set.Infinite<*>) 10 else -1) ?: "{...?}"
+    }
 }

@@ -15,6 +15,7 @@ interface MathematicalObject {
      * Do not call this directly; use the equality operator (`==`) instead.
      */
     fun isNonReferentiallyEqualTo(that: MathematicalObject): Boolean
+    // TODO isClassicallyEqualTo
 
     abstract class Abstract : MathematicalObject {
         override fun toString(): String = debugText

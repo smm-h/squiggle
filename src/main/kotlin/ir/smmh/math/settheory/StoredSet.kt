@@ -1,16 +1,15 @@
 package ir.smmh.math.settheory
 
+import ir.smmh.math.MathematicalCollection
+import ir.smmh.math.MathematicalObject
 import kotlin.random.Random
 
-class StoredSet<T : Any>(preFillElements: Iterable<T>? = null) : AbstractSet(), Set.Specific.Finite<T> {
-    private val set = HashSet<T>().apply { preFillElements?.also { addAll(it) } }
-    private val list by lazy { set.toList() }
+class StoredSet<T : MathematicalObject>(elements: Iterable<T>) : AbstractSet<T>(), Set.Finite<T> {
+    private val set = HashSet<T>().also { it.addAll(elements) }
     override val cardinality by set::size
-    override val choose: () -> T = { list[Random.nextInt(cardinality)] }
-    override fun containsSpecific(it: T): Boolean = it in set
     override val overElements: Iterable<T> = set
-    override fun equals(other: Any?) = other is StoredSet<*> && other.set == set
-    override fun hashCode() = set.hashCode()
-    override fun toString() = set.toString()
-    override fun singletonNullable() = if (cardinality == 1) set.firstOrNull() else null
+    override fun contains(element: T): Boolean = set.contains(element)
+    override fun singletonOrNull() = set.firstOrNull()
+    override fun isNonReferentiallyEqualTo(that: MathematicalObject) = that is StoredSet<*> && that.set == set
+    override fun getPicker(random: Random): MathematicalCollection.Picker<T>? = ListPicker(this, random)
 }

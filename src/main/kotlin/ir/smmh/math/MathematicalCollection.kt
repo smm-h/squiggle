@@ -1,6 +1,11 @@
 package ir.smmh.math
 
+
 import ir.smmh.math.MathematicalCollection.*
+import ir.smmh.math.sequence.Sequence
+import ir.smmh.math.settheory.Bag
+import ir.smmh.math.settheory.Set
+import kotlin.random.Random
 
 
 /**
@@ -22,8 +27,11 @@ interface MathematicalCollection<T : MathematicalObject> : MathematicalObject {
     fun count(element: T): Int
     fun isEmpty(): Boolean
     fun isNotEmpty() = !isEmpty()
-    val overElements: Iterable<T>? get() = null
+    val overElements: Iterable<T>?
+    fun getPicker(random: Random = Random): Picker<T>?
 
+    fun containsAnyOf(vararg these: T): Boolean = containsAny(these.asList())
+    fun containsAllOf(vararg these: T): Boolean = containsAll(these.asList())
     fun containsAny(them: Iterable<T>): Boolean = them.fold(false) { a, e -> a || contains(e) }
     fun containsAll(them: Iterable<T>): Boolean = them.fold(true) { a, e -> a && contains(e) }
 
@@ -79,7 +87,10 @@ interface MathematicalCollection<T : MathematicalObject> : MathematicalObject {
         }
     }
 
-    interface CanPickRandomElement<T : MathematicalObject> : MathematicalCollection<T> {
+    /**
+     * A helper object that picks randoms elements from a collection
+     */
+    fun interface Picker<T : MathematicalObject> {
         fun pick(): T
 
         fun pickTwo(): Pair<T, T> = pick() to pick()
