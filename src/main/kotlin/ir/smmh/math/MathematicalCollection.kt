@@ -76,7 +76,7 @@ interface MathematicalCollection<T : MathematicalObject> : MathematicalObject {
     interface Infinite<T : MathematicalObject> : MathematicalCollection<T> {
         override fun isEmpty() = false
         override fun isNotEmpty() = true
-        override val overElements: InfinitelyIterable<T>? get() = null
+        override val overElements: InfinitelyIterable<T>?
     }
 
     interface InfinitelyIterable<T> : Iterable<T> {

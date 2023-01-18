@@ -1,7 +1,7 @@
 package ir.smmh.math.settheory
 
-import ir.smmh.math.MathematicalObject
 import ir.smmh.math.MathematicalCollection
+import ir.smmh.math.MathematicalObject
 
 interface Set<T : MathematicalObject> : MathematicalCollection<T>, MathematicalCollection.DisallowsDuplicates<T> {
     interface Finite<T : MathematicalObject> : Set<T>, MathematicalCollection.Finite<T>
