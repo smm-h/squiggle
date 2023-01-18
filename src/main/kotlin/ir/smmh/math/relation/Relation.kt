@@ -5,19 +5,32 @@ import ir.smmh.math.settheory.Set
 import ir.smmh.math.tuple.Tuple
 import ir.smmh.nile.verbs.CanChangeValues
 
-interface Relation<TupleType : Tuple> : Set<TupleType> {
+interface Relation<TupleType : Tuple> : MathematicalObject {
+
+    val holds: Set<TupleType>
+
+    override val debugText: String get() = "Relation:${holds.debugText}"
+    override fun isNonReferentiallyEqualTo(that: MathematicalObject): Boolean? = that is Relation<*> && that.holds == holds
+
     interface Finitary<TupleType : Tuple.Finitary> : Relation<TupleType>
     interface Infinitary<TupleType : Tuple.Infinitary> : Relation<TupleType>
 
     interface Closed<T : MathematicalObject, TupleType : Tuple.Uniform<T>> : Relation<TupleType> {
         val domain: Set<T>
+
+        interface Finite<T : MathematicalObject, TupleType : Tuple.Uniform<T>> : Closed<T, TupleType> {
+            override val holds: Set.Finite<TupleType>
+        }
+
+        interface Infinite<T : MathematicalObject, TupleType : Tuple.Uniform<T>> : Closed<T, TupleType> {
+            override val holds: Set.Infinite<TupleType>
+        }
     }
 
     interface Binary<T1 : MathematicalObject, T2 : MathematicalObject, TupleType : Tuple.Binary.Specific<T1, T2>> :
         Finitary<TupleType> {
         val domain: Set<T1>
         val codomain: Set<T2>
-        val holds: Set<TupleType>
 
         operator fun get(a: T1, b: T2): Boolean
 
@@ -52,15 +65,14 @@ interface Relation<TupleType : Tuple> : Set<TupleType> {
                 Binary.Mutable<T, T, TupleType>
 
             interface Finite<T : MathematicalObject, TupleType : Tuple.Binary.Uniform<T>> :
-                Closed<T, TupleType> {
+                Closed<T, TupleType>, Relation.Closed.Finite<T, TupleType> {
                 override val holds: Set.Finite<TupleType>
                 override val domain: Set.Finite<T>
                 override val codomain: Set.Finite<T> get() = domain
             }
 
             interface Infinite<T : MathematicalObject, TupleType : Tuple.Binary.Uniform<T>> :
-                Closed<T, TupleType> {
-                override val holds: Set.Infinite<TupleType>
+                Closed<T, TupleType>, Relation.Closed.Infinite<T, TupleType> {
                 override val domain: Set.Infinite<T>
                 override val codomain: Set.Infinite<T> get() = domain
             }

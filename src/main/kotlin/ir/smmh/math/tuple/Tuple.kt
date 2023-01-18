@@ -8,7 +8,7 @@ sealed interface Tuple : MathematicalObject {
     operator fun get(index: Int): MathematicalObject
 
     interface Finitary : Tuple {
-        override fun isNonReferentiallyEqualTo(that: MathematicalObject): Boolean {
+        override fun isNonReferentiallyEqualTo(that: MathematicalObject): Boolean? {
             if (that is Tuple && length == that.length) {
                 for (i in 0 until length) if (this[i] != that[i]) return false
                 return true

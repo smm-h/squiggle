@@ -9,12 +9,12 @@ interface MathematicalObject {
     //TODO val tex: String
     //TODO fun express(): Expression
 
-    fun isEqualTo(that: MathematicalObject) = this === that || isNonReferentiallyEqualTo(that)
+    fun isEqualTo(that: MathematicalObject) = this === that || isNonReferentiallyEqualTo(that) == true
 
     /**
      * Do not call this directly; use the equality operator (`==`) instead.
      */
-    fun isNonReferentiallyEqualTo(that: MathematicalObject): Boolean
+    fun isNonReferentiallyEqualTo(that: MathematicalObject): Boolean?
     // TODO isClassicallyEqualTo
 
     abstract class Abstract : MathematicalObject {

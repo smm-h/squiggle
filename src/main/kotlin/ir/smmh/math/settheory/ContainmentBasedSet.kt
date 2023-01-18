@@ -18,7 +18,7 @@ abstract class ContainmentBasedSet<T : MathematicalObject>(
     ) : ContainmentBasedSet<T>(debugText, containment), Set.Finite<T> {
         override val overElements: Iterable<T>? get() = null
         override fun singletonOrNull(): T? = null
-        override fun isNonReferentiallyEqualTo(that: MathematicalObject): Boolean = false
+        override fun isNonReferentiallyEqualTo(that: MathematicalObject) = null
         override fun getPicker(random: Random): MathematicalCollection.Picker<T>? = null
     }
 
@@ -27,7 +27,7 @@ abstract class ContainmentBasedSet<T : MathematicalObject>(
         containment: (T) -> Boolean,
     ) : ContainmentBasedSet<T>(debugText, containment), Set.Infinite<T> {
         override val overElements: MathematicalCollection.InfinitelyIterable<T>? get() = null
-        override fun isNonReferentiallyEqualTo(that: MathematicalObject) = false
+        override fun isNonReferentiallyEqualTo(that: MathematicalObject) = null
         override fun getPicker(random: Random): MathematicalCollection.Picker<T>? = null
     }
 }
