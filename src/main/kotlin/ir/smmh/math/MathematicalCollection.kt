@@ -79,7 +79,7 @@ interface MathematicalCollection<T : MathematicalObject> : MathematicalObject {
         override val overElements: InfinitelyIterable<T>?
     }
 
-    interface InfinitelyIterable<T> : Iterable<T> {
+    fun interface InfinitelyIterable<T> : Iterable<T> {
         override fun iterator(): Iterator<T>
 
         fun interface Iterator<T> : kotlin.collections.Iterator<T> {

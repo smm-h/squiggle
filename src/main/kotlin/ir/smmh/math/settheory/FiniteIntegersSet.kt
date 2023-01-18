@@ -1,15 +1,21 @@
 package ir.smmh.math.settheory
 
-import ir.smmh.nile.Cache
+import ir.smmh.math.MathematicalCollection
+import ir.smmh.math.MathematicalObject
+import ir.smmh.math.numbers.Builtins
+import ir.smmh.math.numbers.Numbers
+import ir.smmh.math.numbers.Numbers.Integer
+import ir.smmh.math.numbers.Numbers.ZERO
 import kotlin.random.Random
 
-class FiniteIntegersSet private constructor(override val cardinality: Int) : AbstractSet(), Set.Specific.Finite<Int> {
-    override val choose: () -> Int = { Random.nextInt(cardinality) }
-    override fun containsSpecific(it: Int): Boolean = it >= 0 && it < cardinality
-    override val overElements: Iterable<Int> by lazy { 0 until cardinality }
-    override fun singletonNullable() = if (cardinality == 1) 0 else null
-    companion object {
-        private val cache = Cache<Int, FiniteIntegersSet> { FiniteIntegersSet(it) }
-        fun of(degree: Int): FiniteIntegersSet = cache(degree)
-    }
+class FiniteIntegersSet(override val cardinality: Int) : AbstractSet<Integer>(), Set.Finite<Integer> {
+    private val integerCardinality = Builtins.IntInteger(cardinality)
+    override val overElements: Iterable<Integer> by lazy { (0 until cardinality).map(Builtins::IntInteger) }
+    override fun contains(it: Integer): Boolean = it >= ZERO && it < integerCardinality
+    override fun singletonOrNull() = if (cardinality == 1) Numbers.ZERO else null
+    override fun isNonReferentiallyEqualTo(that: MathematicalObject) =
+        that is FiniteIntegersSet && that.cardinality == cardinality
+
+    override fun getPicker(random: Random) =
+        MathematicalCollection.Picker<Integer> { Builtins.IntInteger(random.nextInt(cardinality)) }
 }

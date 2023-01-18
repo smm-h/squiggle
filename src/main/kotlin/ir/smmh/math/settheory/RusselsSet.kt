@@ -1,5 +1,6 @@
 package ir.smmh.math.settheory
 
+import ir.smmh.math.MathematicalCollection
 import ir.smmh.math.MathematicalObject
 import kotlin.random.Random
 
@@ -13,6 +14,7 @@ import kotlin.random.Random
 sealed class RusselsSet : Set.Infinite<Set<*>> {
 
     override val debugText: String = "Russel's Set"
+    override val overElements = null
     override fun getPicker(random: Random) = null
     override fun isNonReferentiallyEqualTo(that: MathematicalObject) = that is RusselsSet
 
