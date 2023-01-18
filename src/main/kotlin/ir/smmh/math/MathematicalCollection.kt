@@ -23,8 +23,8 @@ import kotlin.random.Random
 interface MathematicalCollection<T : MathematicalObject> : MathematicalObject {
 
     // TODO val cardinality: Numbers.Cardinal
-    operator fun contains(element: T): Boolean
-    fun count(element: T): Int
+    operator fun contains(it: T): Boolean
+    fun count(it: T): Int
     fun isEmpty(): Boolean
     fun isNotEmpty() = !isEmpty()
     val overElements: Iterable<T>?
@@ -55,7 +55,7 @@ interface MathematicalCollection<T : MathematicalObject> : MathematicalObject {
      * [Set]
      */
     interface DisallowsDuplicates<T : MathematicalObject> : MathematicalCollection<T> {
-        override fun count(element: T) = if (contains(element)) 1 else 0
+        override fun count(it: T) = if (contains(it)) 1 else 0
     }
 
     /**
