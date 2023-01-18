@@ -11,5 +11,4 @@ class StoredSet<T : MathematicalObject>(elements: Iterable<T>) : AbstractSet<T>(
     override fun contains(it: T): Boolean = set.contains(it)
     override fun singletonOrNull() = set.firstOrNull()
     override fun isNonReferentiallyEqualTo(that: MathematicalObject) = that is StoredSet<*> && that.set == set
-    override fun getPicker(random: Random): MathematicalCollection.Picker<T>? = ListPicker(this, random)
 }
