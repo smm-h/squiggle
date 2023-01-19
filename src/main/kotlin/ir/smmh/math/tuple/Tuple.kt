@@ -1,6 +1,7 @@
 package ir.smmh.math.tuple
 
 import ir.smmh.math.MathematicalObject
+import ir.smmh.math.logic.Knowable
 import ir.smmh.nile.verbs.CanClear
 
 sealed interface Tuple : MathematicalObject {
@@ -8,12 +9,12 @@ sealed interface Tuple : MathematicalObject {
     operator fun get(index: Int): MathematicalObject
 
     interface Finitary : Tuple {
-        override fun isNonReferentiallyEqualTo(that: MathematicalObject): Boolean? {
+        override fun isNonReferentiallyEqualTo(that: MathematicalObject): Knowable {
             if (that is Tuple.Finitary && length == that.length) {
-                for (i in 0 until length) if (this[i] != that[i]) return false
-                return true
+                for (i in 0 until length) if (this[i] != that[i]) return Knowable.Known.False
+                return Knowable.Known.True
             }
-            return false
+            return Knowable.Known.False
         }
     }
 

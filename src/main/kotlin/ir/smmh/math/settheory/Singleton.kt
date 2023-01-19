@@ -2,6 +2,7 @@ package ir.smmh.math.settheory
 
 import ir.smmh.math.MathematicalCollection
 import ir.smmh.math.MathematicalObject
+import ir.smmh.math.logic.Knowable
 import kotlin.random.Random
 
 class Singleton<T : MathematicalObject>(val value: T) : AbstractSet<T>(), Set.Finite<T> {
@@ -10,6 +11,6 @@ class Singleton<T : MathematicalObject>(val value: T) : AbstractSet<T>(), Set.Fi
     override fun contains(it: T): Boolean = it == value
     override fun singletonOrNull(): T = value
     override fun getPicker(random: Random) = MathematicalCollection.Picker<T> { value }
-    override fun isNonReferentiallyEqualTo(that: MathematicalObject): Boolean? =
-        that is Set.Finite<*> && that.singletonOrNull() == value
+    override fun isNonReferentiallyEqualTo(that: MathematicalObject): Knowable =
+        if (that is Set.Finite<*> && that.singletonOrNull() == value) Knowable.Known.True else Knowable.Known.False
 }

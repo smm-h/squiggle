@@ -1,6 +1,7 @@
 package ir.smmh.math.relation
 
 import ir.smmh.math.MathematicalObject
+import ir.smmh.math.logic.Knowable
 import ir.smmh.math.matrix.LowLevelMatrix
 import ir.smmh.math.matrix.Matrix
 import ir.smmh.math.matrix.Matrix.Companion.forEach
@@ -23,8 +24,8 @@ private constructor(private val map: BiDirectionalMap<T, Int>) :
 
     abstract val matrix: Matrix<Boolean>
 
-    override fun isNonReferentiallyEqualTo(that: MathematicalObject): Boolean? =
-        that is MatrixRelation<*> && that.matrix == matrix
+    override fun isNonReferentiallyEqualTo(that: MathematicalObject): Knowable =
+        if (that is MatrixRelation<*> && that.matrix == matrix) Knowable.Known.True else Knowable.Unknown
 
     override val holds: Set.Finite<Tuple.Binary.Uniform<T>> by lazy {
         object : Set.Finite<Tuple.Binary.Uniform<T>> {
@@ -34,7 +35,7 @@ private constructor(private val map: BiDirectionalMap<T, Int>) :
             override fun singletonOrNull(): Tuple.Binary.Uniform<T>? = list.firstOrNull()
             override fun contains(it: Tuple.Binary.Uniform<T>) = list.contains(it)
             override fun getPicker(random: Random) = ListPicker(list, random)
-            override fun isNonReferentiallyEqualTo(that: MathematicalObject): Boolean? = null
+            override fun isNonReferentiallyEqualTo(that: MathematicalObject) = Knowable.Unknown
         }
     }
 

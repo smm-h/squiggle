@@ -1,8 +1,7 @@
 package ir.smmh.math.settheory
 
-import ir.smmh.math.MathematicalCollection
 import ir.smmh.math.MathematicalObject
-import kotlin.random.Random
+import ir.smmh.math.logic.Knowable
 
 class StoredSet<T : MathematicalObject>(elements: Iterable<T>) : AbstractSet<T>(), Set.Finite<T> {
     private val set = HashSet<T>().also { it.addAll(elements) }
@@ -10,5 +9,6 @@ class StoredSet<T : MathematicalObject>(elements: Iterable<T>) : AbstractSet<T>(
     override val overElements: Iterable<T> = set
     override fun contains(it: T): Boolean = set.contains(it)
     override fun singletonOrNull() = set.firstOrNull()
-    override fun isNonReferentiallyEqualTo(that: MathematicalObject) = that is StoredSet<*> && that.set == set
+    override fun isNonReferentiallyEqualTo(that: MathematicalObject): Knowable =
+        if (that is StoredSet<*> && that.set == set) Knowable.Known.True else Knowable.Unknown
 }
