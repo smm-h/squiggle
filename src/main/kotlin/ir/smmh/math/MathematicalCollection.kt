@@ -81,14 +81,6 @@ interface MathematicalCollection<T : MathematicalObject> : MathematicalObject {
         override val overElements: InfinitelyIterable<T>?
     }
 
-    fun interface InfinitelyIterable<T> : Iterable<T> {
-        override fun iterator(): Iterator<T>
-
-        fun interface Iterator<T> : kotlin.collections.Iterator<T> {
-            override fun hasNext() = true
-        }
-    }
-
     /**
      * A helper object that picks randoms elements from a collection
      */

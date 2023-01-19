@@ -1,14 +1,29 @@
 package ir.smmh.math.tuple
 
+import ir.smmh.math.InfinitelyIterable
 import ir.smmh.math.MathematicalObject
 import ir.smmh.math.logic.Knowable
 import ir.smmh.nile.verbs.CanClear
 
 sealed interface Tuple : MathematicalObject {
-    val length: Int
     operator fun get(index: Int): MathematicalObject
 
+    val overParts: Iterable<MathematicalObject>
+
+    override val debugText: String
+        get() = overParts.joinToString(", ", "(", ")", limit = if (this is Infinitary) 10 else -1) { it.debugText }
+
     interface Finitary : Tuple {
+        val length: Int
+        override val overParts: Iterable<MathematicalObject>
+            get() = Iterable<MathematicalObject> {
+                var i = 0
+                object : Iterator<MathematicalObject> {
+                    override fun hasNext() = i < length
+                    override fun next() = get(i++)
+                }
+            }
+
         override fun isNonReferentiallyEqualTo(that: MathematicalObject): Knowable {
             if (that is Tuple.Finitary && length == that.length) {
                 for (i in 0 until length) if (this[i] != that[i]) return Knowable.Known.False
@@ -18,7 +33,39 @@ sealed interface Tuple : MathematicalObject {
         }
     }
 
-    interface Infinitary : Tuple
+    interface Infinitary : Tuple {
+        override val overParts: InfinitelyIterable<MathematicalObject>
+            get() = InfinitelyIterable<MathematicalObject> {
+                var i = 0
+                object : InfinitelyIterable.Iterator<MathematicalObject> {
+                    override fun next() = get(i++)
+                }
+            }
+    }
+
+    interface Uniform<T : MathematicalObject> : Tuple {
+        override fun get(index: Int): T
+        interface Finitary<T : MathematicalObject> : Tuple.Finitary, Uniform<T> {
+            override val overParts: Iterable<T>
+                get() = Iterable<T> {
+                    var i = 0
+                    object : Iterator<T> {
+                        override fun hasNext() = i < length
+                        override fun next() = get(i++)
+                    }
+                }
+        }
+
+        interface Infinitary<T : MathematicalObject> : Tuple.Infinitary, Uniform<T> {
+            override val overParts: InfinitelyIterable<T>
+                get() = InfinitelyIterable<T> {
+                    var i = 0
+                    object : InfinitelyIterable.Iterator<T> {
+                        override fun next() = get(i++)
+                    }
+                }
+        }
+    }
 
     interface Nullary : Finitary {
         override val length: Int get() = 0
@@ -105,10 +152,6 @@ sealed interface Tuple : MathematicalObject {
                 else if (index == 2) third
                 else throw IndexOutOfBoundsException()
         }
-    }
-
-    interface Uniform<T : MathematicalObject> : Tuple {
-        override fun get(index: Int): T
     }
 
     interface Factory<T : Tuple> : CanClear {

@@ -1,5 +1,6 @@
 package ir.smmh.math.settheory
 
+import ir.smmh.math.InfinitelyIterable
 import ir.smmh.math.MathematicalCollection
 import ir.smmh.math.MathematicalObject
 import ir.smmh.math.logic.Knowable
@@ -27,7 +28,7 @@ abstract class ContainmentBasedSet<T : MathematicalObject>(
         debugText: String,
         containment: (T) -> Boolean,
     ) : ContainmentBasedSet<T>(debugText, containment), Set.Infinite<T> {
-        override val overElements: MathematicalCollection.InfinitelyIterable<T>? get() = null
+        override val overElements: InfinitelyIterable<T>? get() = null
         override fun isNonReferentiallyEqualTo(that: MathematicalObject) = Knowable.Unknown
         override fun getPicker(random: Random): MathematicalCollection.Picker<T>? = null
     }

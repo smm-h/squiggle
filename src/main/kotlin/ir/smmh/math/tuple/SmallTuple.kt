@@ -5,6 +5,11 @@ import ir.smmh.math.MathematicalObject
 @Suppress("DuplicatedCode")
 sealed class SmallTuple : Tuple.Finitary {
 
+    companion object {
+        infix fun <T1 : MathematicalObject, T2 : MathematicalObject> T1.r(that: T2) = Couple<T1, T2>(this, that)
+        infix fun <T : MathematicalObject> T.ru(that: T) = Uniform.Couple<T>(this, that)
+    }
+
     override val debugText by lazy(::toString)
 
     data class Uniple<
