@@ -7,7 +7,7 @@ import kotlin.random.Random
 
 interface Set<T : MathematicalObject> : MathematicalCollection<T>, MathematicalCollection.DisallowsDuplicates<T> {
 
-//    infix fun superset(that: Set<T>): Knowable = isEqualTo()
+//    infix fun superset(that: Set<T>): Knowable = (this isEqualTo that) or (this supersetNeq that)
 //    infix fun supersetNeq(that: Set<T>): Knowable
 
     interface Finite<T : MathematicalObject> : Set<T>, MathematicalCollection.Finite<T> {

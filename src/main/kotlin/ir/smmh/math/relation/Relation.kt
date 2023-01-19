@@ -34,8 +34,6 @@ interface Relation<TupleType : Tuple> : MathematicalObject {
         val domain: Set<T1>
         val codomain: Set<T2>
 
-        operator fun get(a: T1, b: T2): Boolean
-
         interface Mutable<T1 : MathematicalObject, T2 : MathematicalObject, TupleType : Tuple.Binary.Specific<T1, T2>> :
             Binary<T1, T2, TupleType>, CanChangeValues {
             operator fun set(a: T1, b: T2, holds: Boolean)

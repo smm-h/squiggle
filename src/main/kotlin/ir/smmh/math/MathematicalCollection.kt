@@ -5,6 +5,8 @@ import ir.smmh.math.MathematicalCollection.*
 import ir.smmh.math.sequence.Sequence
 import ir.smmh.math.settheory.Bag
 import ir.smmh.math.settheory.Set
+import ir.smmh.math.tuple.SmallTuple
+import ir.smmh.math.tuple.Tuple
 import kotlin.random.Random
 
 
@@ -93,8 +95,8 @@ interface MathematicalCollection<T : MathematicalObject> : MathematicalObject {
     fun interface Picker<T : MathematicalObject> {
         fun pick(): T
 
-        fun pickTwo(): Pair<T, T> = pick() to pick()
-        fun pickThree(): Triple<T, T, T> = Triple(pick(), pick(), pick())
-        fun pickN(n: Int): List<T> = ArrayList<T>(n).apply { repeat(n) { add(pick()) } }
+        fun pickTwo(): Tuple.Binary.Uniform<T> = SmallTuple.Uniform.Couple(pick(), pick())
+        fun pickThree(): Tuple.Ternary.Uniform<T> = SmallTuple.Uniform.Triple(pick(), pick(), pick())
+        //fun pickN(n: Int): Tuple.Uniform<T> = ArrayList<T>(n).apply { repeat(n) { add(pick()) } }
     }
 }
