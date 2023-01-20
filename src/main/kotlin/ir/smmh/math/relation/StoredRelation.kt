@@ -9,12 +9,12 @@ import ir.smmh.math.tuple.Tuple
 class StoredRelation<T : MathematicalObject> private constructor(
     override val domain: Set.Finite<T>,
     override val holds: StoredSet<Tuple.Binary.Uniform<T>>,
-) : Relation.Binary.Homogeneous.Finite<T, Tuple.Binary.Uniform<T>> {
+) : Relation.Binary.Homogeneous.Finite<T> {
 
     override fun get(a: T, b: T) = holds.contains(SmallTuple.Uniform.Couple(a, b))
 
     companion object {
-        fun <T : MathematicalObject, TT : Tuple.Binary.Uniform<T>> Relation.Binary.Homogeneous.Finite<T, TT>.toStoredRelation() =
+        fun <T : MathematicalObject> Relation.Binary.Homogeneous.Finite<T>.toStoredRelation() =
             StoredRelation.of(holds.overElements!!)
 
         fun <T : MathematicalObject> empty() =

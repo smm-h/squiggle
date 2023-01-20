@@ -7,6 +7,7 @@ import ir.smmh.math.logic.Knowable.Unknown
 import ir.smmh.math.relation.ComparisonResult.Comparable
 import ir.smmh.math.relation.ComparisonResult.Comparable.*
 import ir.smmh.math.relation.ComparisonResult.Incomparable
+import ir.smmh.math.relation.Relation.Binary.Homogeneous.*
 import ir.smmh.math.tuple.Tuple
 import ir.smmh.math.MathematicalObject as M
 
@@ -20,11 +21,11 @@ import ir.smmh.math.MathematicalObject as M
  *
  * [Wikipedia](https://en.wikipedia.org/wiki/Partially_ordered_set)
  */
-sealed interface PartialOrder<T : M, TT : Tuple.Binary.Uniform<T>> : Relation.Binary.Homogeneous.Transitive<T, TT> {
+sealed interface PartialOrder<T : M> : Reflexive<T>, Antisymmetric<T>, Transitive<T> {
 
     fun compare(a: T, b: T): ComparisonResult
 
-    interface NonStrict<T : M, TT : Tuple.Binary.Uniform<T>> : PartialOrder<T, TT> {
+    interface NonStrict<T : M> : PartialOrder<T> {
         override fun compare(a: T, b: T): ComparisonResult {
             val ab = get(a, b)
             val ba = get(b, a)
@@ -35,7 +36,7 @@ sealed interface PartialOrder<T : M, TT : Tuple.Binary.Uniform<T>> : Relation.Bi
         }
     }
 
-    interface Strict<T : M, TT : Tuple.Binary.Uniform<T>> : PartialOrder<T, TT> {
+    interface Strict<T : M> : PartialOrder<T> {
         override fun compare(a: T, b: T): ComparisonResult {
             val ab = get(a, b)
             val ba = get(b, a)

@@ -12,14 +12,14 @@ import ir.smmh.math.MathematicalObject as M
  *
  * [Wikipedia](https://en.wikipedia.org/wiki/Total_order)
  */
-sealed interface TotalOrder<T : M, TT : Tuple.Binary.Uniform<T>> : PartialOrder<T, TT> {
+sealed interface TotalOrder<T : M> : PartialOrder<T> {
     override fun compare(a: T, b: T): ComparisonResult.Comparable
 
-    interface NonStrict<T : M, TT : Tuple.Binary.Uniform<T>> : TotalOrder<T, TT>, PartialOrder.NonStrict<T, TT> {
+    interface NonStrict<T : M> : TotalOrder<T>, PartialOrder.NonStrict<T> {
         override fun compare(a: T, b: T): Comparable = super.compare(a, b) as Comparable
     }
 
-    interface Strict<T : M, TT : Tuple.Binary.Uniform<T>> : TotalOrder<T, TT>, PartialOrder.Strict<T, TT> {
+    interface Strict<T : M> : TotalOrder<T>, PartialOrder.Strict<T> {
         override fun compare(a: T, b: T): Comparable = super.compare(a, b) as Comparable
     }
 

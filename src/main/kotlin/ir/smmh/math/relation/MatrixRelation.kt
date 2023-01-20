@@ -18,9 +18,8 @@ import kotlin.random.Random
  * A finite closed binary relation ([Relation.Binary.Homogeneous.Finite]) that uses
  * a square logical [matrix] to represent the relation between its elements.
  */
-sealed class MatrixRelation<T : MathematicalObject>
-private constructor(private val map: BiDirectionalMap<T, Int>) :
-    Relation.Binary.Homogeneous.Finite<T, Tuple.Binary.Uniform<T>> {
+sealed class MatrixRelation<T : MathematicalObject> private constructor(private val map: BiDirectionalMap<T, Int>) :
+    Relation.Binary.Homogeneous.Finite<T> {
 
     abstract val matrix: Matrix<Boolean>
 
@@ -75,7 +74,7 @@ private constructor(private val map: BiDirectionalMap<T, Int>) :
         override val debugText: String get() = "MatrixRelation.Mutable"
 
         companion object {
-            fun <T : MathematicalObject> Relation.Binary.Homogeneous.Finite<T, Tuple.Binary.Uniform<T>>.toMutableMatrixRelation() =
+            fun <T : MathematicalObject> Relation.Binary.Homogeneous.Finite<T>.toMutableMatrixRelation() =
                 of(holds.overElements!!)
 
             fun <T : MathematicalObject> empty() =
@@ -110,12 +109,12 @@ private constructor(private val map: BiDirectionalMap<T, Int>) :
             return q
         }
 
-        fun <T : MathematicalObject> of(r: Relation.Binary.Homogeneous.Finite<T, Tuple.Binary.Uniform<T>>): MatrixRelation<T> =
+        fun <T : MathematicalObject> of(r: Relation.Binary.Homogeneous.Finite<T>): MatrixRelation<T> =
             (if (r is MatrixRelation<T>) r else of(r.holds.overElements!!)).transform(this)
     }
 
     companion object {
-        fun <T : MathematicalObject, TT : Tuple.Binary.Uniform<T>> Relation.Binary.Homogeneous.Finite<T, TT>.toMatrixRelation() =
+        fun <T : MathematicalObject> Relation.Binary.Homogeneous.Finite<T>.toMatrixRelation() =
             of(holds.overElements!!)
 
         fun <T : MathematicalObject> empty() =
