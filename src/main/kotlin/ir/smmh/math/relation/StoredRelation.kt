@@ -5,17 +5,16 @@ import ir.smmh.math.settheory.Set
 import ir.smmh.math.settheory.StoredSet
 import ir.smmh.math.tuple.SmallTuple
 import ir.smmh.math.tuple.Tuple
-import kotlin.random.Random
 
 class StoredRelation<T : MathematicalObject> private constructor(
     override val domain: Set.Finite<T>,
     override val holds: StoredSet<Tuple.Binary.Uniform<T>>,
-) : Relation.Binary.Closed.Finite<T, Tuple.Binary.Uniform<T>> {
+) : Relation.Binary.Homogeneous.Finite<T, Tuple.Binary.Uniform<T>> {
 
     override fun get(a: T, b: T) = holds.contains(SmallTuple.Uniform.Couple(a, b))
 
     companion object {
-        fun <T : MathematicalObject, TupleType : Tuple.Binary.Uniform<T>> Relation.Binary.Closed.Finite<T, TupleType>.toStoredRelation() =
+        fun <T : MathematicalObject, TT : Tuple.Binary.Uniform<T>> Relation.Binary.Homogeneous.Finite<T, TT>.toStoredRelation() =
             StoredRelation.of(holds.overElements!!)
 
         fun <T : MathematicalObject> empty() =

@@ -15,20 +15,20 @@ import kotlin.random.Random
 
 
 /**
- * A finite closed binary relation ([Relation.Binary.Closed.Finite]) that uses
+ * A finite closed binary relation ([Relation.Binary.Homogeneous.Finite]) that uses
  * a square logical [matrix] to represent the relation between its elements.
  */
 sealed class MatrixRelation<T : MathematicalObject>
 private constructor(private val map: BiDirectionalMap<T, Int>) :
-    Relation.Binary.Closed.Finite<T, Tuple.Binary.Uniform<T>> {
+    Relation.Binary.Homogeneous.Finite<T, Tuple.Binary.Uniform<T>> {
 
     abstract val matrix: Matrix<Boolean>
 
     override fun isNonReferentiallyEqualTo(that: MathematicalObject): Knowable =
         if (that is MatrixRelation<*> && that.matrix == matrix) Knowable.Known.True else Knowable.Unknown
 
-    override val holds: Set.Finite<Tuple.Binary.Uniform<T>> by lazy {
-        object : Set.Finite<Tuple.Binary.Uniform<T>> {
+    override val holds by lazy {
+        object : Set.Finite.KnownCardinality<Tuple.Binary.Uniform<T>> {
             override val debugText: String get() = "MatrixRelation.holds"
             override val cardinality: Int by list::size
             override val overElements: Iterable<Tuple.Binary.Uniform<T>> by ::list
@@ -42,8 +42,8 @@ private constructor(private val map: BiDirectionalMap<T, Int>) :
     override fun get(a: T, b: T): Boolean = get(indexOf(a), indexOf(b))
     operator fun get(a: Int, b: Int): Boolean = matrix[a, b]
 
-    override val domain: Set.Finite<T> =
-        ContainmentBasedSet.Finite<T>("MatrixRelation.domain", map.size) { map.containsKey(it) }
+    override val domain: Set.Finite.KnownCardinality<T> =
+        ContainmentBasedSet.Finite.KnownCardinality<T>("MatrixRelation.domain", map.size) { map.containsKey(it) }
     // by lazy { StoredSet(map.keys) }
 
     fun getAtIndex(index: Int): T = map.reverse.getValue(index)
@@ -75,7 +75,7 @@ private constructor(private val map: BiDirectionalMap<T, Int>) :
         override val debugText: String get() = "MatrixRelation.Mutable"
 
         companion object {
-            fun <T : MathematicalObject> Relation.Binary.Closed.Finite<T, Tuple.Binary.Uniform<T>>.toMutableMatrixRelation() =
+            fun <T : MathematicalObject> Relation.Binary.Homogeneous.Finite<T, Tuple.Binary.Uniform<T>>.toMutableMatrixRelation() =
                 of(holds.overElements!!)
 
             fun <T : MathematicalObject> empty() =
@@ -110,12 +110,12 @@ private constructor(private val map: BiDirectionalMap<T, Int>) :
             return q
         }
 
-        fun <T : MathematicalObject> of(r: Relation.Binary.Closed.Finite<T, Tuple.Binary.Uniform<T>>): MatrixRelation<T> =
+        fun <T : MathematicalObject> of(r: Relation.Binary.Homogeneous.Finite<T, Tuple.Binary.Uniform<T>>): MatrixRelation<T> =
             (if (r is MatrixRelation<T>) r else of(r.holds.overElements!!)).transform(this)
     }
 
     companion object {
-        fun <T : MathematicalObject, TupleType : Tuple.Binary.Uniform<T>> Relation.Binary.Closed.Finite<T, TupleType>.toMatrixRelation() =
+        fun <T : MathematicalObject, TT : Tuple.Binary.Uniform<T>> Relation.Binary.Homogeneous.Finite<T, TT>.toMatrixRelation() =
             of(holds.overElements!!)
 
         fun <T : MathematicalObject> empty() =

@@ -5,12 +5,12 @@ import ir.smmh.math.MathematicalObject
 import ir.smmh.math.logic.Knowable
 import kotlin.random.Random
 
-class Singleton<T : MathematicalObject>(val value: T) : AbstractSet<T>(), Set.Finite<T> {
+class Singleton<T : MathematicalObject>(val value: T) : AbstractSet<T>(), Set.Finite.KnownCardinality<T> {
     override val cardinality: Int get() = 1
     override val overElements: Iterable<T> by lazy { listOf(value) }
     override fun contains(it: T): Boolean = it == value
     override fun singletonOrNull(): T = value
     override fun getPicker(random: Random) = MathematicalCollection.Picker<T> { value }
     override fun isNonReferentiallyEqualTo(that: MathematicalObject): Knowable =
-        if (that is Set.Finite<*> && that.singletonOrNull() == value) Knowable.Known.True else Knowable.Known.False
+        if (that is Set.Finite<*>) that.singletonOrNull()?.isEqualTo(value) ?: Knowable.Unknown else Knowable.Unknown
 }

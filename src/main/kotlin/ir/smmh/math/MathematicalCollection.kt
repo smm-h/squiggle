@@ -2,12 +2,14 @@ package ir.smmh.math
 
 
 import ir.smmh.math.MathematicalCollection.*
+import ir.smmh.math.logic.Knowable
 import ir.smmh.math.sequence.Sequence
 import ir.smmh.math.settheory.Bag
 import ir.smmh.math.settheory.Set
 import ir.smmh.math.tuple.SmallTuple
 import ir.smmh.math.tuple.Tuple
 import kotlin.random.Random
+import ir.smmh.math.MathematicalObject as M
 
 
 /**
@@ -22,13 +24,13 @@ import kotlin.random.Random
  * type, it is strongly recommended that you use one of the already defined
  * types of [Sequence], [Set], [Set.Ordered], and [Bag].
  */
-interface MathematicalCollection<T : MathematicalObject> : MathematicalObject {
+interface MathematicalCollection<T : M> : M {
 
     // TODO val cardinality: Numbers.Cardinal
     operator fun contains(it: T): Boolean
     fun count(it: T): Int
-    fun isEmpty(): Boolean
-    fun isNotEmpty() = !isEmpty()
+    fun isEmpty(): Knowable
+    fun isNotEmpty(): Knowable = !isEmpty()
     val overElements: Iterable<T>?
     fun getPicker(random: Random = Random): Picker<T>?
 
@@ -40,13 +42,13 @@ interface MathematicalCollection<T : MathematicalObject> : MathematicalObject {
     /**
      * [Sequence]/[Set.Ordered]
      */
-    interface OrderMatters<T : MathematicalObject> : MathematicalCollection<T> {
+    interface OrderMatters<T : M> : MathematicalCollection<T> {
 
         fun compare(a: T, b: T): Int
 
         // Measureable, Measure, measure(it: T): Int/Double/...
 
-        interface Countable<T : MathematicalObject> {
+        interface Countable<T : M> {
             val first: T
             fun next(after: T): T
             fun nth(n: Int): T
@@ -56,17 +58,26 @@ interface MathematicalCollection<T : MathematicalObject> : MathematicalObject {
     /**
      * [Set]
      */
-    interface DisallowsDuplicates<T : MathematicalObject> : MathematicalCollection<T> {
+    interface DisallowsDuplicates<T : M> : MathematicalCollection<T> {
         override fun count(it: T) = if (contains(it)) 1 else 0
     }
 
     /**
      * [Sequence.Finite], [Bag.Finite], [Set.Finite], [Set.Ordered.Finite]
      */
-    interface Finite<T : MathematicalObject> : MathematicalCollection<T> {
-        val cardinality: Int
-        override fun isEmpty() = cardinality == 0
-        override fun isNotEmpty() = cardinality > 0
+    interface Finite<T : M> : MathematicalCollection<T> {
+        val cardinality: Int?
+        override fun isEmpty(): Knowable = when (cardinality) {
+            null -> Knowable.Unknown
+            0 -> Knowable.Known.True
+            else -> Knowable.Known.False
+        }
+
+        interface KnownCardinality<T : M> : Finite<T> {
+            override val cardinality: Int
+            override fun isEmpty(): Knowable.Known = Knowable.Known.of(cardinality == 0)
+            override fun isNotEmpty(): Knowable.Known = !isEmpty()
+        }
 
         fun singletonOrNull(): T?
         fun singleton(): T = singletonOrNull() ?: throw Exception("set is not a singleton")
@@ -75,16 +86,16 @@ interface MathematicalCollection<T : MathematicalObject> : MathematicalObject {
     /**
      * [Sequence.Infinite], [Bag.Infinite], [Set.Infinite], [Set.Ordered.Infinite]
      */
-    interface Infinite<T : MathematicalObject> : MathematicalCollection<T> {
-        override fun isEmpty() = false
-        override fun isNotEmpty() = true
+    interface Infinite<T : M> : MathematicalCollection<T> {
+        override fun isEmpty() = Knowable.Known.False
+        override fun isNotEmpty() = Knowable.Known.True
         override val overElements: InfinitelyIterable<T>?
     }
 
     /**
      * A helper object that picks randoms elements from a collection
      */
-    fun interface Picker<T : MathematicalObject> {
+    fun interface Picker<T : M> {
         fun pick(): T
 
         fun pickTwo(): Tuple.Binary.Uniform<T> = SmallTuple.Uniform.Couple(pick(), pick())
