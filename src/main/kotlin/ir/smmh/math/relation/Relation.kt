@@ -43,6 +43,9 @@ interface Relation : M {
 
         operator fun get(a: T1, b: T2): Boolean
 
+        val reciprocal: Binary<T2, T1>
+            get() = PredicateRelation.Heterogeneous<T2, T1>(codomain, domain) { a, b -> get(b, a) }
+
         interface Mutable<T1 : M, T2 : M> : Binary<T1, T2>, CanChangeValues {
             operator fun set(a: T1, b: T2, holds: Boolean)
             fun hold(a: T1, b: T2) = set(a, b, true)
@@ -65,6 +68,9 @@ interface Relation : M {
             override val holds: Set<out Tuple.Binary.Uniform<T>>
             override val domain: Set<T>
             override val codomain: Set<T> get() = domain
+
+            override val reciprocal: Homogeneous<T>
+                get() = PredicateRelation.Homogeneous<T>(domain) { a, b -> get(b, a) }
 
             interface Reflexive<T : M> : Homogeneous<T>
             interface Irreflexive<T : M> : Homogeneous<T> // TODO iff Asymmetric, Transitive
