@@ -7,6 +7,7 @@ sealed class Knowable : MathematicalObject.Abstract() {
     override fun isNonReferentiallyEqualTo(that: MathematicalObject) = Known.False
 
     sealed class Known : Knowable() {
+        abstract override fun toBoolean(): Boolean
         abstract override fun not(): Known
         abstract infix fun and(that: Known): Known
         abstract infix fun or(that: Known): Known
@@ -14,6 +15,7 @@ sealed class Knowable : MathematicalObject.Abstract() {
         abstract infix fun imp(that: Known): Known
 
         object True : Known() {
+            override fun toBoolean() = true
             override val debugText = "True"
             override fun not() = False
             override fun and(that: Known) = that
@@ -27,6 +29,7 @@ sealed class Knowable : MathematicalObject.Abstract() {
         }
 
         object False : Known() {
+            override fun toBoolean() = false
             override val debugText = "False"
             override fun not() = True
             override fun and(that: Known) = False
@@ -38,8 +41,14 @@ sealed class Knowable : MathematicalObject.Abstract() {
             override fun imp(that: Known) = True // vacuous truth
             override fun imp(that: Knowable) = True // vacuous truth
         }
+
+        companion object {
+            fun of(boolean: Boolean): Known =
+                if (boolean) True else False
+        }
     }
 
+    abstract fun toBoolean(): Boolean?
     abstract operator fun not(): Knowable
     abstract infix fun and(that: Knowable): Knowable
     abstract infix fun or(that: Knowable): Knowable
@@ -47,11 +56,17 @@ sealed class Knowable : MathematicalObject.Abstract() {
     abstract infix fun imp(that: Knowable): Knowable
 
     object Unknown : Knowable() {
+        override fun toBoolean() = null
         override val debugText = "Unknown"
         override fun not() = Unknown
         override fun and(that: Knowable) = if (that is Known) that.and(this) else Unknown
         override fun or(that: Knowable) = if (that is Known) that.or(this) else Unknown
         override fun xor(that: Knowable) = if (that is Known) that.xor(this) else Unknown
         override fun imp(that: Knowable) = if (that is Known.True) Known.True else Unknown
+    }
+
+    companion object {
+        fun of(boolean: Boolean?): Knowable =
+            if (boolean == null) Unknown else Known.of(boolean)
     }
 }
