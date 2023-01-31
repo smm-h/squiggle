@@ -53,7 +53,7 @@ sealed class SmallTuple : Tuple.Finitary {
             1 -> second
             2 -> third
             3 -> fourth
-            else -> throw IndexOutOfBoundsException()
+            else -> throw TupleIndexOutOfBoundsException(index)
         }
     }
 
@@ -77,7 +77,7 @@ sealed class SmallTuple : Tuple.Finitary {
             2 -> third
             3 -> fourth
             4 -> fifth
-            else -> throw IndexOutOfBoundsException()
+            else -> throw TupleIndexOutOfBoundsException(index)
         }
     }
 
@@ -104,7 +104,7 @@ sealed class SmallTuple : Tuple.Finitary {
             3 -> fourth
             4 -> fifth
             5 -> sixth
-            else -> throw IndexOutOfBoundsException()
+            else -> throw TupleIndexOutOfBoundsException(index)
         }
     }
 
@@ -134,7 +134,7 @@ sealed class SmallTuple : Tuple.Finitary {
             4 -> fifth
             5 -> sixth
             6 -> seventh
-            else -> throw IndexOutOfBoundsException()
+            else -> throw TupleIndexOutOfBoundsException(index)
         }
     }
 
@@ -167,7 +167,7 @@ sealed class SmallTuple : Tuple.Finitary {
             5 -> sixth
             6 -> seventh
             7 -> eighth
-            else -> throw IndexOutOfBoundsException()
+            else -> throw TupleIndexOutOfBoundsException(index)
         }
     }
 
@@ -203,7 +203,7 @@ sealed class SmallTuple : Tuple.Finitary {
             6 -> seventh
             7 -> eighth
             8 -> ninth
-            else -> throw IndexOutOfBoundsException()
+            else -> throw TupleIndexOutOfBoundsException(index)
         }
     }
 
@@ -242,7 +242,7 @@ sealed class SmallTuple : Tuple.Finitary {
             7 -> eighth
             8 -> ninth
             9 -> tenth
-            else -> throw IndexOutOfBoundsException()
+            else -> throw TupleIndexOutOfBoundsException(index)
         }
     }
 
@@ -284,7 +284,7 @@ sealed class SmallTuple : Tuple.Finitary {
             8 -> ninth
             9 -> tenth
             10 -> eleventh
-            else -> throw IndexOutOfBoundsException()
+            else -> throw TupleIndexOutOfBoundsException(index)
         }
     }
 
@@ -329,7 +329,7 @@ sealed class SmallTuple : Tuple.Finitary {
             9 -> tenth
             10 -> eleventh
             11 -> twelfth
-            else -> throw IndexOutOfBoundsException()
+            else -> throw TupleIndexOutOfBoundsException(index)
         }
     }
 
@@ -377,7 +377,7 @@ sealed class SmallTuple : Tuple.Finitary {
             10 -> eleventh
             11 -> twelfth
             12 -> thirteenth
-            else -> throw IndexOutOfBoundsException()
+            else -> throw TupleIndexOutOfBoundsException(index)
         }
     }
 
@@ -410,7 +410,7 @@ sealed class SmallTuple : Tuple.Finitary {
                 1 -> second
                 2 -> third
                 3 -> fourth
-                else -> throw IndexOutOfBoundsException()
+                else -> throw TupleIndexOutOfBoundsException(index)
             }
         }
 
@@ -428,7 +428,7 @@ sealed class SmallTuple : Tuple.Finitary {
                 2 -> third
                 3 -> fourth
                 4 -> fifth
-                else -> throw IndexOutOfBoundsException()
+                else -> throw TupleIndexOutOfBoundsException(index)
             }
         }
 
@@ -448,7 +448,7 @@ sealed class SmallTuple : Tuple.Finitary {
                 3 -> fourth
                 4 -> fifth
                 5 -> sixth
-                else -> throw IndexOutOfBoundsException()
+                else -> throw TupleIndexOutOfBoundsException(index)
             }
         }
 
@@ -470,7 +470,7 @@ sealed class SmallTuple : Tuple.Finitary {
                 4 -> fifth
                 5 -> sixth
                 6 -> seventh
-                else -> throw IndexOutOfBoundsException()
+                else -> throw TupleIndexOutOfBoundsException(index)
             }
         }
 
@@ -494,7 +494,7 @@ sealed class SmallTuple : Tuple.Finitary {
                 5 -> sixth
                 6 -> seventh
                 7 -> eighth
-                else -> throw IndexOutOfBoundsException()
+                else -> throw TupleIndexOutOfBoundsException(index)
             }
         }
 
@@ -520,7 +520,7 @@ sealed class SmallTuple : Tuple.Finitary {
                 6 -> seventh
                 7 -> eighth
                 8 -> ninth
-                else -> throw IndexOutOfBoundsException()
+                else -> throw TupleIndexOutOfBoundsException(index)
             }
         }
 
@@ -548,7 +548,7 @@ sealed class SmallTuple : Tuple.Finitary {
                 7 -> eighth
                 8 -> ninth
                 9 -> tenth
-                else -> throw IndexOutOfBoundsException()
+                else -> throw TupleIndexOutOfBoundsException(index)
             }
         }
 
@@ -578,7 +578,7 @@ sealed class SmallTuple : Tuple.Finitary {
                 8 -> ninth
                 9 -> tenth
                 10 -> eleventh
-                else -> throw IndexOutOfBoundsException()
+                else -> throw TupleIndexOutOfBoundsException(index)
             }
         }
 
@@ -610,7 +610,7 @@ sealed class SmallTuple : Tuple.Finitary {
                 9 -> tenth
                 10 -> eleventh
                 11 -> twelfth
-                else -> throw IndexOutOfBoundsException()
+                else -> throw TupleIndexOutOfBoundsException(index)
             }
         }
 
@@ -644,7 +644,7 @@ sealed class SmallTuple : Tuple.Finitary {
                 10 -> eleventh
                 11 -> twelfth
                 12 -> thirteenth
-                else -> throw IndexOutOfBoundsException()
+                else -> throw TupleIndexOutOfBoundsException(index)
             }
         }
     }

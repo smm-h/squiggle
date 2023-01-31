@@ -25,8 +25,6 @@ interface Relation : M {
      * [Wikipedia](https://en.wikipedia.org/wiki/Homogeneous_relation)
      */
     interface Homogeneous<T : M> : Relation {
-        val domain: Set<T>
-
         interface Finite<T : M> : Homogeneous<T> {
             override val holds: Set.Finite<out Tuple.Uniform<T>>
         }
@@ -38,13 +36,11 @@ interface Relation : M {
 
     interface Binary<T1 : M, T2 : M> : Finitary {
         override val holds: Set<out Tuple.Binary.Specific<T1, T2>>
-        val domain: Set<T1>
-        val codomain: Set<T2>
 
         operator fun get(a: T1, b: T2): Boolean
 
         val reciprocal: Binary<T2, T1>
-            get() = PredicateRelation.Heterogeneous<T2, T1>(codomain, domain) { a, b -> get(b, a) }
+            get() = PredicateRelation.Heterogeneous<T2, T1> { a, b -> get(b, a) }
 
         interface Mutable<T1 : M, T2 : M> : Binary<T1, T2>, CanChangeValues {
             operator fun set(a: T1, b: T2, holds: Boolean)
@@ -54,23 +50,17 @@ interface Relation : M {
 
         interface Finite<T1 : M, T2 : M> : Binary<T1, T2> {
             override val holds: Set.Finite<out Tuple.Binary.Specific<T1, T2>>
-            override val domain: Set.Finite<T1>
-            override val codomain: Set.Finite<T2>
         }
 
         interface Infinite<T1 : M, T2 : M> : Binary<T1, T2> {
             override val holds: Set.Infinite<out Tuple.Binary.Specific<T1, T2>>
-            override val domain: Set.Infinite<T1>
-            override val codomain: Set.Infinite<T2>
         }
 
         interface Homogeneous<T : M> : Relation.Homogeneous<T>, Binary<T, T> {
             override val holds: Set<out Tuple.Binary.Uniform<T>>
-            override val domain: Set<T>
-            override val codomain: Set<T> get() = domain
 
             override val reciprocal: Homogeneous<T>
-                get() = PredicateRelation.Homogeneous<T>(domain) { a, b -> get(b, a) }
+                get() = PredicateRelation.Homogeneous<T> { a, b -> get(b, a) }
 
             interface Reflexive<T : M> : Homogeneous<T>
             interface Irreflexive<T : M> : Homogeneous<T> // TODO iff Asymmetric, Transitive
@@ -86,14 +76,10 @@ interface Relation : M {
 
             interface Finite<T : M> : Homogeneous<T>, Relation.Homogeneous.Finite<T> {
                 override val holds: Set.Finite<out Tuple.Binary.Uniform<T>>
-                override val domain: Set.Finite<T>
-                override val codomain: Set.Finite<T> get() = domain
             }
 
             interface Infinite<T : M> : Homogeneous<T>, Relation.Homogeneous.Infinite<T> {
                 override val holds: Set.Infinite<out Tuple.Binary.Uniform<T>>
-                override val domain: Set.Infinite<T>
-                override val codomain: Set.Infinite<T> get() = domain
             }
         }
     }

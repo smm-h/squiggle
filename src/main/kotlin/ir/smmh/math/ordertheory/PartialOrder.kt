@@ -1,25 +1,28 @@
-package ir.smmh.math.relation
+package ir.smmh.math.ordertheory
 
 import ir.smmh.math.logic.Knowable
 import ir.smmh.math.logic.Knowable.Known.False
 import ir.smmh.math.logic.Knowable.Known.True
 import ir.smmh.math.logic.Knowable.Unknown
-import ir.smmh.math.relation.ComparisonResult.Comparable
-import ir.smmh.math.relation.ComparisonResult.Comparable.*
-import ir.smmh.math.relation.ComparisonResult.Incomparable
+import ir.smmh.math.ordertheory.ComparisonResult.Comparable
+import ir.smmh.math.ordertheory.ComparisonResult.Comparable.*
+import ir.smmh.math.ordertheory.ComparisonResult.Incomparable
+import ir.smmh.math.relation.Relation
 import ir.smmh.math.relation.Relation.Binary.Homogeneous.*
-import ir.smmh.math.tuple.Tuple
 import ir.smmh.math.MathematicalObject as M
+
+// <= , >= , divides, integral multiple and inclusion
 
 /**
  * A [PartialOrder] is a homogeneous binary relation
  * ([Relation.Binary.Homogeneous]) where if it holds for two elements from its
  * [domain], it implies one precedes the other. It can [compare] and return a
  * [ComparisonResult] for every two elements from its [domain].
- * The word "partial" implies that not every pair of elements have to be
- * [Comparable].
  *
- * [Wikipedia](https://en.wikipedia.org/wiki/Partially_ordered_set)
+ * The word "partial" implies that not every pair of elements have to be
+ * [Comparable]. See also [TotalOrder] where every pair of elements are so.
+ *
+ * [Wikipedia](https://en.wikipedia.org/wiki/Partial_order)
  */
 sealed interface PartialOrder<T : M> : Reflexive<T>, Antisymmetric<T>, Transitive<T> {
 
@@ -40,7 +43,7 @@ sealed interface PartialOrder<T : M> : Reflexive<T>, Antisymmetric<T>, Transitiv
         override fun compare(a: T, b: T): ComparisonResult {
             val ab = get(a, b)
             val ba = get(b, a)
-            return if (ab && ba) EqualTo
+            return if (ab && ba) throw StrictOrderViolationException(a, b)
             else if (ab) LessThan
             else if (ba) GreaterThan
             else Incomparable

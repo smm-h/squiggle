@@ -5,7 +5,7 @@ import ir.smmh.math.MathematicalObject
 import ir.smmh.math.logic.Knowable
 import kotlin.random.Random
 
-interface Singleton<T : MathematicalObject> : Set.Finite.KnownCardinality<T> {
+interface Singleton<T : MathematicalObject> : Set.Finite<T> {
     val value: T
     override val cardinality: Int get() = 1
     override val overElements: Iterable<T> get() = listOf(value)

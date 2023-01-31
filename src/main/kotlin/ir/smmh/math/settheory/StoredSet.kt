@@ -3,7 +3,7 @@ package ir.smmh.math.settheory
 import ir.smmh.math.MathematicalObject
 import ir.smmh.math.logic.Knowable
 
-class StoredSet<T : MathematicalObject>(elements: Iterable<T>) : AbstractSet<T>(), Set.Finite.KnownCardinality<T> {
+class StoredSet<T : MathematicalObject>(elements: Iterable<T>) : AbstractSet<T>(), Set.Finite<T> {
     constructor(vararg elements: T) : this(elements.asList())
     private val set = HashSet<T>().also { it.addAll(elements) }
     override val cardinality by set::size

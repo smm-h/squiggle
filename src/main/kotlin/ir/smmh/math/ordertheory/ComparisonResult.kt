@@ -1,4 +1,4 @@
-package ir.smmh.math.relation
+package ir.smmh.math.ordertheory
 
 sealed class ComparisonResult {
     object Incomparable : ComparisonResult()

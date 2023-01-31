@@ -1,15 +1,12 @@
 package ir.smmh.math.relation
 
 import ir.smmh.math.MathematicalObject
-import ir.smmh.math.settheory.Set
 import ir.smmh.math.settheory.StoredSet
 import ir.smmh.math.tuple.SmallTuple
 import ir.smmh.math.tuple.Tuple
 
-class StoredRelation<T : MathematicalObject> private constructor(
-    override val domain: Set.Finite<T>,
-    override val holds: StoredSet<Tuple.Binary.Uniform<T>>,
-) : Relation.Binary.Homogeneous.Finite<T> {
+class StoredRelation<T : MathematicalObject> private constructor(override val holds: StoredSet<Tuple.Binary.Uniform<T>>) :
+    Relation.Binary.Homogeneous.Finite<T> {
 
     override fun get(a: T, b: T) = holds.contains(SmallTuple.Uniform.Couple(a, b))
 
@@ -24,11 +21,6 @@ class StoredRelation<T : MathematicalObject> private constructor(
             StoredRelation.of(pairs.asList())
 
         fun <T : MathematicalObject> of(pairs: Iterable<Tuple.Binary.Uniform<T>>) =
-            StoredRelation(StoredSet(HashSet<T>().apply {
-                for (pair in pairs) {
-                    add(pair.first)
-                    add(pair.second)
-                }
-            }), StoredSet(pairs))
+            StoredRelation(StoredSet(pairs))
     }
 }

@@ -1,10 +1,9 @@
-package ir.smmh.math.relation
+package ir.smmh.math.ordertheory
 
 import ir.smmh.math.logic.Knowable.Known
 import ir.smmh.math.logic.Knowable.Known.True
-import ir.smmh.math.relation.ComparisonResult.Comparable
-import ir.smmh.math.relation.ComparisonResult.Comparable.*
-import ir.smmh.math.tuple.Tuple
+import ir.smmh.math.ordertheory.ComparisonResult.Comparable
+import ir.smmh.math.ordertheory.ComparisonResult.Comparable.*
 import ir.smmh.math.MathematicalObject as M
 
 /**
@@ -13,14 +12,21 @@ import ir.smmh.math.MathematicalObject as M
  * [Wikipedia](https://en.wikipedia.org/wiki/Total_order)
  */
 sealed interface TotalOrder<T : M> : PartialOrder<T> {
-    override fun compare(a: T, b: T): ComparisonResult.Comparable
+    override fun compare(a: T, b: T): Comparable
 
     interface NonStrict<T : M> : TotalOrder<T>, PartialOrder.NonStrict<T> {
         override fun compare(a: T, b: T): Comparable = super.compare(a, b) as Comparable
     }
 
     interface Strict<T : M> : TotalOrder<T>, PartialOrder.Strict<T> {
-        override fun compare(a: T, b: T): Comparable = super.compare(a, b) as Comparable
+        override fun compare(a: T, b: T): Comparable {
+            val ab = !get(a, b)
+            val ba = !get(b, a)
+            return if (ab && ba) EqualTo
+            else if (ab) LessThan
+            else if (ba) GreaterThan
+            else throw StrictOrderViolationException(a, b)
+        }
     }
 
     override fun isLessThan(a: T, b: T) = Known.of(compare(a, b) == LessThan)

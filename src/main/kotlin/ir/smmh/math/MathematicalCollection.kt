@@ -2,6 +2,7 @@ package ir.smmh.math
 
 
 import ir.smmh.math.MathematicalCollection.*
+import ir.smmh.math.MathematicalObject
 import ir.smmh.math.logic.Knowable
 import ir.smmh.math.sequence.Sequence
 import ir.smmh.math.settheory.Bag
@@ -22,7 +23,7 @@ import ir.smmh.math.MathematicalObject as M
  *
  * While you can mix and mash these properties to define your own collection
  * type, it is strongly recommended that you use one of the already defined
- * types of [Sequence], [Set], [Set.Ordered], and [Bag].
+ * types of [Sequence], [Set], and [Bag].
  */
 interface MathematicalCollection<T : M> : M {
 
@@ -40,20 +41,17 @@ interface MathematicalCollection<T : M> : M {
     fun containsAll(them: Iterable<T>): Boolean = them.fold(true) { a, e -> a && contains(e) }
 
     /**
-     * [Sequence]/[Set.Ordered]
+     * [Sequence]/[Set.PartiallyOrdered]
      */
-    interface OrderMatters<T : M> : MathematicalCollection<T> {
+    interface OrderMatters<T : M> : MathematicalCollection<T>
 
-        fun compare(a: T, b: T): Int
-
-        // Measureable, Measure, measure(it: T): Int/Double/...
-
-        interface Countable<T : M> {
-            val first: T
-            fun next(after: T): T
-            fun nth(n: Int): T
-        }
-    }
+//        fun compare(a: T, b: T): Int
+//        // Measureable, Measure, measure(it: T): Int/Double/...
+//        interface Countable<T : M> : OrderMatters<T> {
+//            val first: T
+//            fun next(after: T): T
+//            fun nth(n: Int): T
+//        }
 
     /**
      * [Set]
@@ -62,29 +60,27 @@ interface MathematicalCollection<T : M> : M {
         override fun count(it: T) = if (contains(it)) 1 else 0
     }
 
-    /**
-     * [Sequence.Finite], [Bag.Finite], [Set.Finite], [Set.Ordered.Finite]
-     */
-    interface Finite<T : M> : MathematicalCollection<T> {
-        val cardinality: Int?
-        override fun isEmpty(): Knowable = when (cardinality) {
-            null -> Knowable.Unknown
-            0 -> Knowable.Known.True
-            else -> Knowable.Known.False
-        }
-
-        interface KnownCardinality<T : M> : Finite<T> {
-            override val cardinality: Int
-            override fun isEmpty(): Knowable.Known = Knowable.Known.of(cardinality == 0)
-            override fun isNotEmpty(): Knowable.Known = !isEmpty()
-        }
-
-        fun singletonOrNull(): T?
-        fun singleton(): T = singletonOrNull() ?: throw Exception("set is not a singleton")
+    interface UnknownCardinality<T : M> : MathematicalCollection<T> {
+        override fun isEmpty() = Knowable.Unknown
+        override fun isNotEmpty() = Knowable.Unknown
     }
 
     /**
-     * [Sequence.Infinite], [Bag.Infinite], [Set.Infinite], [Set.Ordered.Infinite]
+     * [Sequence.Finite], [Bag.Finite], [Set.Finite]
+     */
+    interface Finite<T : M> : MathematicalCollection<T> {
+        val cardinality: Int
+        override fun isEmpty(): Knowable.Known = Knowable.Known.of(cardinality == 0)
+        override fun isNotEmpty(): Knowable.Known = !isEmpty()
+
+        fun singletonOrNull(): T?
+        fun singleton(): T = singletonOrNull() ?: throw NotASingletonException()
+    }
+
+    class NotASingletonException : MathematicalException("collection is not a singleton")
+
+    /**
+     * [Sequence.Infinite], [Bag.Infinite], [Set.Infinite]
      */
     interface Infinite<T : M> : MathematicalCollection<T> {
         override fun isEmpty() = Knowable.Known.False

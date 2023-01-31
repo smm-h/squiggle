@@ -12,32 +12,23 @@ sealed class ContainmentBasedSet<T : MathematicalObject>(
 ) : Set<T> {
 
     override fun contains(it: T): Boolean = containment(it)
-
     override fun isNonReferentiallyEqualTo(that: MathematicalObject) = Knowable.Unknown
     override fun getPicker(random: Random): MathematicalCollection.Picker<T>? = null
+    override val overElements: Iterable<T>? get() = null
 
-    sealed class Finite<T : MathematicalObject>(
+    class Finite<T : MathematicalObject>(
         debugText: String,
+        override val cardinality: Int,
         containment: (T) -> Boolean,
     ) : ContainmentBasedSet<T>(debugText, containment), Set.Finite<T> {
-        override val overElements: Iterable<T>? get() = null
         override fun singletonOrNull(): T? = null
-
         override fun getPicker(random: Random): MathematicalCollection.Picker<T>? = null
-
-        class KnownCardinality<T : MathematicalObject>(
-            debugText: String,
-            override val cardinality: Int,
-            containment: (T) -> Boolean,
-        ) : ContainmentBasedSet.Finite<T>(debugText, containment), Set.Finite.KnownCardinality<T>
-
-        class UnknownCardinality<T : MathematicalObject>(
-            debugText: String,
-            containment: (T) -> Boolean,
-        ) : ContainmentBasedSet.Finite<T>(debugText, containment), Set.Finite<T> {
-            override val cardinality = null
-        }
     }
+
+    class UnknownCardinality<T : MathematicalObject>(
+        debugText: String,
+        containment: (T) -> Boolean,
+    ) : ContainmentBasedSet<T>(debugText, containment), Set<T>, MathematicalCollection.UnknownCardinality<T>
 
     class Infinite<T : MathematicalObject>(
         debugText: String,

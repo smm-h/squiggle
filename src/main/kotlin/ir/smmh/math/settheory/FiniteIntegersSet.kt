@@ -9,7 +9,7 @@ import ir.smmh.math.numbers.Numbers.Integer
 import ir.smmh.math.numbers.Numbers.ZERO
 import kotlin.random.Random
 
-class FiniteIntegersSet(override val cardinality: Int) : AbstractSet<Integer>(), Set.Finite.KnownCardinality<Integer> {
+class FiniteIntegersSet(override val cardinality: Int) : AbstractSet<Integer>(), Set.Finite<Integer> {
     private val integerCardinality = Builtins.IntInteger(cardinality)
     override val overElements: Iterable<Integer> by lazy { (0 until cardinality).map(Builtins::IntInteger) }
     override fun contains(it: Integer): Boolean = it >= ZERO && it < integerCardinality

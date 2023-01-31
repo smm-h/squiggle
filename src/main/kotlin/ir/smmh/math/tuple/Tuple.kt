@@ -69,7 +69,7 @@ sealed interface Tuple : MathematicalObject {
 
     interface Nullary : Finitary {
         override val length: Int get() = 0
-        override fun get(index: Int) = throw IndexOutOfBoundsException()
+        override fun get(index: Int) = throw TupleIndexOutOfBoundsException(index)
     }
 
     interface Unary : Finitary {
@@ -82,7 +82,7 @@ sealed interface Tuple : MathematicalObject {
             override fun component1(): T = singleton
             override fun get(index: Int): T =
                 if (index == 0) singleton
-                else throw IndexOutOfBoundsException()
+                else throw TupleIndexOutOfBoundsException(index)
         }
     }
 
@@ -95,7 +95,7 @@ sealed interface Tuple : MathematicalObject {
         override fun get(index: Int): MathematicalObject =
             if (index == 0) first
             else if (index == 1) second
-            else throw IndexOutOfBoundsException()
+            else throw TupleIndexOutOfBoundsException(index)
 
         interface Specific<T1 : MathematicalObject, T2 : MathematicalObject> : Tuple.Binary {
             override val first: T1
@@ -112,7 +112,7 @@ sealed interface Tuple : MathematicalObject {
             override fun get(index: Int): T =
                 if (index == 0) first
                 else if (index == 1) second
-                else throw IndexOutOfBoundsException()
+                else throw TupleIndexOutOfBoundsException(index)
         }
     }
 
@@ -128,7 +128,7 @@ sealed interface Tuple : MathematicalObject {
             if (index == 0) first
             else if (index == 1) second
             else if (index == 2) third
-            else throw IndexOutOfBoundsException()
+            else throw TupleIndexOutOfBoundsException(index)
 
         interface Specific<T1 : MathematicalObject, T2 : MathematicalObject, T3 : MathematicalObject> : Tuple.Ternary {
             override val first: T1
@@ -150,7 +150,7 @@ sealed interface Tuple : MathematicalObject {
                 if (index == 0) first
                 else if (index == 1) second
                 else if (index == 2) third
-                else throw IndexOutOfBoundsException()
+                else throw TupleIndexOutOfBoundsException(index)
         }
     }
 
