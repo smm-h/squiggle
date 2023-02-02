@@ -345,7 +345,7 @@ interface Matrix<T : M> : M {
             { i, j -> BuiltinNumberType.IntInteger(i + 1 + j * rows) }
 
         fun identity(n: Int): Matrix<Logical> =
-            FunctionMatrix.Unmemoized(n, n, BooleanCalculator.R) { i, j -> Logical.of(i == j) }
+            FunctionMatrix.Unmemoized(n, n, Logical.Structure.asRing) { i, j -> Logical.of(i == j) }
 
         fun <T : M> of(
             rows: Int,

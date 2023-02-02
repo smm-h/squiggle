@@ -13,7 +13,7 @@ import kotlin.random.Random
 class FiniteIntegersSet(override val cardinality: Int) : AbstractSet<Integer>(), Set.Finite<Integer> {
     private val integerCardinality = BuiltinNumberType.IntInteger(cardinality)
     override val overElements: Iterable<Integer> by lazy { (0 until cardinality).map(BuiltinNumberType::IntInteger) }
-    override fun contains(it: Integer): Boolean = it >= ZERO && it < integerCardinality
+    override fun contains(it: Integer) = Logical.of(it >= ZERO && it < integerCardinality)
     override fun singletonOrNull() = if (cardinality == 1) Numbers.ZERO else null
     override fun isNonReferentiallyEqualTo(that: MathematicalObject): Knowable =
         if (that is FiniteIntegersSet && that.cardinality == cardinality) Logical.True else Knowable.Unknown

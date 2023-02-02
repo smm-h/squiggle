@@ -20,8 +20,8 @@ sealed interface TotalOrder<T : M> : PartialOrder<T> {
 
     interface Strict<T : M> : TotalOrder<T>, PartialOrder.Strict<T> {
         override fun compare(a: T, b: T): Comparable {
-            val ab = !get(a, b)
-            val ba = !get(b, a)
+            val ab = get(a, b) == Logical.False
+            val ba = get(b, a) == Logical.False
             return if (ab && ba) EqualTo
             else if (ab) LessThan
             else if (ba) GreaterThan

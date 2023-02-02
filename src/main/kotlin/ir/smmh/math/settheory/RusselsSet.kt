@@ -25,7 +25,7 @@ sealed class RusselsSet : Set.Infinite<Set<*>> {
      * not contain themselves, but it does contain itself.
      */
     private object ContainsItself : RusselsSet() {
-        override fun contains(it: Set<*>): Boolean = if (it == this) true else it !in this
+        override fun contains(it: Set<*>) = if (it == this) Logical.True else doesNotContain(it)
     }
 
     /**
@@ -33,7 +33,7 @@ sealed class RusselsSet : Set.Infinite<Set<*>> {
      * itself and also a set of all sets that do not contain themselves.
      */
     private object DoesNotContainItself : RusselsSet() {
-        override fun contains(it: Set<*>): Boolean = if (it == this) false else it !in this
+        override fun contains(it: Set<*>) = if (it == this) Logical.False else doesNotContain(it)
     }
 
     /**
@@ -42,6 +42,6 @@ sealed class RusselsSet : Set.Infinite<Set<*>> {
      * [StackOverflowError]
      */
     private object Unspecified : RusselsSet() {
-        override fun contains(it: Set<*>): Boolean = it !in this
+        override fun contains(it: Set<*>) = doesNotContain(it)
     }
 }

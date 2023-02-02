@@ -2,6 +2,7 @@ package ir.smmh.math.ordertheory
 
 import ir.smmh.math.logic.Knowable
 import ir.smmh.math.logic.Knowable.Unknown
+import ir.smmh.math.logic.Logical
 import ir.smmh.math.logic.Logical.False
 import ir.smmh.math.logic.Logical.True
 import ir.smmh.math.ordertheory.ComparisonResult.Comparable
@@ -30,8 +31,8 @@ sealed interface PartialOrder<T : M> : Reflexive<T>, Antisymmetric<T>, Transitiv
 
     interface NonStrict<T : M> : PartialOrder<T> {
         override fun compare(a: T, b: T): ComparisonResult {
-            val ab = get(a, b)
-            val ba = get(b, a)
+            val ab = get(a, b) == Logical.True
+            val ba = get(b, a) == Logical.True
             return if (ab && ba) EqualTo
             else if (ab) LessThan
             else if (ba) GreaterThan
@@ -41,8 +42,8 @@ sealed interface PartialOrder<T : M> : Reflexive<T>, Antisymmetric<T>, Transitiv
 
     interface Strict<T : M> : PartialOrder<T> {
         override fun compare(a: T, b: T): ComparisonResult {
-            val ab = get(a, b)
-            val ba = get(b, a)
+            val ab = get(a, b) == Logical.True
+            val ba = get(b, a) == Logical.True
             return if (ab && ba) throw StrictOrderViolationException(a, b)
             else if (ab) LessThan
             else if (ba) GreaterThan

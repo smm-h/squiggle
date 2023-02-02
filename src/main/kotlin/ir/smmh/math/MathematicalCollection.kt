@@ -36,6 +36,7 @@ interface MathematicalCollection<T : M> : M {
     val overElements: Iterable<T>?
     fun getPicker(random: Random = Random): Picker<T>?
 
+    fun doesNotContain(it: T): Logical = !contains(it)
     fun containsAnyOf(vararg these: T): Logical = containsAny(these.asList())
     fun containsAllOf(vararg these: T): Logical = containsAll(these.asList())
     fun containsAny(them: Iterable<T>): Logical = them.fold<T, Logical>(Logical.False) { a, e -> a or contains(e) }

@@ -17,8 +17,8 @@ class MatricesSet<T : MathematicalObject>(
     override val debugText: String = "MatrixSet($rows,$columns)"
     override fun isNonReferentiallyEqualTo(that: MathematicalObject) = Logical.False
 
-    override fun contains(it: Matrix<T>): Boolean =
-        it.rows == rows && it.columns == columns && it.ring == ring
+    override fun contains(it: Matrix<T>) =
+        Logical.of(it.rows == rows && it.columns == columns && it.ring == ring)
 
     override val overElements: InfinitelyIterable<Matrix<T>>?
         get() {
