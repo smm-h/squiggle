@@ -4,11 +4,17 @@ import ir.smmh.mage.core.Color
 import ir.smmh.mage.core.Image
 import ir.smmh.mage.core.Platform
 import ir.smmh.mage.core.Size
-import ir.smmh.math.abstractalgebra.RingLike
-import ir.smmh.math.abstractalgebra.Structures.BooleanRing
+import ir.smmh.math.MathematicalException
+import ir.smmh.math.abstractalgebra.RingLikeStructure
+import ir.smmh.math.logic.BooleanCalculator
+import ir.smmh.math.logic.Knowable
+import ir.smmh.math.logic.Logical
+import ir.smmh.math.numbers.BuiltinNumberType
+import ir.smmh.math.numbers.Numbers
 import ir.smmh.nile.FunctionalSequence
 import ir.smmh.nile.Sequential
 import ir.smmh.nile.verbs.CanChangeValues
+import ir.smmh.math.MathematicalObject as M
 
 
 /**
@@ -25,122 +31,140 @@ import ir.smmh.nile.verbs.CanChangeValues
  *   is fast and memory usage only increase when values are different from a
  *   given default value; good for sparse matrices and high-level tasks
  * - [UniformMatrix]: no write, read is instantanious because it is a constant
- * - [LowLevelMatrix]: same as array matrix but specialized and more efficient;
- *   uses two-dimensional primitive arrays instead of general object arrays.
  */
-interface Matrix<T : Any> {
+interface Matrix<T : M> : M {
+
+    /** [rows] > 0 */
     val rows: Int
+
+    /** [columns] > 0 */
     val columns: Int
-    val structure: RingLike<T>
+
+    val ring: RingLikeStructure.SubtractionRing<T>
 
     val transpose: Matrix<T>
 
-    val determinant: T?
-        get() = if (isSquare) calculatedDeterminant() else null
+    class UndeterminableMatrixException(reason: String) :
+        MathematicalException("matrix is not determinable because: $reason")
+
+    val isSquare: Boolean get() = rows == columns
+
+    val determinant: T
+        get() =
+            if (isSquare) calculatedDeterminant()
+            else throw UndeterminableMatrixException("it is not square")
+
+    val minorDeterminantMatrix: Matrix<T>
+        get() =
+            if (isSquare) FunctionMatrix.Memoized(rows, columns, ring) { i, j -> getMinor(i, j).determinant }
+            else throw UndeterminableMatrixException("it is not square")
 
     private fun calculatedDeterminant(): T {
         // assume isSquare
         if (rows == 2) {
-            return structure.subtract(
-                structure.multiply(this[0, 0], this[1, 1]),
-                structure.multiply(this[0, 1], this[1, 0])
+            return ring.subtract(
+                ring.multiply(get(0, 0), get(1, 1)),
+                ring.multiply(get(0, 1), get(1, 0))
             )
         } else {
             var p: T
             var n: T
 
-            p = structure.addition.identity!!
+            p = ring.additiveGroup.identityElement
             n = p
 
             for (k in 0 until rows step 2)
-                p = structure.add(p, structure.multiply(this[0, k], getMinor(0, k).calculatedDeterminant()))
+                p = ring.add(p, ring.multiply(get(0, k), getMinor(0, k).calculatedDeterminant()))
 
             for (k in 1 until rows step 2)
-                n = structure.add(n, structure.multiply(this[0, k], getMinor(0, k).calculatedDeterminant()))
+                n = ring.add(n, ring.multiply(get(0, k), getMinor(0, k).calculatedDeterminant()))
 
-            return structure.subtract(p, n)
+            return ring.subtract(p, n)
         }
     }
 
     fun getMinor(i: Int, j: Int): Matrix<T> =
-        FunctionMatrix.Unmemoized(rows - 1, columns - 1, structure) { x, y ->
-            this@Matrix[
-                    if (x >= i) x + 1 else x,
-                    if (y >= j) y + 1 else y]
+        FunctionMatrix.Unmemoized(rows - 1, columns - 1, ring) { x, y ->
+            get(
+                if (x >= i) x + 1 else x,
+                if (y >= j) y + 1 else y,
+            )
         }
-
-    val minorDeterminantMatrix: Matrix<T>
-        get() = FunctionMatrix.Memoized(rows, columns, structure) { i, j -> getMinor(i, j).determinant!! }
-
-    val isNatural: Boolean get() = rows > 0 && columns > 0
-    val isSquare: Boolean get() = isNatural && rows == columns
 
     /**
      * [Matrix invertibility](https://en.wikipedia.org/wiki/Invertible_matrix)
      */
-    // TODO this is only correct if the ring is commutative
-    val isInvertible: Boolean get() = isSquare && structure.invertible(determinant!!)
-    val inverse: Matrix<T>? get() = if (isInvertible) minorDeterminantMatrix * structure.invert(determinant!!) else null
+    val inverse: Matrix<T>
+        get() {
+            val r = ring
+
+            if (r !is RingLikeStructure.CommutativeRing<T>)
+                throw UninvertibleMatrixException("its ring is not commutative")
+
+            if (r !is RingLikeStructure.DivisionRing<T>)
+                throw UninvertibleMatrixException("its ring does not support division")
+
+            return minorDeterminantMatrix * r.reciprocal(determinant)
+        }
+
+    class UninvertibleMatrixException(reason: String) :
+        MathematicalException("matrix is not invertible because: $reason")
 
     val negative: Matrix<T>
-        get() = FunctionMatrix.Unmemoized(rows, columns, structure) { i, j -> structure.negate(this@Matrix[i, j]) }
+        get() = FunctionMatrix.Unmemoized(rows, columns, ring) { i, j -> ring.negate(get(i, j)) }
 
-    fun row(i: Int): Sequential<T> = FunctionalSequence(columns) { j -> this[i, j] }
-    fun column(j: Int): Sequential<T> = FunctionalSequence(columns) { i -> this[i, j] }
+    fun row(i: Int): Sequential<T> = FunctionalSequence(columns) { j -> get(i, j) }
+    fun column(j: Int): Sequential<T> = FunctionalSequence(columns) { i -> get(i, j) }
 
-    fun areEqual(that: Matrix<*>): Boolean {
-        if (areSameSize(that) && areSameStructure(that)) {
+    override fun isNonReferentiallyEqualTo(that: ir.smmh.math.MathematicalObject): Knowable {
+        if (that is Matrix<*> && areSameSize(that) && areSameStructure(that)) {
             for (i in 0 until rows)
                 for (j in 0 until columns)
                     if (this[i, j] != that[i, j])
-                        return false
-            return true
-        } else return false
+                        return Logical.False
+            return Logical.True
+        } else return Logical.False
     }
 
     fun areSameSize(that: Matrix<*>): Boolean =
-        this.rows == that.rows && this.columns == that.columns
+        rows == that.rows && columns == that.columns
 
     fun areSameStructure(that: Matrix<*>): Boolean =
-        this.structure == that.structure
+        ring == that.ring
 
     operator fun get(i: Int, j: Int): T
 
-    fun <R : Any> convert(structure: RingLike<R>, convertor: (T) -> R): Matrix<R> =
-        FunctionMatrix.Unmemoized(rows, columns, structure) { i, j -> convertor(this[i, j]) }
+    fun <R : M> convert(structure: RingLikeStructure.SubtractionRing<R>, convertor: (T) -> R): Matrix<R> =
+        FunctionMatrix.Unmemoized(rows, columns, structure) { i, j -> convertor(get(i, j)) }
 
     operator fun contains(it: T): Boolean {
         for (i in 0 until rows)
             for (j in 0 until columns)
-                if (this[i, j] == it)
+                if (get(i, j) == it)
                     return true
         return false
     }
 
-    class MatrixMultiplicationException(message: String) : Exception(message)
-
     operator fun times(that: Matrix<T>): Matrix<T> = multiply(that)
     fun multiply(that: Matrix<T>): Matrix<T> =
-        multiply(that, MapMatrix<T>(this.rows, that.columns, structure))
+        multiply(that, MapMatrix<T>(rows, that.columns, ring))
 
     /**
      * [Matrix multiplication](https://en.wikipedia.org/wiki/Matrix_multiplication)
      */
     fun multiply(that: Matrix<T>, destination: Matrix.Mutable<T>): Matrix<T> {
-        if (this.structure != that.structure)
+        if (!areSameStructure(that))
             throw MatrixMultiplicationException("structures do not match")
         if (destination.rows != this.rows || destination.columns != that.columns)
             throw MatrixMultiplicationException("incorrect output size")
         val n = columns
         if (that.rows != n)
             throw MatrixMultiplicationException("incorrect input sizes")
-        val s0 = structure.addition.identity
-        if (s0 == null)
-            throw MatrixMultiplicationException("structure has no additive identity")
+        val s0 = ring.additiveGroup.identityElement
         destination.setAll { i, j ->
             var s: T = s0
             for (k in 0 until n)
-                s = structure.add(s, structure.multiply(this[i, k], that[k, j]))
+                s = ring.add(s, ring.multiply(this[i, k], that[k, j]))
             s
         }
         return destination
@@ -148,84 +172,143 @@ interface Matrix<T : Any> {
 
     operator fun unaryPlus(): Matrix<T> = this
 
-    operator fun unaryMinus(): Matrix<T> =
-        FunctionMatrix.Unmemoized(rows, columns, structure) { i, j -> structure.negate(this[i, j]) }
-
     operator fun plus(that: Matrix<T>): Matrix<T> =
-        FunctionMatrix.Unmemoized(rows, columns, structure) { i, j -> structure.add(this[i, j], that[i, j]) }
-
-    operator fun minus(that: Matrix<T>): Matrix<T> =
-        FunctionMatrix.Unmemoized(rows, columns, structure) { i, j -> structure.subtract(this[i, j], that[i, j]) }
+        FunctionMatrix.Unmemoized(rows, columns, ring) { i, j -> ring.add(this[i, j], that[i, j]) }
 
     operator fun times(that: T): Matrix<T> =
-        FunctionMatrix.Unmemoized(rows, columns, structure) { i, j -> structure.multiply(this[i, j], that) }
+        FunctionMatrix.Unmemoized(rows, columns, ring) { i, j -> ring.multiply(this[i, j], that) }
 
-    operator fun div(that: T): Matrix<T> =
-        FunctionMatrix.Unmemoized(rows, columns, structure) { i, j -> structure.divide(this[i, j], that) }
+    operator fun unaryMinus(): Matrix<T> =
+        FunctionMatrix.Unmemoized(rows, columns, ring) { i, j -> ring.negate(this[i, j]) }
 
-    operator fun rem(that: T): Matrix<T> =
-        FunctionMatrix.Unmemoized(rows, columns, structure) { i, j -> structure.remainder(this[i, j], that) }
+    operator fun minus(that: Matrix<T>): Matrix<T> =
+        FunctionMatrix.Unmemoized(rows, columns, ring) { i, j -> ring.subtract(this[i, j], that[i, j]) }
 
-    private fun plusInverse(that: Matrix<T>): Matrix<T> =
-        FunctionMatrix.Unmemoized(rows, columns, structure) { i, j -> structure.add(that[i, j], this[i, j]) }
+//    TODO: these operations
+//    operator fun div(that: T): Matrix<T> =
+//        FunctionMatrix.Unmemoized(rows, columns, ring) { i, j -> ring.divide(this[i, j], that) }
+//    operator fun rem(that: T): Matrix<T> =
+//        FunctionMatrix.Unmemoized(rows, columns, ring) { i, j -> ring.remainder(this[i, j], that) }
 
-    private fun minusInverse(that: Matrix<T>): Matrix<T> =
-        FunctionMatrix.Unmemoized(rows, columns, structure) { i, j -> structure.subtract(that[i, j], this[i, j]) }
-
-    private fun timesInverse(that: T): Matrix<T> =
-        FunctionMatrix.Unmemoized(rows, columns, structure) { i, j -> structure.multiply(that, this[i, j]) }
-
-    private fun divInverse(that: T): Matrix<T> =
-        FunctionMatrix.Unmemoized(rows, columns, structure) { i, j -> structure.divide(that, this[i, j]) }
-
-    private fun remInverse(that: T): Matrix<T> =
-        FunctionMatrix.Unmemoized(rows, columns, structure) { i, j -> structure.remainder(that, this[i, j]) }
-
-    interface Mutable<T : Any> : Matrix<T>, CanChangeValues {
+    interface Mutable<T : M> : Matrix<T>, CanChangeValues {
 
         override val transpose: Matrix.Mutable<T>
 
-        operator fun set(i: Int, j: Int, value: T)
+        fun setWithoutMutation(i: Int, j: Int, value: T)
 
-        fun setTransposed(source: Matrix<T>) =
-            setAll { i, j -> source[j, i] }
+        operator fun set(i: Int, j: Int, value: T) {
+            changesToValues.beforeChange()
+            setWithoutMutation(i, j, value)
+            changesToValues.afterChange()
+        }
 
         fun setAll(f: (Int, Int) -> T) =
-            also { for (i in 0 until rows) for (j in 0 until columns) this[i, j] = f(i, j) }
+            also {
+                changesToValues.beforeChange()
+                for (i in 0 until rows) for (j in 0 until columns) setWithoutMutation(i, j, f(i, j))
+                changesToValues.afterChange()
+            }
 
         fun setAll(value: T) =
-            also { for (i in 0 until rows) for (j in 0 until columns) this[i, j] = value }
+            also {
+                changesToValues.beforeChange()
+                for (i in 0 until rows) for (j in 0 until columns) setWithoutMutation(i, j, value)
+                changesToValues.afterChange()
+            }
 
         fun setPartially(i1: Int, i2: Int, j1: Int, j2: Int, f: (Int, Int) -> T) =
-            also { for (i in i1 until i2) for (j in j1 until j2) this[i, j] = f(i, j) }
+            also {
+                val iRange = i1 until i2
+                val jRange = j1 until j2
+                if (!iRange.isEmpty() && !jRange.isEmpty()) {
+                    changesToValues.beforeChange()
+                    for (i in iRange) for (j in jRange) setWithoutMutation(i, j, f(i, j))
+                    changesToValues.afterChange()
+                }
+            }
 
         fun setPartially(i1: Int, i2: Int, j1: Int, j2: Int, value: T) =
-            also { for (i in i1 until i2) for (j in j1 until j2) this[i, j] = value }
+            also {
+                val iRange = i1 until i2
+                val jRange = j1 until j2
+                if (!iRange.isEmpty() && !jRange.isEmpty()) {
+                    changesToValues.beforeChange()
+                    for (i in iRange) for (j in jRange) setWithoutMutation(i, j, value)
+                    changesToValues.afterChange()
+                }
+            }
 
         fun setSpecific(s: Iterable<Pair<Int, Int>>, f: (Int, Int) -> T) =
-            also { for ((i, j) in s) this[i, j] = f(i, j) }
+            also {
+                changesToValues.beforeChange()
+                for ((i, j) in s) setWithoutMutation(i, j, f(i, j))
+                changesToValues.afterChange()
+            }
 
         fun setSpecific(s: Iterable<Pair<Int, Int>>, value: T) =
-            also { for ((i, j) in s) this[i, j] = value }
+            also {
+                changesToValues.beforeChange()
+                for ((i, j) in s) setWithoutMutation(i, j, value)
+                changesToValues.afterChange()
+            }
 
         fun setAllIf(c: Condition, f: (Int, Int) -> T) =
-            also { for (i in 0 until rows) for (j in 0 until columns) if (c(i, j)) this[i, j] = f(i, j) }
+            also {
+                changesToValues.beforeChange()
+                for (i in 0 until rows) for (j in 0 until columns) if (c(i, j)) setWithoutMutation(i, j, f(i, j))
+                changesToValues.afterChange()
+            }
 
         fun setAllIf(value: T, c: Condition) =
-            also { for (i in 0 until rows) for (j in 0 until columns) if (c(i, j)) this[i, j] = value }
+            also {
+                changesToValues.beforeChange()
+                for (i in 0 until rows) for (j in 0 until columns) if (c(i, j)) setWithoutMutation(i, j, value)
+                changesToValues.afterChange()
+            }
 
         fun setPartiallyIf(i1: Int, i2: Int, j1: Int, j2: Int, f: (Int, Int) -> T, c: Condition) =
-            also { for (i in i1 until i2) for (j in j1 until j2) if (c(i, j)) this[i, j] = f(i, j) }
+            also {
+                val iRange = i1 until i2
+                val jRange = j1 until j2
+                if (!iRange.isEmpty() && !jRange.isEmpty()) {
+                    changesToValues.beforeChange()
+                    for (i in iRange) for (j in jRange) if (c(i, j)) setWithoutMutation(i, j, f(i, j))
+                    changesToValues.afterChange()
+                }
+            }
 
         fun setPartiallyIf(i1: Int, i2: Int, j1: Int, j2: Int, value: T, c: Condition) =
-            also { for (i in i1 until i2) for (j in j1 until j2) if (c(i, j)) this[i, j] = value }
+            also {
+                val iRange = i1 until i2
+                val jRange = j1 until j2
+                if (!iRange.isEmpty() && !jRange.isEmpty()) {
+                    changesToValues.beforeChange()
+                    for (i in iRange) for (j in jRange) if (c(i, j)) setWithoutMutation(i, j, value)
+                    changesToValues.afterChange()
+                }
+            }
 
         fun setSpecificIf(s: Iterable<Pair<Int, Int>>, f: (Int, Int) -> T, c: Condition) =
-            also { for ((i, j) in s) if (c(i, j)) this[i, j] = f(i, j) }
+            also {
+                changesToValues.beforeChange()
+                for ((i, j) in s) if (c(i, j)) setWithoutMutation(i, j, f(i, j))
+                changesToValues.afterChange()
+            }
 
         fun setSpecificIf(s: Iterable<Pair<Int, Int>>, value: T, c: Condition) =
-            also { for ((i, j) in s) if (c(i, j)) this[i, j] = value }
+            also {
+                changesToValues.beforeChange()
+                for ((i, j) in s) if (c(i, j)) setWithoutMutation(i, j, value)
+                changesToValues.afterChange()
+            }
+
+        fun setTransposed(source: Matrix<T>) =
+            if (isSquare) setAll { i, j -> source[j, i] }
+            else throw NonSquareTranspositionException()
     }
+
+    class NonSquareTranspositionException :
+        MathematicalException("cannot transpose a non-square matrix")
 
     fun interface Condition : (Int, Int) -> Boolean
 
@@ -234,12 +317,12 @@ interface Matrix<T : Any> {
         fun <T> constant(c: T): (Int, Int) -> T = { _, _ -> c }
     }
 
-    fun uniform(value: T) = UniformMatrix(rows, columns, structure, value)
+    fun uniform(value: T) = UniformMatrix(rows, columns, ring, value)
 
     fun pair(i: Int, j: Int): Int = i * rows + j
-    fun unpairI(x: Int): Int = x / rows
-    fun unpairJ(x: Int): Int = x % rows
-    fun unpair(x: Int): Pair<Int, Int> = unpairI(x) to unpairJ(x)
+    fun unpairI(p: Int): Int = p / rows
+    fun unpairJ(p: Int): Int = p % rows
+    fun unpair(p: Int): Pair<Int, Int> = unpairI(p) to unpairJ(p)
 
     fun toImage(platform: Platform, zoom: Int = 1, colorer: (T) -> Color.Packed): Image =
         platform.createGraphics(Size.of(rows * zoom, columns * zoom)).apply {
@@ -247,7 +330,7 @@ interface Matrix<T : Any> {
             fill = true
             for (i in 0 until rows) {
                 for (j in 0 until columns) {
-                    color = colorer(this@Matrix[i, j])
+                    color = colorer(get(i, j))
                     rectangle(i * z, j * z, z, z)
                 }
             }
@@ -255,59 +338,27 @@ interface Matrix<T : Any> {
 
     companion object {
 
-        operator fun Int.times(m: Matrix<Int>) = m.timesInverse(this)
-        operator fun Long.times(m: Matrix<Long>) = m.timesInverse(this)
-        operator fun Float.times(m: Matrix<Float>) = m.timesInverse(this)
-        operator fun Double.times(m: Matrix<Double>) = m.timesInverse(this)
+        fun getRowMajor(columns: Int): (Int, Int) -> Numbers.Integer =
+            { i, j -> BuiltinNumberType.IntInteger(j + 1 + i * columns) }
 
-        operator fun Int.div(m: Matrix<Int>) = m.divInverse(this)
-        operator fun Long.div(m: Matrix<Long>) = m.divInverse(this)
-        operator fun Float.div(m: Matrix<Float>) = m.divInverse(this)
-        operator fun Double.div(m: Matrix<Double>) = m.divInverse(this)
+        fun getColumnMajor(rows: Int): (Int, Int) -> Numbers.Integer =
+            { i, j -> BuiltinNumberType.IntInteger(i + 1 + j * rows) }
 
-        operator fun Int.rem(m: Matrix<Int>) = m.remInverse(this)
-        operator fun Long.rem(m: Matrix<Long>) = m.remInverse(this)
-        operator fun Float.rem(m: Matrix<Float>) = m.remInverse(this)
-        operator fun Double.rem(m: Matrix<Double>) = m.remInverse(this)
+        fun identity(n: Int): Matrix<Logical> =
+            FunctionMatrix.Unmemoized(n, n, BooleanCalculator.R) { i, j -> Logical.of(i == j) }
 
-        fun getRowMajor(columns: Int): (Int, Int) -> Int = { i, j -> j + 1 + i * columns }
-        fun getColumnMajor(rows: Int): (Int, Int) -> Int = { i, j -> i + 1 + j * rows }
-
-        fun identity(n: Int): Matrix<Boolean> =
-            FunctionMatrix.Unmemoized(n, n, BooleanRing) { i, j -> i == j }
-
-        fun <T : Any> of(rows: Int, columns: Int, structure: RingLike<T>, vararg values: T): Matrix<T> =
+        fun <T : M> of(
+            rows: Int,
+            columns: Int,
+            structure: RingLikeStructure.SubtractionRing<T>,
+            values: List<T>
+        ): Matrix<T> =
             MapMatrix(rows, columns, structure).setAll { i, j -> values[i * columns + j] }
 
-        fun hashCode(m: Matrix<*>): Int {
-            return toString(m).hashCode() xor m.structure.hashCode()
+        inline fun <T : M> Matrix<T>.forEach(action: (Int, Int) -> Unit) {
+            val r = 0 until rows
+            val c = 0 until columns
+            for (i in r) for (j in c) action(i, j)
         }
-
-        fun <T : Any> toString(m: Matrix<T>): String = StringBuilder().apply {
-            val n = m.rows - 1
-            for (i in 0 until m.rows) {
-                if (i != 0) append('\n')
-                append(
-                    when (i) {
-                        0 -> '┌'
-                        n -> '└'
-                        else -> '│'
-                    }
-                )
-                append('\t')
-                for (j in 0 until m.columns) {
-                    if (j != 0) append('\t')
-                    append(m[i, j])
-                }
-                append('\t')
-                append(
-                    when (i) {
-                        0 -> '┐'
-                        n -> '┘'
-                        else -> '│'
-                    }
-                )
-            }
-        }.toString()
     }
 }

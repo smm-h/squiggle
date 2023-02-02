@@ -1,8 +1,6 @@
-package ir.smmh.math.vector
+package ir.smmh.math.matrix
 
 import ir.smmh.math.abstractalgebra.RingLikeStructure
-import ir.smmh.math.matrix.AbstractMatrix
-import ir.smmh.math.matrix.Matrix
 import ir.smmh.nile.Change
 import ir.smmh.math.MathematicalObject as M
 
@@ -13,18 +11,13 @@ abstract class AbstractVector<T : M> : AbstractMatrix<T>(), Vector<T> {
         override val transpose: Matrix.Mutable<T> by lazy { Transpose.Mutable(this) }
     }
 
-    private abstract class Transpose<T : M> : Vector<T> {
+    private abstract class Transpose<T : M> : AbstractMatrix<T>(), Vector<T> {
         abstract val vector: Vector<T>
-        override val rows: Int
-            get() = 1
-        override val columns: Int
-            get() = vector.length
-        override val length: Int
-            get() = vector.length
-        override val ring: RingLikeStructure<T>
-            get() = vector.ring
-        override val transpose: Matrix<T>
-            get() = vector
+        override val rows: Int get() = 1
+        override val columns: Int by vector::length
+        override val length: Int by vector::length
+        override val ring: RingLikeStructure.SubtractionRing<T> by vector::ring
+        override val transpose: Matrix<T> by ::vector
 
         override fun get(i: Int, j: Int): T = vector[j]
         override fun get(i: Int): T = vector[i]
@@ -41,10 +34,7 @@ abstract class AbstractVector<T : M> : AbstractMatrix<T>(), Vector<T> {
             override val transpose: Matrix.Mutable<T>
                 get() = vector.transpose
 
-            override fun set(i: Int, j: Int, value: T) =
-                vector.set(j, value)
-
-            override fun set(i: Int, value: T) =
+            override fun setWithoutMutation(i: Int, value: T) =
                 vector.set(i, value)
         }
     }

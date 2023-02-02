@@ -1,11 +1,12 @@
 package ir.smmh.math.matrix
 
-import ir.smmh.math.abstractalgebra.RingLike
+import ir.smmh.math.MathematicalObject
+import ir.smmh.math.abstractalgebra.RingLikeStructure
 
-class UniformMatrix<T : Any>(
+class UniformMatrix<T : MathematicalObject>(
     override val rows: Int,
     override val columns: Int,
-    override val structure: RingLike<T>,
+    override val ring: RingLikeStructure.SubtractionRing<T>,
     val value: T,
 ) : AbstractMatrix<T>() {
     override val transpose: Matrix<T> = this
