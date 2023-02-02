@@ -7,7 +7,7 @@ import ir.smmh.math.numbers.Numbers.ZERO
 import ir.smmh.math.settheory.Set
 
 object IntegerRing : RingLikeStructure.CommutativeRing<Numbers.Integer> {
-    override val domain: Set<out Numbers.Integer> = BuiltinNumberSet.IntIntegers(1000)
+    override val domain: Set<Numbers.Integer> = BuiltinNumberSet.IntIntegers(1000)
     override val additiveGroup = object : GroupLikeStructure.AbelianGroup<Numbers.Integer> {
         override val domain by this@IntegerRing::domain
         override fun operate(a: Numbers.Integer, b: Numbers.Integer): Numbers.Integer = a + b

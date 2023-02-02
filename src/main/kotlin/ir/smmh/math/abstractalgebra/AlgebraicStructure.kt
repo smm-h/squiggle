@@ -4,5 +4,5 @@ import ir.smmh.math.MathematicalObject
 import ir.smmh.math.settheory.Set
 
 interface AlgebraicStructure<T : MathematicalObject> {
-    val domain: Set<out T>
+    val domain: Set<T>
 }

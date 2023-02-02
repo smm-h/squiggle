@@ -1,73 +1,140 @@
 package ir.smmh.math.numbers
 
-import ir.smmh.mage.core.Utils.sqr
-import kotlin.math.sqrt
+import ir.smmh.math.InfinitelyIterable
+import ir.smmh.math.MathematicalCollection
+import ir.smmh.math.MathematicalObject
+import ir.smmh.math.abstractalgebra.AbstractRingLikeStructure
+import ir.smmh.math.logic.Knowable
+import ir.smmh.math.logic.Logical
+import ir.smmh.math.numbers.Complex.Companion.i
+import ir.smmh.math.settheory.AbstractSet
+import kotlin.random.Random
+import ir.smmh.math.settheory.Set.Infinite as InfiniteSet
 
-class Complex(val r: Double, val i: Double) {
-    constructor(value: Int) : this(value.toDouble())
-    constructor(value: Double) : this(value, 0.0)
-    constructor(real: Int, imaginary: Int) : this(real.toDouble(), imaginary.toDouble())
+/**
+ * Sum of two [Real] numbers, one multiplied by [i]
+ */
+sealed interface Complex : Quaternion {
+    val imaginaryPart: Numbers.Real
 
-    operator fun component1() = r
-    operator fun component2() = i
+    override val coefficientOfI: Numbers.Real get() = imaginaryPart
+    override val coefficientOfJ: Numbers.Real get() = Numbers.ZERO
+    override val coefficientOfK: Numbers.Real get() = Numbers.ZERO
 
-    operator fun plus(that: Int) = Complex(r + that, i)
-    operator fun minus(that: Int) = Complex(r - that, i)
-    operator fun times(that: Int) = Complex(r * that, i * that)
-    operator fun div(that: Int) = Complex(r / that, i / that)
+    override fun unaryPlus(): Complex = this
+    override fun unaryMinus(): Complex = if (isReal()) -realPart else RR(-realPart, -imaginaryPart)
 
-    operator fun plus(that: Double) = Complex(r + that, i)
-    operator fun minus(that: Double) = Complex(r - that, i)
-    operator fun times(that: Double) = Complex(r * that, i * that)
-    operator fun div(that: Double) = Complex(r / that, i / that)
+    override val absoluteSquared: Numbers.Real get() = realPart.squared + imaginaryPart.squared
 
-    operator fun plus(that: Complex) = add(that)
-    operator fun minus(that: Complex) = subtract(that)
-    operator fun times(that: Complex) = multiply(that)
-    operator fun div(that: Complex) = divide(that)
+    override fun isComplex() = true
+    override fun asComplex() = this
 
-    val magnitudeSquared: Double by lazy { sqr(r) + sqr(i) }
-    val magnitude: Double by lazy { sqrt(magnitudeSquared) }
-    val angle: Double by lazy { Math.atan2(i, r) }
+    fun isReal(): Boolean = imaginaryPart == Numbers.ZERO
+    fun asReal(): Numbers.Real? = if (isReal()) realPart else null
 
-    fun add(other: Complex) = Complex(
-        r + other.r,
-        i + other.i,
-    )
+    override fun isNonReferentiallyEqualTo(that: MathematicalObject): Knowable =
+        if (that is Complex) realPart.isEqualTo(that.realPart) and imaginaryPart.isEqualTo(that.imaginaryPart)
+        else Logical.False
 
-    fun negate() =
-        Complex(-r, i)
+    override val debugText: String
+        get() = "$realPart+$imaginaryPart·i"
 
-    fun subtract(other: Complex) = Complex(
-        r - other.r,
-        i - other.i,
-    )
+    val angle: Numbers.Real
+        get() = BuiltinNumberType.DoubleReal(
+            Math.atan2(
+                imaginaryPart.approximateAsFP64(),
+                realPart.approximateAsFP64()
+            )
+        )
 
-    fun multiply(other: Complex) = Complex(
-        r * other.r - i * other.i,
-        i * other.r + r * other.i,
-    )
-
-    val reciprocal: Complex? by lazy {
-        if (magnitudeSquared == 0.0) null else Complex(r / magnitudeSquared, -i / magnitudeSquared)
+    operator fun plus(that: Complex): Complex {
+        val a = this.asReal()
+        val b = that.asReal()
+        return if (a != null && b != null) a + b else RR(
+            this.component1() + that.component1(),
+            this.component2() + that.component2(),
+        )
     }
 
-    fun divide(other: Complex) = Complex(
-        (r * other.r - i * other.i) / other.magnitudeSquared,
-        (i * other.r - r * other.i) / other.magnitudeSquared,
+    operator fun minus(that: Complex): Complex {
+        val a = this.asReal()
+        val b = that.asReal()
+        return if (a != null && b != null) a - b else RR(
+            this.component1() - that.component1(),
+            this.component2() - that.component2(),
+        )
+    }
+
+    val reciprocal: Complex
+        get() = if (absoluteSquared == Numbers.ZERO) throw DivisionByZeroException()
+        else RR(realPart / absoluteSquared, -imaginaryPart / absoluteSquared)
+
+    operator fun times(that: Complex): Complex =
+        RR(
+            realPart * that.realPart - imaginaryPart * that.imaginaryPart,
+            imaginaryPart * that.realPart + realPart * that.imaginaryPart
+        )
+
+    operator fun div(that: Complex): Complex = RR(
+        (realPart * that.realPart - imaginaryPart * that.imaginaryPart) / that.absoluteSquared,
+        (imaginaryPart * that.realPart - realPart * that.imaginaryPart) / that.absoluteSquared,
     )
 
-    override fun toString() = "$r+$i·i"
-
     fun power(p: Int): Complex {
-        var x = ONE
-        repeat(p) { x = x.multiply(this) }
+        var x = Numbers.ONE as Complex
+        repeat(p) { x *= this }
         return x
     }
 
+    class RR(
+        override val realPart: Numbers.Real,
+        override val imaginaryPart: Numbers.Real = Numbers.ZERO,
+    ) : MathematicalObject.Abstract(), Complex {
+        constructor(real: Int, imaginary: Int) :
+                this(BuiltinNumberType.IntInteger(real), BuiltinNumberType.IntInteger(imaginary))
+
+        constructor(real: Double, imaginary: Double) :
+                this(BuiltinNumberType.DoubleReal(real), BuiltinNumberType.DoubleReal(imaginary))
+    }
+
     companion object {
-        val ZERO = Complex(0)
-        val ONE = Complex(1)
-        val i = Complex(0, 1)
+        val i = RR(Numbers.ZERO, Numbers.ONE)
+    }
+
+    class Set(val pickerSize: Double) : AbstractSet<Complex>(), InfiniteSet<Complex> {
+        override val debugText = "ComplexNumbers"
+        override fun isNonReferentiallyEqualTo(that: MathematicalObject) = Logical.False
+        override fun contains(it: Complex) = Logical.True
+
+        // 1+4\sum_{i=0}^{n-1}{i}
+        override val overElements = InfinitelyIterable<Complex> {
+            var x = -1
+            var y = -1
+            var stage = 3
+            InfinitelyIterable.Iterator {
+                when (stage) {
+                    //@formatter:off
+                    0 -> { x--; y++; if (x == 0) stage++ }
+                    1 -> { x--; y--; if (y == 0) stage++ }
+                    2 -> { x++; y--; if (x == 0) stage++ }
+                    3 -> { x++; y++; if (y == 0) stage++ }
+                    4 -> { x++; stage = 0 }
+                    //@formatter:on
+                }
+                RR(x, y)
+            }
+        }
+
+        override fun getPicker(random: Random) = MathematicalCollection.Picker<Complex> {
+            RR(
+                BuiltinNumberType.DoubleReal((Random.nextDouble() * 2 - 1) * pickerSize),
+                BuiltinNumberType.DoubleReal((Random.nextDouble() * 2 - 1) * pickerSize),
+            )
+        }
+    }
+
+    class Field(override val domain: Set) : AbstractRingLikeStructure<Complex>() {
+        override fun add(a: Complex, b: Complex): Complex = a + b
+        override fun multiply(a: Complex, b: Complex): Complex = a * b
     }
 }
