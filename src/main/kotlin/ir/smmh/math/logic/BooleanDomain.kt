@@ -29,11 +29,11 @@ class BooleanDomain<T : M>(val falsehood: T, val truth: T) : M.Abstract(), Set.T
     override fun isNonReferentiallyEqualTo(that: M) =
         Logical.of(that is Set.Finite<*> && that.cardinality == 2 && setOf(that.overElements) == elementList.toSet())
 
-    override val order = object : TotalOrder.Strict<T> {
+    override val order = object : TotalOrder.NonStrict<T> {
         override val debugText: String = "BooleanDomain.order"
-        override fun get(a: T, b: T): Logical = Logical.of(a == falsehood && b == truth)
+        override fun get(a: T, b: T): Logical = Logical.of(a == b || a == falsehood && b == truth)
         override val holds: Set<out Tuple.Binary.Uniform<T>> =
-            ContainmentBasedSet.Finite("BooleanDomain.order.holds", 1) { get(it.first, it.second) }
+            ContainmentBasedSet.Finite("BooleanDomain.order.holds", 3) { get(it.first, it.second) }
     }
 
     override fun getPicker(random: Random) = MathematicalCollection.Picker<T> {
