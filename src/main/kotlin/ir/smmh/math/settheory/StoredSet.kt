@@ -5,6 +5,7 @@ import ir.smmh.math.logic.Knowable
 
 class StoredSet<T : MathematicalObject>(elements: Iterable<T>) : AbstractSet<T>(), Set.Finite<T> {
     constructor(vararg elements: T) : this(elements.asList())
+
     private val set = HashSet<T>().also { it.addAll(elements) }
     override val cardinality by set::size
     override val overElements: Iterable<T> = set

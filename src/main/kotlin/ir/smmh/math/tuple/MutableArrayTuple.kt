@@ -9,5 +9,6 @@ class MutableArrayTuple<T : MathematicalObject>(dimensions: Int) : Tuple.Uniform
     operator fun set(index: Int, value: T) {
         array[index] = value
     }
+
     override fun hashCode() = array.hashCode()
 }
