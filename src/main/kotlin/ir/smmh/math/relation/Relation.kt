@@ -38,7 +38,7 @@ interface Relation : M {
     interface Binary<T1 : M, T2 : M> : Finitary {
         override val holds: Set<out Tuple.Binary.Specific<T1, T2>>
 
-        operator fun get(a: T1, b: T2): Boolean
+        operator fun get(a: T1, b: T2): Logical
 
         val reciprocal: Binary<T2, T1>
             get() = PredicateRelation.Heterogeneous<T2, T1> { a, b -> get(b, a) }

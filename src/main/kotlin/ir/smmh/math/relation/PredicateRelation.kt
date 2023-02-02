@@ -1,6 +1,7 @@
 package ir.smmh.math.relation
 
 import ir.smmh.math.logic.Knowable
+import ir.smmh.math.logic.Logical
 import ir.smmh.math.settheory.Set
 import ir.smmh.math.tuple.Tuple
 import kotlin.random.Random
@@ -8,7 +9,7 @@ import ir.smmh.math.MathematicalObject as M
 
 
 sealed class PredicateRelation<T1 : M, T2 : M> : Relation.Binary<T1, T2> {
-    class Heterogeneous<T1 : M, T2 : M>(val predicate: (T1, T2) -> Boolean) :
+    class Heterogeneous<T1 : M, T2 : M>(val predicate: (T1, T2) -> Logical) :
         PredicateRelation<T1, T2>() {
         override fun get(a: T1, b: T2) = predicate(a, b)
         override val holds = object : Set<Tuple.Binary.Specific<T1, T2>> {
@@ -21,7 +22,7 @@ sealed class PredicateRelation<T1 : M, T2 : M> : Relation.Binary<T1, T2> {
         }
     }
 
-    class Homogeneous<T : M>(val predicate: (T, T) -> Boolean) :
+    class Homogeneous<T : M>(val predicate: (T, T) -> Logical) :
         PredicateRelation<T, T>(), Relation.Binary.Homogeneous<T> {
         override fun get(a: T, b: T) = predicate(a, b)
         override val holds = object : Set<Tuple.Binary.Uniform<T>> {

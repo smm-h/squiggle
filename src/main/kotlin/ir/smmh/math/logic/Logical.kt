@@ -9,8 +9,9 @@ sealed class Logical : Knowable() {
     abstract infix fun imp(that: Logical): Logical
 
     object True : Logical() {
+        override fun toInt() = 1
         override fun toBoolean() = true
-        override val debugText = "True"
+        override val debugText = "⊤"
         override fun not() = False
         override fun and(that: Logical) = that
         override fun and(that: Knowable) = if (that is Logical) and(that) else Unknown
@@ -23,8 +24,9 @@ sealed class Logical : Knowable() {
     }
 
     object False : Logical() {
+        override fun toInt() = 0
         override fun toBoolean() = false
-        override val debugText = "False"
+        override val debugText = "⊥"
         override fun not() = True
         override fun and(that: Logical) = False
         override fun and(that: Knowable) = if (that is Logical) and(that) else False
@@ -36,8 +38,19 @@ sealed class Logical : Knowable() {
         override fun imp(that: Knowable) = True // vacuous truth
     }
 
+    override fun negateIf(condition: Boolean) = if (condition) !this else this
+
     companion object {
+        val Domain = BooleanDomain<Logical>(False, True)
+
         fun of(boolean: Boolean): Logical =
             if (boolean) True else False
+    }
+
+    object Structure : AbstractTwoElementBooleanAlgebra<Logical>(Domain) {
+        override fun join(a: Logical, b: Logical) = a or b
+        override fun meet(a: Logical, b: Logical) = a and b
+        override fun complement(a: Logical) = !a
+        override fun symmetricDifference(a: Logical, b: Logical) = a xor b
     }
 }

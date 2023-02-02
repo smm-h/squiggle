@@ -29,17 +29,17 @@ import ir.smmh.math.MathematicalObject as M
 interface MathematicalCollection<T : M> : M {
 
     // TODO val cardinality: Numbers.Cardinal
-    operator fun contains(it: T): Boolean
+    fun contains(it: T): Logical
     fun count(it: T): Int
     fun isEmpty(): Knowable
     fun isNotEmpty(): Knowable = !isEmpty()
     val overElements: Iterable<T>?
     fun getPicker(random: Random = Random): Picker<T>?
 
-    fun containsAnyOf(vararg these: T): Boolean = containsAny(these.asList())
-    fun containsAllOf(vararg these: T): Boolean = containsAll(these.asList())
-    fun containsAny(them: Iterable<T>): Boolean = them.fold(false) { a, e -> a || contains(e) }
-    fun containsAll(them: Iterable<T>): Boolean = them.fold(true) { a, e -> a && contains(e) }
+    fun containsAnyOf(vararg these: T): Logical = containsAny(these.asList())
+    fun containsAllOf(vararg these: T): Logical = containsAll(these.asList())
+    fun containsAny(them: Iterable<T>): Logical = them.fold<T, Logical>(Logical.False) { a, e -> a or contains(e) }
+    fun containsAll(them: Iterable<T>): Logical = them.fold<T, Logical>(Logical.True) { a, e -> a and contains(e) }
 
     /**
      * [Sequence]/[Set.PartiallyOrdered]
@@ -58,7 +58,7 @@ interface MathematicalCollection<T : M> : M {
      * [Set]
      */
     interface DisallowsDuplicates<T : M> : MathematicalCollection<T> {
-        override fun count(it: T) = if (contains(it)) 1 else 0
+        override fun count(it: T) = contains(it).toInt()
     }
 
     interface UnknownCardinality<T : M> : MathematicalCollection<T> {
