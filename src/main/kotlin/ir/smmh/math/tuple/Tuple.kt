@@ -3,6 +3,7 @@ package ir.smmh.math.tuple
 import ir.smmh.math.InfinitelyIterable
 import ir.smmh.math.MathematicalObject
 import ir.smmh.math.logic.Knowable
+import ir.smmh.math.logic.Logical
 import ir.smmh.nile.verbs.CanClear
 
 sealed interface Tuple : MathematicalObject {
@@ -26,10 +27,10 @@ sealed interface Tuple : MathematicalObject {
 
         override fun isNonReferentiallyEqualTo(that: MathematicalObject): Knowable {
             if (that is Tuple.Finitary && length == that.length) {
-                for (i in 0 until length) if (this[i] != that[i]) return Knowable.Known.False
-                return Knowable.Known.True
+                for (i in 0 until length) if (this[i] != that[i]) return Logical.False
+                return Logical.True
             }
-            return Knowable.Known.False
+            return Logical.False
         }
     }
 

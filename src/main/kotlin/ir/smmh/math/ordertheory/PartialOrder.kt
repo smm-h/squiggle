@@ -1,9 +1,9 @@
 package ir.smmh.math.ordertheory
 
 import ir.smmh.math.logic.Knowable
-import ir.smmh.math.logic.Knowable.Known.False
-import ir.smmh.math.logic.Knowable.Known.True
 import ir.smmh.math.logic.Knowable.Unknown
+import ir.smmh.math.logic.Logical.False
+import ir.smmh.math.logic.Logical.True
 import ir.smmh.math.ordertheory.ComparisonResult.Comparable
 import ir.smmh.math.ordertheory.ComparisonResult.Comparable.*
 import ir.smmh.math.ordertheory.ComparisonResult.Incomparable

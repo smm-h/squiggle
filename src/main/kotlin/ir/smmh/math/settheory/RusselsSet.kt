@@ -2,6 +2,7 @@ package ir.smmh.math.settheory
 
 import ir.smmh.math.MathematicalObject
 import ir.smmh.math.logic.Knowable
+import ir.smmh.math.logic.Logical
 import kotlin.random.Random
 
 /**
@@ -17,7 +18,7 @@ sealed class RusselsSet : Set.Infinite<Set<*>> {
     override val overElements = null
     override fun getPicker(random: Random) = null
     override fun isNonReferentiallyEqualTo(that: MathematicalObject): Knowable =
-        if (that is RusselsSet) Knowable.Known.True else Knowable.Known.False
+        if (that is RusselsSet) Logical.True else Logical.False
 
     /**
      * If it does, then it should not, because it is a set of all sets that do

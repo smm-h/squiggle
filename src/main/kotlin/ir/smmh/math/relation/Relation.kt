@@ -1,6 +1,7 @@
 package ir.smmh.math.relation
 
 import ir.smmh.math.logic.Knowable
+import ir.smmh.math.logic.Logical
 import ir.smmh.math.settheory.Set
 import ir.smmh.math.tuple.Tuple
 import ir.smmh.nile.verbs.CanChangeValues
@@ -11,7 +12,7 @@ interface Relation : M {
 
     override val debugText: String get() = "Relation:${holds.debugText}"
     override fun isNonReferentiallyEqualTo(that: M): Knowable =
-        if (that is Relation && that.holds == holds) Knowable.Known.True else Knowable.Known.False
+        if (that is Relation && that.holds == holds) Logical.True else Logical.False
 
     interface Finitary : Relation {
         override val holds: Set<out Tuple.Finitary>

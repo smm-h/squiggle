@@ -1,7 +1,7 @@
 package ir.smmh.math.ordertheory
 
-import ir.smmh.math.logic.Knowable.Known
-import ir.smmh.math.logic.Knowable.Known.True
+import ir.smmh.math.logic.Logical
+import ir.smmh.math.logic.Logical.True
 import ir.smmh.math.ordertheory.ComparisonResult.Comparable
 import ir.smmh.math.ordertheory.ComparisonResult.Comparable.*
 import ir.smmh.math.MathematicalObject as M
@@ -29,10 +29,10 @@ sealed interface TotalOrder<T : M> : PartialOrder<T> {
         }
     }
 
-    override fun isLessThan(a: T, b: T) = Known.of(compare(a, b) == LessThan)
-    override fun isLessThanOrEqualTo(a: T, b: T) = Known.of(compare(a, b) != GreaterThan)
-    override fun isGreaterThan(a: T, b: T) = Known.of(compare(a, b) == GreaterThan)
-    override fun isGreaterThanOrEqualTo(a: T, b: T) = Known.of(compare(a, b) != LessThan)
-    override fun areEqual(a: T, b: T) = Known.of(compare(a, b) == EqualTo)
+    override fun isLessThan(a: T, b: T) = Logical.of(compare(a, b) == LessThan)
+    override fun isLessThanOrEqualTo(a: T, b: T) = Logical.of(compare(a, b) != GreaterThan)
+    override fun isGreaterThan(a: T, b: T) = Logical.of(compare(a, b) == GreaterThan)
+    override fun isGreaterThanOrEqualTo(a: T, b: T) = Logical.of(compare(a, b) != LessThan)
+    override fun areEqual(a: T, b: T) = Logical.of(compare(a, b) == EqualTo)
     override fun areComparable(a: T, b: T) = True
 }

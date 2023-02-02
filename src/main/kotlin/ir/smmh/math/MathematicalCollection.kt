@@ -4,6 +4,7 @@ package ir.smmh.math
 import ir.smmh.math.MathematicalCollection.*
 import ir.smmh.math.MathematicalObject
 import ir.smmh.math.logic.Knowable
+import ir.smmh.math.logic.Logical
 import ir.smmh.math.sequence.Sequence
 import ir.smmh.math.settheory.Bag
 import ir.smmh.math.settheory.Set
@@ -70,8 +71,8 @@ interface MathematicalCollection<T : M> : M {
      */
     interface Finite<T : M> : MathematicalCollection<T> {
         val cardinality: Int
-        override fun isEmpty(): Knowable.Known = Knowable.Known.of(cardinality == 0)
-        override fun isNotEmpty(): Knowable.Known = !isEmpty()
+        override fun isEmpty(): Logical = Logical.of(cardinality == 0)
+        override fun isNotEmpty(): Logical = !isEmpty()
 
         fun singletonOrNull(): T?
         fun singleton(): T = singletonOrNull() ?: throw NotASingletonException()
@@ -83,8 +84,8 @@ interface MathematicalCollection<T : M> : M {
      * [Sequence.Infinite], [Bag.Infinite], [Set.Infinite]
      */
     interface Infinite<T : M> : MathematicalCollection<T> {
-        override fun isEmpty() = Knowable.Known.False
-        override fun isNotEmpty() = Knowable.Known.True
+        override fun isEmpty() = Logical.False
+        override fun isNotEmpty() = Logical.True
         override val overElements: InfinitelyIterable<T>?
     }
 
