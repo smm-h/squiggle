@@ -77,8 +77,7 @@ interface RingLikeStructure<T : M> : AlgebraicStructure<T> {
      * [Wikipedia](https://en.wikipedia.org/wiki/Integral_domain)
      */
     interface IntegralDomain<T : M> : CommutativeRing<T> {
-        // TODO Integers
-
+        // TODO Z
     }
 
     // https://en.wikipedia.org/wiki/Domain_(ring_theory)

@@ -8,7 +8,6 @@ import ir.smmh.math.MathematicalException
 import ir.smmh.math.abstractalgebra.RingLikeStructure
 import ir.smmh.math.logic.Knowable
 import ir.smmh.math.logic.Logical
-import ir.smmh.math.numbers.BuiltinNumberType
 import ir.smmh.math.numbers.Numbers
 import ir.smmh.nile.FunctionalSequence
 import ir.smmh.nile.Sequential
@@ -338,10 +337,10 @@ interface Matrix<T : M> : M {
     companion object {
 
         fun getRowMajor(columns: Int): (Int, Int) -> Numbers.Integer =
-            { i, j -> BuiltinNumberType.IntInteger(j + 1 + i * columns) }
+            { i, j -> Numbers.Integer.of(j + 1 + i * columns) }
 
         fun getColumnMajor(rows: Int): (Int, Int) -> Numbers.Integer =
-            { i, j -> BuiltinNumberType.IntInteger(i + 1 + j * rows) }
+            { i, j -> Numbers.Integer.of(i + 1 + j * rows) }
 
         fun identity(n: Int): Matrix<Logical> =
             FunctionMatrix.Unmemoized(n, n, Logical.Structure.asRing) { i, j -> Logical.of(i == j) }

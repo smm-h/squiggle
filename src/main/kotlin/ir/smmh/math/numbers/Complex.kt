@@ -7,6 +7,10 @@ import ir.smmh.math.abstractalgebra.AbstractRingLikeStructure
 import ir.smmh.math.logic.Knowable
 import ir.smmh.math.logic.Logical
 import ir.smmh.math.numbers.Complex.Companion.i
+import ir.smmh.math.numbers.Numbers.Integer
+import ir.smmh.math.numbers.Numbers.ONE
+import ir.smmh.math.numbers.Numbers.Real
+import ir.smmh.math.numbers.Numbers.ZERO
 import ir.smmh.math.settheory.AbstractSet
 import kotlin.random.Random
 import ir.smmh.math.settheory.Set.Infinite as InfiniteSet
@@ -15,90 +19,78 @@ import ir.smmh.math.settheory.Set.Infinite as InfiniteSet
  * Sum of two [Real] numbers, one multiplied by [i]
  */
 sealed interface Complex : Quaternion {
-    val imaginaryPart: Numbers.Real
+    val imaginaryPart: Real
 
-    override val coefficientOfI: Numbers.Real get() = imaginaryPart
-    override val coefficientOfJ: Numbers.Real get() = Numbers.ZERO
-    override val coefficientOfK: Numbers.Real get() = Numbers.ZERO
+    override val coefficientOfI: Real get() = imaginaryPart
+    override val coefficientOfJ: Real get() = ZERO
+    override val coefficientOfK: Real get() = ZERO
 
-    override fun unaryPlus(): Complex = this
-    override fun unaryMinus(): Complex = if (isReal()) -realPart else RR(-realPart, -imaginaryPart)
-
-    override val absoluteSquared: Numbers.Real get() = realPart.squared + imaginaryPart.squared
+    override val absoluteSquared: Real get() = realPart.squared + imaginaryPart.squared
 
     override fun isComplex() = true
     override fun asComplex() = this
 
-    fun isReal(): Boolean = imaginaryPart == Numbers.ZERO
-    fun asReal(): Numbers.Real? = if (isReal()) realPart else null
+    fun isReal(): Boolean = this is Real || (imaginaryPart isEqualTo ZERO).toBoolean()
+    fun asReal(): Real? =
+        if (this is Real) this
+        else if (isReal()) realPart
+        else null
 
-    override fun isNonReferentiallyEqualTo(that: MathematicalObject): Knowable =
+    override fun isNonReferentiallyEqualTo(that: MathematicalObject) =
         if (that is Complex) realPart.isEqualTo(that.realPart) and imaginaryPart.isEqualTo(that.imaginaryPart)
         else Logical.False
 
     override val debugText: String get() = "${realPart.debugText}+${imaginaryPart.debugText}·i"
     override val tex: String get() = "${realPart.tex}+${imaginaryPart.tex}\\cdot i"
 
-    val angle: Numbers.Real
-        get() = BuiltinNumberType.DoubleReal(
-            Math.atan2(
-                imaginaryPart.approximateAsDouble(),
-                realPart.approximateAsDouble()
-            )
-        )
+    val angle: Real get() = Real.of(Math.atan2(imaginaryPart.approximateAsDouble(), realPart.approximateAsDouble()))
 
-    operator fun plus(that: Complex): Complex {
-        val a = this.asReal()
-        val b = that.asReal()
-        return if (a != null && b != null) a + b else RR(
-            this.component1() + that.component1(),
-            this.component2() + that.component2(),
-        )
-    }
+    override fun unaryPlus(): Complex = this
+    operator fun minus(that: Complex): Complex = this + (-that)
+    operator fun div(that: Complex): Complex = this * that.reciprocal
 
-    operator fun minus(that: Complex): Complex {
-        val a = this.asReal()
-        val b = that.asReal()
-        return if (a != null && b != null) a - b else RR(
-            this.component1() - that.component1(),
-            this.component2() - that.component2(),
-        )
-    }
+    override fun unaryMinus(): Complex = of(-realPart, -imaginaryPart)
 
-    val reciprocal: Complex
-        get() = if (absoluteSquared == Numbers.ZERO) throw DivisionByZeroException()
-        else RR(realPart / absoluteSquared, -imaginaryPart / absoluteSquared)
-
-    operator fun times(that: Complex): Complex =
-        RR(
-            realPart * that.realPart - imaginaryPart * that.imaginaryPart,
-            imaginaryPart * that.realPart + realPart * that.imaginaryPart
-        )
-
-    operator fun div(that: Complex): Complex = RR(
-        (realPart * that.realPart - imaginaryPart * that.imaginaryPart) / that.absoluteSquared,
-        (imaginaryPart * that.realPart - realPart * that.imaginaryPart) / that.absoluteSquared,
+    operator fun plus(that: Complex): Complex = of(
+        this.component1() + that.component1(),
+        this.component2() + that.component2(),
     )
 
+    val reciprocal: Complex
+        get() =
+            if ((absoluteSquared isEqualTo ZERO).toBoolean())
+                throw DivisionByZeroException()
+            else
+                of(realPart / absoluteSquared, -imaginaryPart / absoluteSquared)
+
+    operator fun times(that: Complex): Complex = of(
+        realPart * that.realPart - imaginaryPart * that.imaginaryPart,
+        imaginaryPart * that.realPart + realPart * that.imaginaryPart
+    )
+
+    // TODO exponent
     fun power(p: Int): Complex {
-        var x = Numbers.ONE as Complex
+        var x = ONE as Complex
         repeat(p) { x *= this }
         return x
     }
 
-    class RR(
-        override val realPart: Numbers.Real,
-        override val imaginaryPart: Numbers.Real = Numbers.ZERO,
-    ) : MathematicalObject.Abstract(), Complex {
-        constructor(real: Int, imaginary: Int) :
-                this(BuiltinNumberType.IntInteger(real), BuiltinNumberType.IntInteger(imaginary))
-
-        constructor(real: Double, imaginary: Double) :
-                this(BuiltinNumberType.DoubleReal(real), BuiltinNumberType.DoubleReal(imaginary))
-    }
+    private class ComplexImpl(
+        override val realPart: Real,
+        override val imaginaryPart: Real = ZERO,
+    ) : MathematicalObject.Abstract(), Complex
 
     companion object {
-        val i = RR(Numbers.ZERO, Numbers.ONE)
+        val i = of(ZERO, ONE)
+
+        fun of(realPart: Int, imaginaryPart: Int): Complex =
+            if (imaginaryPart == 0) Integer.of(realPart) else of(Integer.of(realPart), Integer.of(imaginaryPart))
+
+        fun of(realPart: Double, imaginaryPart: Double): Complex =
+            if (imaginaryPart == 0.0) Real.of(realPart) else of(Real.of(realPart), Real.of(imaginaryPart))
+
+        fun of(realPart: Real, imaginaryPart: Real): Complex =
+            if ((imaginaryPart isEqualTo ZERO).toBoolean()) realPart else ComplexImpl(realPart, imaginaryPart)
     }
 
     class Set(val pickerSize: Double) : AbstractSet<Complex>(), InfiniteSet<Complex> {
@@ -122,14 +114,14 @@ sealed interface Complex : Quaternion {
                     4 -> { x++; stage = 0 }
                     //@formatter:on
                 }
-                RR(x, y)
+                of(x, y)
             }
         }
 
         override fun getPicker(random: Random) = MathematicalCollection.Picker<Complex> {
-            RR(
-                BuiltinNumberType.DoubleReal((Random.nextDouble() * 2 - 1) * pickerSize),
-                BuiltinNumberType.DoubleReal((Random.nextDouble() * 2 - 1) * pickerSize),
+            of(
+                (Random.nextDouble() * 2 - 1) * pickerSize,
+                (Random.nextDouble() * 2 - 1) * pickerSize,
             )
         }
     }

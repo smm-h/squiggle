@@ -8,6 +8,6 @@
 combine '#' hexDigits as hexNumber
 
 define
-    'if' '(' expression as condition')'
+    'if' '(' calculable as condition')'
     block as ifTrueBlock 'else' block as ifFalseBlock
     as ifElse

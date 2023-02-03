@@ -1,18 +1,17 @@
 package ir.smmh.math.abstractalgebra
 
-import ir.smmh.math.numbers.BuiltinNumberType
 import ir.smmh.math.numbers.Numbers
-import ir.smmh.math.numbers.Numbers.Integer
-import ir.smmh.math.settheory.FiniteIntegersSet
+import ir.smmh.math.numbers.Numbers.Natural
+import ir.smmh.math.settheory.FiniteNaturalsSet
 import ir.smmh.math.settheory.Set
 
-class FiniteCyclicGroup private constructor(val dInt: Int, val dInteger: Integer) :
-    GroupLikeStructure.AbelianGroup<Integer> {
-    constructor(degree: Int) : this(degree, BuiltinNumberType.IntInteger(degree))
-    constructor(degree: Integer) : this(degree.approximateAsLong().toInt(), degree)
+class FiniteCyclicGroup private constructor(val dInt: Int, val dNatural: Natural) :
+    GroupLikeStructure.AbelianGroup<Natural> {
+    constructor(degree: Int) : this(degree, Natural.of(degree))
+    constructor(degree: Natural) : this(degree.approximateAsLong().toInt(), degree)
 
-    override val domain: Set<Integer> = FiniteIntegersSet(dInt)
-    override fun operate(a: Integer, b: Integer): Integer = (a + b) % dInteger
-    override val identityElement: Integer = Numbers.ZERO
-    override fun invert(a: Integer): Integer = (dInteger - a) % dInteger
+    override val domain: Set<Natural> = FiniteNaturalsSet(dInt)
+    override fun operate(a: Natural, b: Natural): Natural = (a + b) % dNatural
+    override val identityElement: Natural = Numbers.ZERO
+    override fun invert(a: Natural): Natural = (dNatural - a).asNatural()!! % dNatural
 }

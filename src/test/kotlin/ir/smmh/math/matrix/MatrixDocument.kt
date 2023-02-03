@@ -2,10 +2,8 @@ package ir.smmh.math.matrix
 
 import ir.smmh.math.abstractalgebra.IntegerRing
 import ir.smmh.math.abstractalgebra.RealField
-import ir.smmh.math.numbers.BuiltinNumberType
 import ir.smmh.math.numbers.Numbers
 import ir.smmh.math.numbers.Numbers.ONE
-import ir.smmh.math.numbers.Numbers.TWO
 import ir.smmh.math.numbers.Numbers.ZERO
 
 fun main() {
@@ -14,7 +12,7 @@ fun main() {
     val r = RealField
 
     val i2r: (Matrix<Numbers.Integer>) -> Matrix<Numbers.Real> =
-        { it.convert(r) { BuiltinNumberType.DoubleReal(it.approximateAsDouble()) } }
+        { it.convert(r) { Numbers.Real.of(it.approximateAsDouble()) } }
 
     val n = 5
     println("n = $n\n")
@@ -23,7 +21,7 @@ fun main() {
     println("Identity matrix:\n$mi\n")
 
     val multiplicationTable: (Int, Int) -> Numbers.Integer =
-        { i, j -> BuiltinNumberType.IntInteger((i + 1) * (j + 1)) }
+        { i, j -> Numbers.Integer.of((i + 1) * (j + 1)) }
 
     val mt: Matrix<Numbers.Integer> = FunctionMatrix.Unmemoized(n, n, z, multiplicationTable)
     println("Multiplication table:\n$mt\n")
@@ -46,12 +44,12 @@ fun main() {
     val dif = dr - dc
     println("Their difference:\n$dif\n")
 
-    val k = BuiltinNumberType.DoubleReal(2.0 * (n - 1))
+    val k = Numbers.Real.of(2.0 * (n - 1))
     val mk = UniformMatrix(n, n, r, k)
 
-    val sumn = (i2r(sum) - mk) / k
-    println("Their sum minus uniform(k) and divided by k:\n$sumn\n")
-
-    val difn = i2r(dif) / (k * TWO)
-    println("Their difference divided by 2k:\n$difn\n")
+//    val sumn = (i2r(sum) - mk) / k
+//    println("Their sum minus uniform(k) and divided by k:\n$sumn\n")
+//
+//    val difn = i2r(dif) / (k * TWO)
+//    println("Their difference divided by 2k:\n$difn\n")
 }

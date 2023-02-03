@@ -1,6 +1,5 @@
 package ir.smmh.math.abstractalgebra
 
-import ir.smmh.math.numbers.BuiltinNumberSet
 import ir.smmh.math.numbers.Complex
 import ir.smmh.math.numbers.Numbers
 import ir.smmh.math.settheory.Set

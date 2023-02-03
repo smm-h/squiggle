@@ -2,7 +2,6 @@ package ir.smmh.math.logic
 
 import ir.smmh.math.abstractalgebra.GroupLikeStructure
 import ir.smmh.math.abstractalgebra.RingLikeStructure
-import ir.smmh.math.settheory.Set
 import ir.smmh.math.MathematicalObject as M
 
 abstract class AbstractBooleanAlgebra<T : M> : BooleanAlgebra<T> {
