@@ -1,13 +1,14 @@
 package ir.smmh.math.numbers
 
 import ir.smmh.math.numbers.BuiltinNumberType.*
+import ir.smmh.util.MathUtil
 
 
 object Numbers {
 
     val ZERO = IntNatural(0)
     val ONE = IntNatural(1)
-    val TWO = IntNatural(1)
+    val TWO = IntNatural(2)
 
     /**
      * 0, 1, 2, ...
@@ -17,9 +18,13 @@ object Numbers {
         operator fun plus(that: Natural): Natural = IntNatural(approximateAsInt32() + that.approximateAsInt32())
         operator fun times(that: Natural): Natural = IntNatural(approximateAsInt32() * that.approximateAsInt32())
 
-        fun quotientWithRemainder(that: Natural): Pair<Natural, Natural>
-        fun quotient(that: Natural): Natural
-        operator fun rem(that: Natural): Natural
+        fun quotient(that: Natural): Natural = LongNatural(approximateAsInt64() / that.approximateAsInt64())
+        operator fun rem(that: Natural): Natural = LongNatural(approximateAsInt64() % that.approximateAsInt64())
+        fun quotientWithRemainder(that: Natural): Pair<Natural, Natural> {
+            val a = this.approximateAsInt64()
+            val b = that.approximateAsInt64()
+            return LongNatural(a / b) to LongNatural(a % b)
+        }
 
         override val isNegative: Boolean get() = false
         override val absolute: Natural get() = this
@@ -38,7 +43,7 @@ object Numbers {
      */
     sealed interface Integer : Rational {
 
-        fun approximateAsInt32(): Int
+        fun approximateAsInt32(): Int = approximateAsInt64().toInt()
         fun approximateAsInt64(): Long
 
         override val wholePart: Integer get() = this
@@ -48,28 +53,32 @@ object Numbers {
         override val denominator: Integer get() = ONE
 
         override fun unaryPlus(): Integer = this
-        override fun unaryMinus(): Integer
+        override fun unaryMinus(): Integer = LongInteger(-approximateAsInt64())
         operator fun plus(that: Integer): Integer = IntInteger(approximateAsInt32() + that.approximateAsInt32())
         operator fun times(that: Integer): Integer = IntInteger(approximateAsInt32() * that.approximateAsInt32())
         operator fun minus(that: Integer): Integer = this + (-that)
-        operator fun div(that: Integer): Rational
+        operator fun div(that: Integer): Rational = Rational.RR(this, that)
 
         // Euclidean division
-        fun quotientWithRemainder(that: Integer): Pair<Integer, Integer>
-        fun quotient(that: Integer): Rational
-        operator fun rem(that: Integer): Integer
-
-        override val squared: Natural
+        fun quotient(that: Integer): Integer = LongInteger(approximateAsInt64() / that.approximateAsInt64())
+        operator fun rem(that: Integer): Integer = LongInteger(approximateAsInt64() % that.approximateAsInt64())
+        fun quotientWithRemainder(that: Integer): Pair<Integer, Integer> {
+            val a = this.approximateAsInt64()
+            val b = that.approximateAsInt64()
+            return LongInteger(a / b) to LongInteger(a % b)
+        }
 
         override val isNegative: Boolean get() = numerator.isNegative xor denominator.isNegative
-        override val absolute: Natural
         override val absoluteSquared: Natural get() = squared
+        override val absolute: Natural get() = LongNatural(Math.abs(approximateAsInt64()))
+        override val squared: Natural get() = LongNatural(MathUtil.sqr(approximateAsInt64()))
+        override val reciprocal: Rational get() = Numbers.Rational.RR(ONE, this)
 
         override fun isInteger() = true
         override fun asInteger() = this
 
         fun isNatural(): Boolean = !isNegative
-        fun asNatural(): Natural
+        fun asNatural(): Natural = LongNatural(approximateAsInt64())
     }
 
     /**
@@ -189,10 +198,20 @@ object Numbers {
         override fun isReal() = true
         override fun asReal() = this
 
-        fun isRational(): Boolean
-        fun asRational(): Numbers.Rational?
+        fun isRational(): Boolean = true
+        fun asRational(): Numbers.Rational? {
+            val d = longDenominator
+            val n = (approximateAsFP64() * d).toLong()
+            val gcd = MathUtil.gcd(n, d)
+            return Numbers.Rational.RR(LongInteger(n / gcd), LongInteger(d / gcd))
+        }
 
         fun isIrrational(): Boolean = !isRational()
-        fun asIrrational(): Numbers.Irrational?
+        fun asIrrational(): Numbers.Irrational? = null
     }
+
+    /**
+     * 20!
+     */
+    private const val longDenominator = 2432902008176640000L // 1000000000000000L
 }

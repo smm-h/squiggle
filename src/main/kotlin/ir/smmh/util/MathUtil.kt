@@ -53,13 +53,10 @@ object MathUtil {
         return kotlin.math.sqrt(x.toDouble()).toFloat()
     }
 
-    fun sqr(x: Int): Int {
-        return x * x
-    }
-
-    fun sqr(x: Double): Double {
-        return x * x
-    }
+    fun sqr(x: Int) = x * x
+    fun sqr(x: Long) = x * x
+    fun sqr(x: Float) = x * x
+    fun sqr(x: Double) = x * x
 
     fun power(b: Int, p: Int): Long {
         var x: Long = 1
