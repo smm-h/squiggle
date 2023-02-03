@@ -36,14 +36,14 @@ sealed interface Complex : Quaternion {
         if (that is Complex) realPart.isEqualTo(that.realPart) and imaginaryPart.isEqualTo(that.imaginaryPart)
         else Logical.False
 
-    override val debugText: String
-        get() = "$realPart+$imaginaryPart·i"
+    override val debugText: String get() = "${realPart.debugText}+${imaginaryPart.debugText}·i"
+    override val tex: String get() = "${realPart.tex}+${imaginaryPart.tex}\\cdot i"
 
     val angle: Numbers.Real
         get() = BuiltinNumberType.DoubleReal(
             Math.atan2(
-                imaginaryPart.approximateAsFP64(),
-                realPart.approximateAsFP64()
+                imaginaryPart.approximateAsDouble(),
+                realPart.approximateAsDouble()
             )
         )
 
@@ -103,6 +103,7 @@ sealed interface Complex : Quaternion {
 
     class Set(val pickerSize: Double) : AbstractSet<Complex>(), InfiniteSet<Complex> {
         override val debugText = "ComplexNumbers"
+        override val tex = "{\\mathbb{C}}"
         override fun isNonReferentiallyEqualTo(that: MathematicalObject) = Logical.False
         override fun contains(it: Complex) = Logical.True
 

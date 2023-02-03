@@ -9,7 +9,10 @@ import ir.smmh.math.logic.Logical
 interface MathematicalObject {
 
     val debugText: String
-    //TODO val tex: String
+
+    val tex: String
+
+    //TODO val wikipediaLink: String
     //TODO fun express(): Expression
 
     fun isEqualTo(that: MathematicalObject): Knowable =

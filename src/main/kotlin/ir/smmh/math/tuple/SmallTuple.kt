@@ -3,7 +3,7 @@ package ir.smmh.math.tuple
 import ir.smmh.math.MathematicalObject
 
 @Suppress("DuplicatedCode")
-sealed class SmallTuple : Tuple.Finitary {
+sealed class SmallTuple : AbstractFinitaryTuple() {
 
     companion object {
         infix fun <T1 : MathematicalObject, T2 : MathematicalObject> T1.r(that: T2) = Couple<T1, T2>(this, that)

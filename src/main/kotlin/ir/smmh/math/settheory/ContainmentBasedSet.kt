@@ -9,6 +9,7 @@ import kotlin.random.Random
 
 sealed class ContainmentBasedSet<T : MathematicalObject>(
     override val debugText: String,
+    override val tex: String,
     private val containment: (T) -> Logical,
 ) : Set<T> {
 
@@ -19,22 +20,25 @@ sealed class ContainmentBasedSet<T : MathematicalObject>(
 
     class Finite<T : MathematicalObject>(
         debugText: String,
+        tex: String,
         override val cardinality: Int,
         containment: (T) -> Logical,
-    ) : ContainmentBasedSet<T>(debugText, containment), Set.Finite<T> {
+    ) : ContainmentBasedSet<T>(debugText, tex, containment), Set.Finite<T> {
         override fun singletonOrNull(): T? = null
         override fun getPicker(random: Random): MathematicalCollection.Picker<T>? = null
     }
 
     class UnknownCardinality<T : MathematicalObject>(
         debugText: String,
+        tex: String,
         containment: (T) -> Logical,
-    ) : ContainmentBasedSet<T>(debugText, containment), Set<T>, MathematicalCollection.UnknownCardinality<T>
+    ) : ContainmentBasedSet<T>(debugText, tex, containment), Set<T>, MathematicalCollection.UnknownCardinality<T>
 
     class Infinite<T : MathematicalObject>(
         debugText: String,
+        tex: String,
         containment: (T) -> Logical,
-    ) : ContainmentBasedSet<T>(debugText, containment), Set.Infinite<T> {
+    ) : ContainmentBasedSet<T>(debugText, tex, containment), Set.Infinite<T> {
         override val overElements: InfinitelyIterable<T>? get() = null
     }
 }

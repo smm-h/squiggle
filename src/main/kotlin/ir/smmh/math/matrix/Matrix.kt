@@ -6,7 +6,6 @@ import ir.smmh.mage.core.Platform
 import ir.smmh.mage.core.Size
 import ir.smmh.math.MathematicalException
 import ir.smmh.math.abstractalgebra.RingLikeStructure
-import ir.smmh.math.logic.BooleanCalculator
 import ir.smmh.math.logic.Knowable
 import ir.smmh.math.logic.Logical
 import ir.smmh.math.numbers.BuiltinNumberType

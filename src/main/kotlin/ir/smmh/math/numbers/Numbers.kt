@@ -15,21 +15,21 @@ object Numbers {
      */
     sealed interface Natural : Integer {
         override fun unaryPlus(): Natural = this
-        operator fun plus(that: Natural): Natural = IntNatural(approximateAsInt32() + that.approximateAsInt32())
-        operator fun times(that: Natural): Natural = IntNatural(approximateAsInt32() * that.approximateAsInt32())
+        operator fun plus(that: Natural): Natural = LongNatural(approximateAsLong() + that.approximateAsLong())
+        operator fun times(that: Natural): Natural = LongNatural(approximateAsLong() * that.approximateAsLong())
 
-        fun quotient(that: Natural): Natural = LongNatural(approximateAsInt64() / that.approximateAsInt64())
-        operator fun rem(that: Natural): Natural = LongNatural(approximateAsInt64() % that.approximateAsInt64())
+        fun quotient(that: Natural): Natural = LongNatural(this.approximateAsLong() / that.approximateAsLong())
+        operator fun rem(that: Natural): Natural = LongNatural(this.approximateAsLong() % that.approximateAsLong())
         fun quotientWithRemainder(that: Natural): Pair<Natural, Natural> {
-            val a = this.approximateAsInt64()
-            val b = that.approximateAsInt64()
+            val a = this.approximateAsLong()
+            val b = that.approximateAsLong()
             return LongNatural(a / b) to LongNatural(a % b)
         }
 
         override val isNegative: Boolean get() = false
         override val absolute: Natural get() = this
         override val squared: Natural get() = this * this
-        override val squareRoot: Real get() = DoubleReal(Math.sqrt(approximateAsFP64()))
+        override val squareRoot: Real get() = DoubleReal(Math.sqrt(approximateAsDouble()))
 
         override fun isNatural() = true
         override fun asNatural() = this
@@ -43,8 +43,10 @@ object Numbers {
      */
     sealed interface Integer : Rational {
 
-        fun approximateAsInt32(): Int = approximateAsInt64().toInt()
-        fun approximateAsInt64(): Long
+        fun approximateAsLong(): Long
+
+        override val debugText: String get() = approximateAsDouble().toString()
+        override val tex: String get() = "{$debugText}"
 
         override val wholePart: Integer get() = this
         override val fractionalPart: Real get() = ZERO
@@ -53,32 +55,32 @@ object Numbers {
         override val denominator: Integer get() = ONE
 
         override fun unaryPlus(): Integer = this
-        override fun unaryMinus(): Integer = LongInteger(-approximateAsInt64())
-        operator fun plus(that: Integer): Integer = IntInteger(approximateAsInt32() + that.approximateAsInt32())
-        operator fun times(that: Integer): Integer = IntInteger(approximateAsInt32() * that.approximateAsInt32())
+        override fun unaryMinus(): Integer = LongInteger(-this.approximateAsLong())
+        operator fun plus(that: Integer): Integer = LongInteger(this.approximateAsLong() + that.approximateAsLong())
+        operator fun times(that: Integer): Integer = LongInteger(this.approximateAsLong() * that.approximateAsLong())
         operator fun minus(that: Integer): Integer = this + (-that)
         operator fun div(that: Integer): Rational = Rational.RR(this, that)
 
         // Euclidean division
-        fun quotient(that: Integer): Integer = LongInteger(approximateAsInt64() / that.approximateAsInt64())
-        operator fun rem(that: Integer): Integer = LongInteger(approximateAsInt64() % that.approximateAsInt64())
+        fun quotient(that: Integer): Integer = LongInteger(this.approximateAsLong() / that.approximateAsLong())
+        operator fun rem(that: Integer): Integer = LongInteger(this.approximateAsLong() % that.approximateAsLong())
         fun quotientWithRemainder(that: Integer): Pair<Integer, Integer> {
-            val a = this.approximateAsInt64()
-            val b = that.approximateAsInt64()
+            val a = this.approximateAsLong()
+            val b = that.approximateAsLong()
             return LongInteger(a / b) to LongInteger(a % b)
         }
 
         override val isNegative: Boolean get() = numerator.isNegative xor denominator.isNegative
         override val absoluteSquared: Natural get() = squared
-        override val absolute: Natural get() = LongNatural(Math.abs(approximateAsInt64()))
-        override val squared: Natural get() = LongNatural(MathUtil.sqr(approximateAsInt64()))
+        override val absolute: Natural get() = LongNatural(Math.abs(this.approximateAsLong()))
+        override val squared: Natural get() = LongNatural(MathUtil.sqr(this.approximateAsLong()))
         override val reciprocal: Rational get() = Numbers.Rational.RR(ONE, this)
 
         override fun isInteger() = true
         override fun asInteger() = this
 
         fun isNatural(): Boolean = !isNegative
-        fun asNatural(): Natural = LongNatural(approximateAsInt64())
+        fun asNatural(): Natural = LongNatural(this.approximateAsLong())
     }
 
     /**
@@ -86,13 +88,13 @@ object Numbers {
      */
     sealed interface Rational : Real {
 
-        override fun approximateAsFP64(): Double = numerator.approximateAsFP64() / denominator.approximateAsInt64()
+        override fun approximateAsDouble(): Double = numerator.approximateAsDouble() / denominator.approximateAsLong()
 
         val numerator: Integer
         val denominator: Integer
 
-        override val debugText: String
-            get() = "${numerator.debugText}/${denominator.debugText}"
+        override val debugText get() = "${numerator.debugText}/${denominator.debugText}"
+        override val tex get() = if (denominator == ONE) numerator.tex else "{${numerator.tex}\\over${denominator.tex}}"
 
         override fun unaryPlus(): Rational =
             this
@@ -164,33 +166,35 @@ object Numbers {
      */
     sealed interface Real : Complex {
 
-        fun approximateAsFP32(): Float = approximateAsFP64().toFloat()
-        fun approximateAsFP64(): Double
+        fun approximateAsDouble(): Double
 
-        val wholePart: Integer get() = IntInteger(Math.floor(approximateAsFP64()).toInt())
-        val fractionalPart: Real get() = IntInteger(approximateAsFP64().let { (it - Math.floor(it)).toInt() })
+        override val debugText: String get() = approximateAsDouble().toString()
+        override val tex: String get() = "{$debugText}"
+
+        val wholePart: Integer get() = IntInteger(Math.floor(approximateAsDouble()).toInt())
+        val fractionalPart: Real get() = IntInteger(approximateAsDouble().let { (it - Math.floor(it)).toInt() })
 
         override val realPart: Real get() = this
         override val imaginaryPart: Real get() = ZERO
 
         override fun unaryPlus(): Real = this
-        operator fun plus(that: Real): Real = DoubleReal(approximateAsFP64() + that.approximateAsFP64())
-        override fun unaryMinus(): Real = DoubleReal(-approximateAsFP64())
+        operator fun plus(that: Real): Real = DoubleReal(approximateAsDouble() + that.approximateAsDouble())
+        override fun unaryMinus(): Real = DoubleReal(-approximateAsDouble())
         operator fun minus(that: Real): Real = this + (-that)
 
-        operator fun times(that: Real): Real = DoubleReal(approximateAsFP64() * that.approximateAsFP64())
-        override val reciprocal: Real get() = DoubleReal(1 / approximateAsFP64())
+        operator fun times(that: Real): Real = DoubleReal(approximateAsDouble() * that.approximateAsDouble())
+        override val reciprocal: Real get() = DoubleReal(1 / approximateAsDouble())
         operator fun div(that: Real): Real = this * that.reciprocal
 
         val squared: Real get() = this * this
         val squareRoot: Complex
             get() =
                 if (isNegative) Complex.RR(ZERO, absolute.squareRoot.asReal()!!)
-                else DoubleReal(Math.sqrt(approximateAsFP64()))
+                else DoubleReal(Math.sqrt(approximateAsDouble()))
 
         val isNegative: Boolean get() = ZERO > this
 
-        operator fun compareTo(that: Real): Int = approximateAsFP64().compareTo(that.approximateAsFP64())
+        operator fun compareTo(that: Real): Int = approximateAsDouble().compareTo(that.approximateAsDouble())
 
         override val absolute: Real get() = if (isNegative) -this else this
         override val absoluteSquared: Real get() = squared
@@ -201,7 +205,7 @@ object Numbers {
         fun isRational(): Boolean = true
         fun asRational(): Numbers.Rational? {
             val d = longDenominator
-            val n = (approximateAsFP64() * d).toLong()
+            val n = (approximateAsDouble() * d).toLong()
             val gcd = MathUtil.gcd(n, d)
             return Numbers.Rational.RR(LongInteger(n / gcd), LongInteger(d / gcd))
         }

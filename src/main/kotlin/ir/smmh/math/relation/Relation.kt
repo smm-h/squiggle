@@ -41,7 +41,7 @@ interface Relation : M {
         operator fun get(a: T1, b: T2): Logical
 
         val reciprocal: Binary<T2, T1>
-            get() = PredicateRelation.Heterogeneous<T2, T1> { a, b -> get(b, a) }
+            get() = PredicateRelation.Heterogeneous<T2, T1>("{$tex^{-1}}") { a, b -> get(b, a) }
 
         interface Mutable<T1 : M, T2 : M> : Binary<T1, T2>, CanChangeValues {
             operator fun set(a: T1, b: T2, holds: Boolean)
@@ -61,7 +61,7 @@ interface Relation : M {
             override val holds: Set<out Tuple.Binary.Uniform<T>>
 
             override val reciprocal: Homogeneous<T>
-                get() = PredicateRelation.Homogeneous<T> { a, b -> get(b, a) }
+                get() = PredicateRelation.Homogeneous<T>("{$tex^{-1}}") { a, b -> get(b, a) }
 
             interface Reflexive<T : M> : Homogeneous<T>
             interface Irreflexive<T : M> : Homogeneous<T> // TODO iff Asymmetric, Transitive

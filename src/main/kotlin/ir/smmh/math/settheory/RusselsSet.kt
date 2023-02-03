@@ -14,7 +14,8 @@ import kotlin.random.Random
  */
 sealed class RusselsSet : Set.Infinite<Set<*>> {
 
-    override val debugText: String = "Russel's Set"
+    override val debugText = "Russel's Set"
+    override val tex = "{\\mathbf{R}}"
     override val overElements = null
     override fun getPicker(random: Random) = null
     override fun isNonReferentiallyEqualTo(that: MathematicalObject): Knowable =

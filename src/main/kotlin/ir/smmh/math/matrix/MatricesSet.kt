@@ -14,7 +14,8 @@ class MatricesSet<T : MathematicalObject>(
     val ring: RingLikeStructure.SubtractionRing<T>,
 ) : Set.Infinite<Matrix<T>> {
 
-    override val debugText: String = "MatrixSet($rows,$columns)"
+    override val debugText = "MatrixSet($rows,$columns)"
+    override val tex = "{\\mathbf{M}_($rows,$columns)}"
     override fun isNonReferentiallyEqualTo(that: MathematicalObject) = Logical.False
 
     override fun contains(it: Matrix<T>) =

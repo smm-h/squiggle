@@ -2,10 +2,10 @@ package ir.smmh.math.relation
 
 import ir.smmh.math.MathematicalObject
 import ir.smmh.math.logic.Knowable
-import ir.smmh.math.matrix.LowLevelMatrix
+import ir.smmh.math.logic.Logical
+import ir.smmh.math.matrix.ArrayMatrix
 import ir.smmh.math.matrix.Matrix
 import ir.smmh.math.matrix.Matrix.Companion.forEach
-import ir.smmh.math.settheory.ContainmentBasedSet
 import ir.smmh.math.settheory.ListPicker
 import ir.smmh.math.settheory.Set
 import ir.smmh.math.tuple.SmallTuple
@@ -21,29 +21,28 @@ import kotlin.random.Random
 sealed class MatrixRelation<T : MathematicalObject> private constructor(private val map: BiDirectionalMap<T, Int>) :
     Relation.Binary.Homogeneous.Finite<T> {
 
-    abstract val matrix: Matrix<Boolean>
+    abstract val matrix: Matrix<Logical>
+
+    override val tex by matrix::tex
 
     override fun isNonReferentiallyEqualTo(that: MathematicalObject): Knowable =
-        if (that is MatrixRelation<*> && that.matrix == matrix) Knowable.Known.True else Knowable.Unknown
+        if (that is MatrixRelation<*> && that.matrix == matrix) Logical.True else Knowable.Unknown
 
     override val holds by lazy {
-        object : Set.Finite.KnownCardinality<Tuple.Binary.Uniform<T>> {
+        object : Set.Finite<Tuple.Binary.Uniform<T>> {
             override val debugText: String get() = "MatrixRelation.holds"
+            override val tex: String get() = this@MatrixRelation.tex
             override val cardinality: Int by list::size
             override val overElements: Iterable<Tuple.Binary.Uniform<T>> by ::list
             override fun singletonOrNull(): Tuple.Binary.Uniform<T>? = list.firstOrNull()
-            override fun contains(it: Tuple.Binary.Uniform<T>) = list.contains(it)
+            override fun contains(it: Tuple.Binary.Uniform<T>) = Logical.of(list.contains(it))
             override fun getPicker(random: Random) = ListPicker(list, random)
             override fun isNonReferentiallyEqualTo(that: MathematicalObject) = Knowable.Unknown
         }
     }
 
-    override fun get(a: T, b: T): Boolean = get(indexOf(a), indexOf(b))
-    operator fun get(a: Int, b: Int): Boolean = matrix[a, b]
-
-    override val domain: Set.Finite.KnownCardinality<T> =
-        ContainmentBasedSet.Finite.KnownCardinality<T>("MatrixRelation.domain", map.size) { map.containsKey(it) }
-    // by lazy { StoredSet(map.keys) }
+    override fun get(a: T, b: T): Logical = get(indexOf(a), indexOf(b))
+    operator fun get(a: Int, b: Int): Logical = matrix[a, b]
 
     fun getAtIndex(index: Int): T = map.reverse.getValue(index)
 
@@ -53,7 +52,7 @@ sealed class MatrixRelation<T : MathematicalObject> private constructor(private 
     private val list: List<Tuple.Binary.Uniform<T>> by lazy {
         ArrayList<Tuple.Binary.Uniform<T>>().apply {
             matrix.forEach { i, j ->
-                if (matrix[i, j]) {
+                if (matrix[i, j].toBoolean()) {
                     add(SmallTuple.Uniform.Couple(getAtIndex(i), getAtIndex(j)))
                 }
             }
@@ -62,14 +61,14 @@ sealed class MatrixRelation<T : MathematicalObject> private constructor(private 
 
     private class Immutable<T : MathematicalObject>(
         map: BiDirectionalMap<T, Int>,
-        override val matrix: Matrix<Boolean>,
+        override val matrix: Matrix<Logical>,
     ) : MatrixRelation<T>(map) {
         override val debugText: String get() = "MatrixRelation.Immutable"
     }
 
     class Mutable<T : MathematicalObject> private constructor(
         map: BiDirectionalMap<T, Int>,
-        override val matrix: Matrix.Mutable<Boolean>,
+        override val matrix: Matrix.Mutable<Logical>,
     ) : MatrixRelation<T>(map) {
         override val debugText: String get() = "MatrixRelation.Mutable"
 
@@ -95,14 +94,14 @@ sealed class MatrixRelation<T : MathematicalObject> private constructor(private 
 
     fun interface Transformation {
 
-        fun beforeLoop(r: Matrix<Boolean>, q: Matrix.Mutable<Boolean>) = Unit
-        fun afterLoop(r: Matrix<Boolean>, q: Matrix.Mutable<Boolean>) = Unit
+        fun beforeLoop(r: Matrix<Logical>, q: Matrix.Mutable<Logical>) = Unit
+        fun afterLoop(r: Matrix<Logical>, q: Matrix.Mutable<Logical>) = Unit
 
-        fun loopBody(r: Matrix<Boolean>, q: Matrix.Mutable<Boolean>, i: Int, j: Int, k: Int)
+        fun loopBody(r: Matrix<Logical>, q: Matrix.Mutable<Logical>, i: Int, j: Int, k: Int)
 
-        fun execute(r: Matrix<Boolean>, n: Int): Matrix<Boolean> {
+        fun execute(r: Matrix<Logical>, n: Int): Matrix<Logical> {
             val v = 0 until n
-            val q = LowLevelMatrix.Boolean(n, n, null)
+            val q = ArrayMatrix<Logical>(n, n, Logical.Structure.asRing)
             beforeLoop(r, q)
             for (i in v) for (j in v) for (k in v) loopBody(r, q, i, j, k)
             afterLoop(r, q)
@@ -128,7 +127,7 @@ sealed class MatrixRelation<T : MathematicalObject> private constructor(private 
             return MatrixRelation.Immutable(map, matrix)
         }
 
-        private fun <T : MathematicalObject> mapAndMatrixOf(binaryTuples: Iterable<Tuple.Binary.Uniform<T>>): Pair<BiDirectionalMap<T, Int>, LowLevelMatrix.Boolean> {
+        private fun <T : MathematicalObject> mapAndMatrixOf(binaryTuples: Iterable<Tuple.Binary.Uniform<T>>): Pair<BiDirectionalMap<T, Int>, Matrix.Mutable<Logical>> {
             val set = HashSet<T>().apply {
                 for ((a, b) in binaryTuples) {
                     add(a)
@@ -137,9 +136,9 @@ sealed class MatrixRelation<T : MathematicalObject> private constructor(private 
             }
             require(set.isNotEmpty())
             val map = BiDirectionalMap.indexMapOf(set)
-            val matrix = LowLevelMatrix.Boolean(set.size, set.size, null).also {
+            val matrix = ArrayMatrix(set.size, set.size, Logical.Structure.asRing).also {
                 for ((a, b) in binaryTuples)
-                    it[map[a]!!, map[b]!!] = true
+                    it[map[a]!!, map[b]!!] = Logical.True
             }
             return map to matrix
         }

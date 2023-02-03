@@ -1,30 +1,37 @@
 package ir.smmh.math.matrix
 
-import ir.smmh.math.abstractalgebra.Structures
+import ir.smmh.math.abstractalgebra.IntegerRing
+import ir.smmh.math.abstractalgebra.RealField
+import ir.smmh.math.numbers.BuiltinNumberType
+import ir.smmh.math.numbers.Numbers
+import ir.smmh.math.numbers.Numbers.ONE
+import ir.smmh.math.numbers.Numbers.TWO
+import ir.smmh.math.numbers.Numbers.ZERO
 
 fun main() {
 
-    // TODO matrices as LaTeX in Markdown
+    val z = IntegerRing
+    val r = RealField
 
-    val z = Structures.Integer32Ring
-    val r = Structures.FloatingPoint32Field
-
-    val i2r: (Matrix<Int>) -> Matrix<Float> = { it.convert(r) { it.toFloat() } }
+    val i2r: (Matrix<Numbers.Integer>) -> Matrix<Numbers.Real> =
+        { it.convert(r) { BuiltinNumberType.DoubleReal(it.approximateAsDouble()) } }
 
     val n = 5
     println("n = $n\n")
 
-    val mi: Matrix<Int> = Matrix.identity(n).convert(z) { x -> if (x) 1 else 0 }
+    val mi: Matrix<Numbers.Integer> = Matrix.identity(n).convert(z) { x -> if (x.toBoolean()) ONE else ZERO }
     println("Identity matrix:\n$mi\n")
 
-    val multiplicationTable: (Int, Int) -> Int = { i, j -> (i + 1) * (j + 1) }
-    val mt: Matrix<Int> = FunctionMatrix.Unmemoized(n, n, z, multiplicationTable)
+    val multiplicationTable: (Int, Int) -> Numbers.Integer =
+        { i, j -> BuiltinNumberType.IntInteger((i + 1) * (j + 1)) }
+
+    val mt: Matrix<Numbers.Integer> = FunctionMatrix.Unmemoized(n, n, z, multiplicationTable)
     println("Multiplication table:\n$mt\n")
 
-    val mr: Matrix<Int> = MapMatrix(n, n, z).setAll(Matrix.getRowMajor(n))
+    val mr: Matrix<Numbers.Integer> = MapMatrix(n, n, z).setAll(Matrix.getRowMajor(n))
     println("Row-major indices:\n$mr\n")
 
-    val mc: Matrix<Int> = MapMatrix(n, n, z).setAll(Matrix.getColumnMajor(n))
+    val mc: Matrix<Numbers.Integer> = MapMatrix(n, n, z).setAll(Matrix.getColumnMajor(n))
     println("Column-major indices:\n$mc\n")
 
     val dr = mr - mt
@@ -39,12 +46,12 @@ fun main() {
     val dif = dr - dc
     println("Their difference:\n$dif\n")
 
-    val k = 2f * (n - 1)
+    val k = BuiltinNumberType.DoubleReal(2.0 * (n - 1))
     val mk = UniformMatrix(n, n, r, k)
 
     val sumn = (i2r(sum) - mk) / k
     println("Their sum minus uniform(k) and divided by k:\n$sumn\n")
 
-    val difn = i2r(dif) / (k * 2)
+    val difn = i2r(dif) / (k * TWO)
     println("Their difference divided by 2k:\n$difn\n")
 }

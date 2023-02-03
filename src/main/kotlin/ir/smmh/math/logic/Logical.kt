@@ -11,7 +11,8 @@ sealed class Logical : Knowable() {
     object True : Logical() {
         override fun toInt() = 1
         override fun toBoolean() = true
-        override val debugText = "⊤"
+        override val debugText = "True"
+        override val tex = "\\top"
         override fun not() = False
         override fun and(that: Logical) = that
         override fun and(that: Knowable) = if (that is Logical) and(that) else Unknown
@@ -26,7 +27,8 @@ sealed class Logical : Knowable() {
     object False : Logical() {
         override fun toInt() = 0
         override fun toBoolean() = false
-        override val debugText = "⊥"
+        override val debugText = "False"
+        override val tex = "\\bot"
         override fun not() = True
         override fun and(that: Logical) = False
         override fun and(that: Knowable) = if (that is Logical) and(that) else False

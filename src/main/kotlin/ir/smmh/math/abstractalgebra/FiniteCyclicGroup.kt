@@ -9,7 +9,7 @@ import ir.smmh.math.settheory.Set
 class FiniteCyclicGroup private constructor(val dInt: Int, val dInteger: Integer) :
     GroupLikeStructure.AbelianGroup<Integer> {
     constructor(degree: Int) : this(degree, BuiltinNumberType.IntInteger(degree))
-    constructor(degree: Integer) : this(degree.approximateAsInt32(), degree)
+    constructor(degree: Integer) : this(degree.approximateAsLong().toInt(), degree)
 
     override val domain: Set<Integer> = FiniteIntegersSet(dInt)
     override fun operate(a: Integer, b: Integer): Integer = (a + b) % dInteger

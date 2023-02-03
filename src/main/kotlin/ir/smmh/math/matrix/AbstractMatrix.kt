@@ -32,6 +32,12 @@ abstract class AbstractMatrix<T : MathematicalObject> : MathematicalObject.Abstr
         }.toString()
     }
 
+    // TODO requiresLatex
+    override val tex by lazy {
+        (0 until rows).joinToString(" \\\\\n", "{\\begin{bmatrix}\n", "\n\\end{bmatrix}}")
+        { i -> row(i).overValues.joinToString(" & ") { it.tex } }
+    }
+
     abstract class Mutable<T : MathematicalObject> : AbstractMatrix<T>(), Matrix.Mutable<T> {
         override val transpose: Matrix.Mutable<T> get() = createSameStructure(columns, rows).setTransposed(this)
         abstract fun createSameStructure(rows: Int, columns: Int): Matrix.Mutable<T>

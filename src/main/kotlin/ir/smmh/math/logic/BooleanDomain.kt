@@ -2,6 +2,7 @@ package ir.smmh.math.logic
 
 import ir.smmh.math.MathematicalCollection
 import ir.smmh.math.ordertheory.TotalOrder
+import ir.smmh.math.settheory.AbstractSet
 import ir.smmh.math.settheory.ContainmentBasedSet
 import ir.smmh.math.settheory.Set
 import ir.smmh.math.tuple.Tuple
@@ -16,12 +17,13 @@ import ir.smmh.math.MathematicalObject as M
  * @see AbstractTwoElementBooleanAlgebra
  * [Wikipedia](https://en.wikipedia.org/wiki/Boolean_domain)
  */
-class BooleanDomain<T : M>(val falsehood: T, val truth: T) : M.Abstract(), Set.TotallyOrdered.Finite<T> {
+class BooleanDomain<T : M>(val falsehood: T, val truth: T) : AbstractSet<T>(), Set.TotallyOrdered.Finite<T> {
 
     val elementList = listOf(falsehood, truth)
 
     override val overElements: Iterable<T> by ::elementList
-    override val debugText: String = "BooleanDomain"
+    override val debugText = "BooleanDomain"
+    override val tex = "{\\mathbb{B}}"
     override val cardinality: Int get() = 2
     override fun contains(it: T) = Logical.True
     override fun singletonOrNull() = null
@@ -31,9 +33,10 @@ class BooleanDomain<T : M>(val falsehood: T, val truth: T) : M.Abstract(), Set.T
 
     override val order = object : TotalOrder.NonStrict<T> {
         override val debugText: String = "BooleanDomain.order"
+        override val tex = "{\\mathbb{B}_{\\le}}"
         override fun get(a: T, b: T): Logical = Logical.of(a == b || a == falsehood && b == truth)
         override val holds: Set<out Tuple.Binary.Uniform<T>> =
-            ContainmentBasedSet.Finite("BooleanDomain.order.holds", 3) { get(it.first, it.second) }
+            ContainmentBasedSet.Finite("BooleanDomain.order.holds", tex, 3) { get(it.first, it.second) }
     }
 
     override fun getPicker(random: Random) = MathematicalCollection.Picker<T> {

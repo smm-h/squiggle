@@ -18,6 +18,7 @@ sealed class Knowable : MathematicalObject.Abstract() {
         override fun toInt() = -1
         override fun toBoolean() = null
         override val debugText = "?"
+        override val tex = "?"
         override fun negateIf(condition: Boolean) = Unknown
         override fun not() = Unknown
         override fun and(that: Knowable) = if (that is Logical) that.and(this) else Unknown

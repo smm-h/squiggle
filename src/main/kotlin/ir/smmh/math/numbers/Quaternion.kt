@@ -61,7 +61,8 @@ sealed interface Quaternion : MathematicalObject {
             && that.coefficientOfK == coefficientOfK
         ) Logical.True else Knowable.Unknown
 
-        override val debugText by lazy { "$realPart+$coefficientOfI·i+$coefficientOfJ·j+$coefficientOfK·k" }
+        override val debugText by lazy { "${realPart.debugText}+${coefficientOfI.debugText}·i+${coefficientOfJ.debugText}·j+${coefficientOfK.debugText}·k" }
+        override val tex by lazy { "{${realPart.tex}+${coefficientOfI.tex}\\cdot i+${coefficientOfJ.tex}\\cdot j+${coefficientOfK.tex}\\cdot k}" }
         override fun hashCode() =
             realPart.hashCode() xor coefficientOfI.hashCode() xor coefficientOfJ.hashCode() xor coefficientOfK.hashCode()
     }
