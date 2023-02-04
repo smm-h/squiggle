@@ -68,8 +68,10 @@ sealed interface Tuple : M {
         }
     }
 
-    interface Nullary : Finitary {
-        override val length: Int get() = 0
+    object Nullary : AbstractFinitaryTuple() {
+        override val debugText = "EmptyTuple"
+        override val tex = "()"
+        override val length = 0
         override fun get(index: Int) = throw TupleIndexOutOfBoundsException(index)
     }
 
