@@ -78,7 +78,7 @@ sealed interface Tuple : M {
         val singleton: M
         operator fun component1(): M = singleton
 
-        interface Specific<T : M> : Unary, Uniform<T> {
+        interface Specific<T : M> : Unary, Uniform.Finitary<T> {
             override val singleton: T
             override fun component1(): T = singleton
             override fun get(index: Int): T =
@@ -105,7 +105,7 @@ sealed interface Tuple : M {
             override fun component2(): T2 = second
         }
 
-        interface Uniform<T : M> : Tuple.Uniform<T>, Specific<T, T> {
+        interface Uniform<T : M> : Tuple.Uniform.Finitary<T>, Specific<T, T> {
             override val first: T
             override val second: T
             override fun component1(): T = first
@@ -140,7 +140,7 @@ sealed interface Tuple : M {
             override fun component3(): T3 = third
         }
 
-        interface Uniform<T : M> : Tuple.Uniform<T>, Specific<T, T, T> {
+        interface Uniform<T : M> : Tuple.Uniform.Finitary<T>, Specific<T, T, T> {
             override val first: T
             override val second: T
             override val third: T
