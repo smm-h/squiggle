@@ -1,9 +1,9 @@
 package ir.smmh.math.settheory
 
-import ir.smmh.math.MathematicalObject
 import ir.smmh.math.logic.Knowable
 import ir.smmh.math.logic.Logical
 import kotlin.random.Random
+import ir.smmh.math.MathematicalObject as M
 
 /**
  * [RusselsSet] or `R` is "the set of all sets that do not contain themselves."
@@ -18,7 +18,7 @@ sealed class RusselsSet : Set.Infinite<Set<*>> {
     override val tex = "{\\mathbf{R}}"
     override val overElements = null
     override fun getPicker(random: Random) = null
-    override fun isNonReferentiallyEqualTo(that: MathematicalObject): Knowable =
+    override fun isNonReferentiallyEqualTo(that: M): Knowable =
         if (that is RusselsSet) Logical.True else Logical.False
 
     /**

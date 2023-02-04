@@ -2,9 +2,7 @@ package ir.smmh.math.numbers
 
 import ir.smmh.math.InfinitelyIterable
 import ir.smmh.math.MathematicalCollection
-import ir.smmh.math.MathematicalObject
 import ir.smmh.math.abstractalgebra.AbstractRingLikeStructure
-import ir.smmh.math.logic.Knowable
 import ir.smmh.math.logic.Logical
 import ir.smmh.math.numbers.Complex.Companion.i
 import ir.smmh.math.numbers.Numbers.Integer
@@ -13,6 +11,7 @@ import ir.smmh.math.numbers.Numbers.Real
 import ir.smmh.math.numbers.Numbers.ZERO
 import ir.smmh.math.settheory.AbstractSet
 import kotlin.random.Random
+import ir.smmh.math.MathematicalObject as M
 import ir.smmh.math.settheory.Set.Infinite as InfiniteSet
 
 /**
@@ -36,7 +35,7 @@ sealed interface Complex : Quaternion {
         else if (isReal()) realPart
         else null
 
-    override fun isNonReferentiallyEqualTo(that: MathematicalObject) =
+    override fun isNonReferentiallyEqualTo(that: M) =
         if (that is Complex) realPart.isEqualTo(that.realPart) and imaginaryPart.isEqualTo(that.imaginaryPart)
         else Logical.False
 
@@ -78,7 +77,7 @@ sealed interface Complex : Quaternion {
     private class ComplexImpl(
         override val realPart: Real,
         override val imaginaryPart: Real = ZERO,
-    ) : MathematicalObject.Abstract(), Complex
+    ) : M.Abstract(), Complex
 
     companion object {
         val i = of(ZERO, ONE)
@@ -96,7 +95,7 @@ sealed interface Complex : Quaternion {
     class Set(val pickerSize: Double) : AbstractSet<Complex>(), InfiniteSet<Complex> {
         override val debugText = "ComplexNumbers"
         override val tex = "{\\mathbb{C}}"
-        override fun isNonReferentiallyEqualTo(that: MathematicalObject) = Logical.False
+        override fun isNonReferentiallyEqualTo(that: M) = Logical.False
         override fun contains(it: Complex) = Logical.True
 
         // 1+4\sum_{i=0}^{n-1}{i}

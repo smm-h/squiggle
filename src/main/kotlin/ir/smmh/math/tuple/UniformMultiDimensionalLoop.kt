@@ -1,22 +1,22 @@
 package ir.smmh.math.tuple
 
-import ir.smmh.math.MathematicalObject
+import ir.smmh.math.MathematicalObject as M
 
 
 object UniformMultiDimensionalLoop {
-    fun <T : MathematicalObject> loop(
+    fun <T : M> loop(
         dimensions: Int,
         iterable: Iterable<T>,
         block: (Tuple.Uniform<T>) -> Unit,
     ) = loop(dimensions, { iterable }, block)
 
-    fun <T : MathematicalObject> loop(
+    fun <T : M> loop(
         dimensions: Int,
         iterables: (Int) -> Iterable<T>,
         block: (Tuple.Uniform<T>) -> Unit,
     ) = if (dimensions > 0) loop(dimensions, iterables, block, MutableArrayTuple(dimensions)) else Unit
 
-    private fun <T : MathematicalObject> loop(
+    private fun <T : M> loop(
         dimensions: Int,
         iterables: (Int) -> Iterable<T>,
         block: (Tuple.Uniform<T>) -> Unit,

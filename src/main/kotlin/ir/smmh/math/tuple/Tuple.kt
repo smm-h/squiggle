@@ -1,31 +1,31 @@
 package ir.smmh.math.tuple
 
 import ir.smmh.math.InfinitelyIterable
-import ir.smmh.math.MathematicalObject
 import ir.smmh.math.logic.Knowable
 import ir.smmh.math.logic.Logical
 import ir.smmh.nile.verbs.CanClear
+import ir.smmh.math.MathematicalObject as M
 
-sealed interface Tuple : MathematicalObject {
-    operator fun get(index: Int): MathematicalObject
+sealed interface Tuple : M {
+    operator fun get(index: Int): M
 
-    val overParts: Iterable<MathematicalObject>
+    val overParts: Iterable<M>
 
     override val debugText: String
         get() = overParts.joinToString(", ", "(", ")", limit = if (this is Infinitary) 10 else -1) { it.debugText }
 
     interface Finitary : Tuple {
         val length: Int
-        override val overParts: Iterable<MathematicalObject>
-            get() = Iterable<MathematicalObject> {
+        override val overParts: Iterable<M>
+            get() = Iterable<M> {
                 var i = 0
-                object : Iterator<MathematicalObject> {
+                object : Iterator<M> {
                     override fun hasNext() = i < length
                     override fun next() = get(i++)
                 }
             }
 
-        override fun isNonReferentiallyEqualTo(that: MathematicalObject): Knowable {
+        override fun isNonReferentiallyEqualTo(that: M): Knowable {
             if (that is Tuple.Finitary && length == that.length) {
                 for (i in 0 until length) if (this[i] != that[i]) return Logical.False
                 return Logical.True
@@ -35,18 +35,18 @@ sealed interface Tuple : MathematicalObject {
     }
 
     interface Infinitary : Tuple {
-        override val overParts: InfinitelyIterable<MathematicalObject>
-            get() = InfinitelyIterable<MathematicalObject> {
+        override val overParts: InfinitelyIterable<M>
+            get() = InfinitelyIterable<M> {
                 var i = 0
-                object : InfinitelyIterable.Iterator<MathematicalObject> {
+                object : InfinitelyIterable.Iterator<M> {
                     override fun next() = get(i++)
                 }
             }
     }
 
-    interface Uniform<T : MathematicalObject> : Tuple {
+    interface Uniform<T : M> : Tuple {
         override fun get(index: Int): T
-        interface Finitary<T : MathematicalObject> : Tuple.Finitary, Uniform<T> {
+        interface Finitary<T : M> : Tuple.Finitary, Uniform<T> {
             override val overParts: Iterable<T>
                 get() = Iterable<T> {
                     var i = 0
@@ -57,7 +57,7 @@ sealed interface Tuple : MathematicalObject {
                 }
         }
 
-        interface Infinitary<T : MathematicalObject> : Tuple.Infinitary, Uniform<T> {
+        interface Infinitary<T : M> : Tuple.Infinitary, Uniform<T> {
             override val overParts: InfinitelyIterable<T>
                 get() = InfinitelyIterable<T> {
                     var i = 0
@@ -75,10 +75,10 @@ sealed interface Tuple : MathematicalObject {
 
     interface Unary : Finitary {
         override val length: Int get() = 1
-        val singleton: MathematicalObject
-        operator fun component1(): MathematicalObject = singleton
+        val singleton: M
+        operator fun component1(): M = singleton
 
-        interface Specific<T : MathematicalObject> : Unary, Uniform<T> {
+        interface Specific<T : M> : Unary, Uniform<T> {
             override val singleton: T
             override fun component1(): T = singleton
             override fun get(index: Int): T =
@@ -89,23 +89,23 @@ sealed interface Tuple : MathematicalObject {
 
     interface Binary : Finitary {
         override val length: Int get() = 2
-        val first: MathematicalObject
-        val second: MathematicalObject
-        operator fun component1(): MathematicalObject = first
-        operator fun component2(): MathematicalObject = second
-        override fun get(index: Int): MathematicalObject =
+        val first: M
+        val second: M
+        operator fun component1(): M = first
+        operator fun component2(): M = second
+        override fun get(index: Int): M =
             if (index == 0) first
             else if (index == 1) second
             else throw TupleIndexOutOfBoundsException(index)
 
-        interface Specific<T1 : MathematicalObject, T2 : MathematicalObject> : Tuple.Binary {
+        interface Specific<T1 : M, T2 : M> : Tuple.Binary {
             override val first: T1
             override val second: T2
             override fun component1(): T1 = first
             override fun component2(): T2 = second
         }
 
-        interface Uniform<T : MathematicalObject> : Tuple.Uniform<T>, Specific<T, T> {
+        interface Uniform<T : M> : Tuple.Uniform<T>, Specific<T, T> {
             override val first: T
             override val second: T
             override fun component1(): T = first
@@ -119,19 +119,19 @@ sealed interface Tuple : MathematicalObject {
 
     interface Ternary : Finitary {
         override val length: Int get() = 3
-        val first: MathematicalObject
-        val second: MathematicalObject
-        val third: MathematicalObject
-        operator fun component1(): MathematicalObject = first
-        operator fun component2(): MathematicalObject = second
-        operator fun component3(): MathematicalObject = third
-        override fun get(index: Int): MathematicalObject =
+        val first: M
+        val second: M
+        val third: M
+        operator fun component1(): M = first
+        operator fun component2(): M = second
+        operator fun component3(): M = third
+        override fun get(index: Int): M =
             if (index == 0) first
             else if (index == 1) second
             else if (index == 2) third
             else throw TupleIndexOutOfBoundsException(index)
 
-        interface Specific<T1 : MathematicalObject, T2 : MathematicalObject, T3 : MathematicalObject> : Tuple.Ternary {
+        interface Specific<T1 : M, T2 : M, T3 : M> : Tuple.Ternary {
             override val first: T1
             override val second: T2
             override val third: T3
@@ -140,7 +140,7 @@ sealed interface Tuple : MathematicalObject {
             override fun component3(): T3 = third
         }
 
-        interface Uniform<T : MathematicalObject> : Tuple.Uniform<T>, Specific<T, T, T> {
+        interface Uniform<T : M> : Tuple.Uniform<T>, Specific<T, T, T> {
             override val first: T
             override val second: T
             override val third: T
@@ -156,7 +156,7 @@ sealed interface Tuple : MathematicalObject {
     }
 
     interface Factory<T : Tuple> : CanClear {
-        fun create(vararg values: MathematicalObject): T
+        fun create(vararg values: M): T
         fun destroy(it: T)
     }
 }

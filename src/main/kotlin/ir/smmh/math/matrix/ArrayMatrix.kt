@@ -1,11 +1,11 @@
 package ir.smmh.math.matrix
 
-import ir.smmh.math.MathematicalObject
 import ir.smmh.math.abstractalgebra.RingLikeStructure
 import ir.smmh.math.matrix.Matrix.ValueFunction.constant
 import ir.smmh.nile.Change
+import ir.smmh.math.MathematicalObject as M
 
-class ArrayMatrix<T : MathematicalObject>(
+class ArrayMatrix<T : M>(
     override val rows: Int,
     override val columns: Int,
     override val ring: RingLikeStructure.SubtractionRing<T>,

@@ -114,7 +114,7 @@ interface Matrix<T : M> : M {
     fun row(i: Int): Sequential<T> = FunctionalSequence(columns) { j -> get(i, j) }
     fun column(j: Int): Sequential<T> = FunctionalSequence(columns) { i -> get(i, j) }
 
-    override fun isNonReferentiallyEqualTo(that: ir.smmh.math.MathematicalObject): Knowable {
+    override fun isNonReferentiallyEqualTo(that: M): Knowable {
         if (that is Matrix<*> && areSameSize(that) && areSameStructure(that)) {
             for (i in 0 until rows)
                 for (j in 0 until columns)

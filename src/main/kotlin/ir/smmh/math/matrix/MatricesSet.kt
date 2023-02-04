@@ -2,13 +2,13 @@ package ir.smmh.math.matrix
 
 import ir.smmh.math.InfinitelyIterable
 import ir.smmh.math.MathematicalCollection
-import ir.smmh.math.MathematicalObject
 import ir.smmh.math.abstractalgebra.RingLikeStructure
 import ir.smmh.math.logic.Logical
 import ir.smmh.math.settheory.Set
 import kotlin.random.Random
+import ir.smmh.math.MathematicalObject as M
 
-class MatricesSet<T : MathematicalObject>(
+class MatricesSet<T : M>(
     val rows: Int,
     val columns: Int,
     val ring: RingLikeStructure.SubtractionRing<T>,
@@ -16,7 +16,7 @@ class MatricesSet<T : MathematicalObject>(
 
     override val debugText = "MatrixSet($rows,$columns)"
     override val tex = "{\\mathbf{M}_($rows,$columns)}"
-    override fun isNonReferentiallyEqualTo(that: MathematicalObject) = Logical.False
+    override fun isNonReferentiallyEqualTo(that: M) = Logical.False
 
     override fun contains(it: Matrix<T>) =
         Logical.of(it.rows == rows && it.columns == columns && it.ring == ring)

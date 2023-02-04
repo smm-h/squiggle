@@ -1,8 +1,8 @@
 package ir.smmh.math.abstractalgebra
 
-import ir.smmh.math.MathematicalObject
+import ir.smmh.math.MathematicalObject as M
 
-abstract class AbstractRingLikeStructure<T : MathematicalObject> : RingLikeStructure<T> {
+abstract class AbstractRingLikeStructure<T : M> : RingLikeStructure<T> {
 
     abstract override fun add(a: T, b: T): T
     abstract override fun multiply(a: T, b: T): T
@@ -17,7 +17,7 @@ abstract class AbstractRingLikeStructure<T : MathematicalObject> : RingLikeStruc
         override fun operate(a: T, b: T) = multiply(a, b)
     }
 
-    abstract class HasSubtraction<T : MathematicalObject> : AbstractRingLikeStructure<T>(),
+    abstract class HasSubtraction<T : M> : AbstractRingLikeStructure<T>(),
         RingLikeStructure.SubtractionRing<T> {
         abstract val additiveIdentityElement: T
         override fun subtract(a: T, b: T): T = add(a, negate(b))
@@ -30,7 +30,7 @@ abstract class AbstractRingLikeStructure<T : MathematicalObject> : RingLikeStruc
         }
     }
 
-    abstract class HasSubtractionAndDivision<T : MathematicalObject> : HasSubtraction<T>(),
+    abstract class HasSubtractionAndDivision<T : M> : HasSubtraction<T>(),
         RingLikeStructure.DivisionRing<T> {
         abstract val multiplicativeIdentityElement: T
         override fun divide(a: T, b: T): T = multiply(a, reciprocal(b))

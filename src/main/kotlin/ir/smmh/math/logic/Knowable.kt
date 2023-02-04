@@ -1,10 +1,10 @@
 package ir.smmh.math.logic
 
-import ir.smmh.math.MathematicalObject
+import ir.smmh.math.MathematicalObject as M
 
-sealed class Knowable : MathematicalObject.Abstract() {
+sealed class Knowable : M.Abstract() {
 
-    override fun isNonReferentiallyEqualTo(that: MathematicalObject) = Logical.False
+    override fun isNonReferentiallyEqualTo(that: M) = Logical.False
 
     abstract fun toInt(): Int
     abstract fun toBoolean(): Boolean?

@@ -1,9 +1,9 @@
 package ir.smmh.math.matrix
 
-import ir.smmh.math.MathematicalObject
 import ir.smmh.math.abstractalgebra.RingLikeStructure
+import ir.smmh.math.MathematicalObject as M
 
-class UniformMatrix<T : MathematicalObject>(
+class UniformMatrix<T : M>(
     override val rows: Int,
     override val columns: Int,
     override val ring: RingLikeStructure.SubtractionRing<T>,

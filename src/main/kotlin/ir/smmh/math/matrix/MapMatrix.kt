@@ -1,13 +1,13 @@
 package ir.smmh.math.matrix
 
-import ir.smmh.math.MathematicalObject
 import ir.smmh.math.abstractalgebra.RingLikeStructure
 import ir.smmh.nile.Change
+import ir.smmh.math.MathematicalObject as M
 
 /**
  * The provided ring must have an additive identity
  */
-class MapMatrix<T : MathematicalObject>(
+class MapMatrix<T : M>(
     override val rows: Int,
     override val columns: Int,
     override val ring: RingLikeStructure.SubtractionRing<T>,

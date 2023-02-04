@@ -1,6 +1,5 @@
 package ir.smmh.math.relation
 
-import ir.smmh.math.MathematicalObject
 import ir.smmh.math.logic.Knowable
 import ir.smmh.math.logic.Logical
 import ir.smmh.math.matrix.ArrayMatrix
@@ -12,20 +11,21 @@ import ir.smmh.math.tuple.SmallTuple
 import ir.smmh.math.tuple.Tuple
 import ir.smmh.nile.BiDirectionalMap
 import kotlin.random.Random
+import ir.smmh.math.MathematicalObject as M
 
 
 /**
  * A finite closed binary relation ([Relation.Binary.Homogeneous.Finite]) that uses
  * a square logical [matrix] to represent the relation between its elements.
  */
-sealed class MatrixRelation<T : MathematicalObject> private constructor(private val map: BiDirectionalMap<T, Int>) :
+sealed class MatrixRelation<T : M> private constructor(private val map: BiDirectionalMap<T, Int>) :
     Relation.Binary.Homogeneous.Finite<T> {
 
     abstract val matrix: Matrix<Logical>
 
     override val tex by matrix::tex
 
-    override fun isNonReferentiallyEqualTo(that: MathematicalObject): Knowable =
+    override fun isNonReferentiallyEqualTo(that: M): Knowable =
         if (that is MatrixRelation<*> && that.matrix == matrix) Logical.True else Knowable.Unknown
 
     override val holds by lazy {
@@ -37,7 +37,7 @@ sealed class MatrixRelation<T : MathematicalObject> private constructor(private 
             override fun singletonOrNull(): Tuple.Binary.Uniform<T>? = list.firstOrNull()
             override fun contains(it: Tuple.Binary.Uniform<T>) = Logical.of(list.contains(it))
             override fun getPicker(random: Random) = ListPicker(list, random)
-            override fun isNonReferentiallyEqualTo(that: MathematicalObject) = Knowable.Unknown
+            override fun isNonReferentiallyEqualTo(that: M) = Knowable.Unknown
         }
     }
 
@@ -59,30 +59,30 @@ sealed class MatrixRelation<T : MathematicalObject> private constructor(private 
         }
     }
 
-    private class Immutable<T : MathematicalObject>(
+    private class Immutable<T : M>(
         map: BiDirectionalMap<T, Int>,
         override val matrix: Matrix<Logical>,
     ) : MatrixRelation<T>(map) {
         override val debugText: String get() = "MatrixRelation.Immutable"
     }
 
-    class Mutable<T : MathematicalObject> private constructor(
+    class Mutable<T : M> private constructor(
         map: BiDirectionalMap<T, Int>,
         override val matrix: Matrix.Mutable<Logical>,
     ) : MatrixRelation<T>(map) {
         override val debugText: String get() = "MatrixRelation.Mutable"
 
         companion object {
-            fun <T : MathematicalObject> Relation.Binary.Homogeneous.Finite<T>.toMutableMatrixRelation() =
+            fun <T : M> Relation.Binary.Homogeneous.Finite<T>.toMutableMatrixRelation() =
                 of(holds.overElements!!)
 
-            fun <T : MathematicalObject> empty() =
+            fun <T : M> empty() =
                 of(emptyList<Tuple.Binary.Uniform<T>>())
 
-            fun <T : MathematicalObject> of(vararg binaryTuples: Tuple.Binary.Uniform<T>) =
+            fun <T : M> of(vararg binaryTuples: Tuple.Binary.Uniform<T>) =
                 of(binaryTuples.asList())
 
-            fun <T : MathematicalObject> of(binaryTuples: Iterable<Tuple.Binary.Uniform<T>>): MatrixRelation.Mutable<T> {
+            fun <T : M> of(binaryTuples: Iterable<Tuple.Binary.Uniform<T>>): MatrixRelation.Mutable<T> {
                 val (map, matrix) = mapAndMatrixOf(binaryTuples)
                 return MatrixRelation.Mutable(map, matrix)
             }
@@ -108,26 +108,26 @@ sealed class MatrixRelation<T : MathematicalObject> private constructor(private 
             return q
         }
 
-        fun <T : MathematicalObject> of(r: Relation.Binary.Homogeneous.Finite<T>): MatrixRelation<T> =
+        fun <T : M> of(r: Relation.Binary.Homogeneous.Finite<T>): MatrixRelation<T> =
             (if (r is MatrixRelation<T>) r else of(r.holds.overElements!!)).transform(this)
     }
 
     companion object {
-        fun <T : MathematicalObject> Relation.Binary.Homogeneous.Finite<T>.toMatrixRelation() =
+        fun <T : M> Relation.Binary.Homogeneous.Finite<T>.toMatrixRelation() =
             of(holds.overElements!!)
 
-        fun <T : MathematicalObject> empty() =
+        fun <T : M> empty() =
             of(emptyList<Tuple.Binary.Uniform<T>>())
 
-        fun <T : MathematicalObject> of(vararg binaryTuples: Tuple.Binary.Uniform<T>) =
+        fun <T : M> of(vararg binaryTuples: Tuple.Binary.Uniform<T>) =
             of(binaryTuples.asList())
 
-        fun <T : MathematicalObject> of(binaryTuples: Iterable<Tuple.Binary.Uniform<T>>): MatrixRelation<T> {
+        fun <T : M> of(binaryTuples: Iterable<Tuple.Binary.Uniform<T>>): MatrixRelation<T> {
             val (map, matrix) = mapAndMatrixOf(binaryTuples)
             return MatrixRelation.Immutable(map, matrix)
         }
 
-        private fun <T : MathematicalObject> mapAndMatrixOf(binaryTuples: Iterable<Tuple.Binary.Uniform<T>>): Pair<BiDirectionalMap<T, Int>, Matrix.Mutable<Logical>> {
+        private fun <T : M> mapAndMatrixOf(binaryTuples: Iterable<Tuple.Binary.Uniform<T>>): Pair<BiDirectionalMap<T, Int>, Matrix.Mutable<Logical>> {
             val set = HashSet<T>().apply {
                 for ((a, b) in binaryTuples) {
                     add(a)

@@ -1,7 +1,7 @@
 package ir.smmh.math.tuple
 
-import ir.smmh.math.MathematicalObject
 import ir.smmh.nile.Change
+import ir.smmh.math.MathematicalObject as M
 
 class GenericFinitaryTupleFactory(
     override val changesToSize: Change,
@@ -13,7 +13,7 @@ class GenericFinitaryTupleFactory(
 
     private val map: MutableMap<Any, Any> = HashMap()
 
-    override fun create(vararg values: MathematicalObject): Tuple.Finitary {
+    override fun create(vararg values: M): Tuple.Finitary {
         changesToSize.beforeChange()
         size++
         val tuple = TupleImpl(idCounter++, values)
@@ -37,10 +37,10 @@ class GenericFinitaryTupleFactory(
 
     private inner class TupleImpl(
         private val id: Int,
-        private val array: Array<out MathematicalObject>
+        private val array: Array<out M>
     ) : AbstractFinitaryTuple() {
         override val length: Int get() = array.size
-        override fun get(index: Int): MathematicalObject = array[index]
+        override fun get(index: Int): M = array[index]
         override fun hashCode() = id
     }
 }

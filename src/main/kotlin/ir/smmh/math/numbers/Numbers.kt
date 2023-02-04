@@ -1,8 +1,8 @@
 package ir.smmh.math.numbers
 
-import ir.smmh.math.MathematicalObject
 import ir.smmh.math.logic.Logical
 import ir.smmh.util.MathUtil
+import ir.smmh.math.MathematicalObject as M
 
 
 object Numbers {
@@ -64,7 +64,7 @@ object Numbers {
         fun approximateAsLong(): Long
         override fun approximateAsDouble() = approximateAsLong().toDouble()
 
-        override fun isNonReferentiallyEqualTo(that: MathematicalObject) = Logical.of(
+        override fun isNonReferentiallyEqualTo(that: M) = Logical.of(
             that is Quaternion &&
                     approximateAsLong() == that.asComplex()?.asReal()?.asRational()?.asInteger()?.approximateAsLong()
         )
@@ -140,7 +140,7 @@ object Numbers {
 
         override fun approximateAsDouble(): Double = numerator.approximateAsDouble() / denominator.approximateAsLong()
 
-        override fun isNonReferentiallyEqualTo(that: MathematicalObject) = Logical.of(
+        override fun isNonReferentiallyEqualTo(that: M) = Logical.of(
             that is Quaternion &&
                     eq(that.asComplex()?.asReal()?.asRational())
         )
@@ -260,7 +260,7 @@ object Numbers {
 
         fun approximateAsDouble(): Double
 
-        override fun isNonReferentiallyEqualTo(that: MathematicalObject) = Logical.of(
+        override fun isNonReferentiallyEqualTo(that: M) = Logical.of(
             that is Quaternion &&
                     approximateAsDouble() == that.asComplex()?.asReal()?.approximateAsDouble()
         )

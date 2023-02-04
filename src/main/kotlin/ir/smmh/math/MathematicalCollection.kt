@@ -2,7 +2,6 @@ package ir.smmh.math
 
 
 import ir.smmh.math.MathematicalCollection.*
-import ir.smmh.math.MathematicalObject
 import ir.smmh.math.logic.Knowable
 import ir.smmh.math.logic.Logical
 import ir.smmh.math.sequence.Sequence
@@ -13,9 +12,8 @@ import ir.smmh.math.tuple.Tuple
 import kotlin.random.Random
 import ir.smmh.math.MathematicalObject as M
 
-
 /**
- * A [MathematicalCollection] is a collection of [MathematicalObject]s of type
+ * A [MathematicalCollection] is a collection of [M]s of type
  * [T].
  *
  * - The order of its elements do not matter unless [OrderMatters]

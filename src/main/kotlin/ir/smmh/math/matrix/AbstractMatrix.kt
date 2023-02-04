@@ -1,8 +1,8 @@
 package ir.smmh.math.matrix
 
-import ir.smmh.math.MathematicalObject
+import ir.smmh.math.MathematicalObject as M
 
-abstract class AbstractMatrix<T : MathematicalObject> : MathematicalObject.Abstract(), Matrix<T> {
+abstract class AbstractMatrix<T : M> : M.Abstract(), Matrix<T> {
     override val debugText: String by lazy {
         StringBuilder().apply {
             val n = rows - 1
@@ -38,7 +38,7 @@ abstract class AbstractMatrix<T : MathematicalObject> : MathematicalObject.Abstr
         { i -> row(i).overValues.joinToString(" & ") { it.tex } }
     }
 
-    abstract class Mutable<T : MathematicalObject> : AbstractMatrix<T>(), Matrix.Mutable<T> {
+    abstract class Mutable<T : M> : AbstractMatrix<T>(), Matrix.Mutable<T> {
         override val transpose: Matrix.Mutable<T> get() = createSameStructure(columns, rows).setTransposed(this)
         abstract fun createSameStructure(rows: Int, columns: Int): Matrix.Mutable<T>
     }

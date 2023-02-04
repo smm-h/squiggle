@@ -1,9 +1,9 @@
 package ir.smmh.math.abstractalgebra
 
-import ir.smmh.math.numbers.UniversalNumberSet
 import ir.smmh.math.numbers.Numbers
 import ir.smmh.math.numbers.Numbers.ONE
 import ir.smmh.math.numbers.Numbers.ZERO
+import ir.smmh.math.numbers.UniversalNumberSet
 import ir.smmh.math.settheory.Set
 
 object RealField : RingLikeStructure.Field<Numbers.Real> {

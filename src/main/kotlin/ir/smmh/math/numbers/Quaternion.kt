@@ -1,14 +1,14 @@
 package ir.smmh.math.numbers
 
-import ir.smmh.math.MathematicalObject
 import ir.smmh.math.logic.Logical
 import ir.smmh.math.numbers.Numbers.Real
 import ir.smmh.math.numbers.Numbers.ZERO
+import ir.smmh.math.MathematicalObject as M
 
 /**
  * Sum of four [Real] numbers, three multiplied by [i], [j], and [k]
  */
-sealed interface Quaternion : MathematicalObject.WellDefined {
+sealed interface Quaternion : M.WellDefined {
 
     val realPart: Real
     val coefficientOfI: Real
@@ -56,8 +56,8 @@ sealed interface Quaternion : MathematicalObject.WellDefined {
         override val coefficientOfI: Real = ZERO,
         override val coefficientOfJ: Real = ZERO,
         override val coefficientOfK: Real = ZERO,
-    ) : Quaternion, MathematicalObject.Abstract() {
-        override fun isNonReferentiallyEqualTo(that: MathematicalObject) = Logical.of(
+    ) : Quaternion, M.Abstract() {
+        override fun isNonReferentiallyEqualTo(that: M) = Logical.of(
             that is Quaternion
                     && that.realPart == realPart
                     && that.coefficientOfI == coefficientOfI
