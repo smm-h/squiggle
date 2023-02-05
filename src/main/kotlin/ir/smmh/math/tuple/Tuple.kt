@@ -44,9 +44,9 @@ sealed interface Tuple : M {
             }
     }
 
-    interface Uniform<T : M> : Tuple {
+    interface Uniform<out T : M> : Tuple {
         override fun get(index: Int): T
-        interface Finitary<T : M> : Tuple.Finitary, Uniform<T> {
+        interface Finitary<out T : M> : Tuple.Finitary, Uniform<T> {
             override val overParts: Iterable<T>
                 get() = Iterable<T> {
                     var i = 0
@@ -57,7 +57,7 @@ sealed interface Tuple : M {
                 }
         }
 
-        interface Infinitary<T : M> : Tuple.Infinitary, Uniform<T> {
+        interface Infinitary<out T : M> : Tuple.Infinitary, Uniform<T> {
             override val overParts: InfinitelyIterable<T>
                 get() = InfinitelyIterable<T> {
                     var i = 0
@@ -80,7 +80,7 @@ sealed interface Tuple : M {
         val singleton: M
         operator fun component1(): M = singleton
 
-        interface Specific<T : M> : Unary, Uniform.Finitary<T> {
+        interface Specific<out T : M> : Unary, Uniform.Finitary<T> {
             override val singleton: T
             override fun component1(): T = singleton
             override fun get(index: Int): T =
@@ -100,14 +100,14 @@ sealed interface Tuple : M {
             else if (index == 1) second
             else throw TupleIndexOutOfBoundsException(index)
 
-        interface Specific<T1 : M, T2 : M> : Tuple.Binary {
+        interface Specific<out T1 : M, out T2 : M> : Tuple.Binary {
             override val first: T1
             override val second: T2
             override fun component1(): T1 = first
             override fun component2(): T2 = second
         }
 
-        interface Uniform<T : M> : Tuple.Uniform.Finitary<T>, Specific<T, T> {
+        interface Uniform<out T : M> : Tuple.Uniform.Finitary<T>, Specific<T, T> {
             override val first: T
             override val second: T
             override fun component1(): T = first
@@ -133,7 +133,7 @@ sealed interface Tuple : M {
             else if (index == 2) third
             else throw TupleIndexOutOfBoundsException(index)
 
-        interface Specific<T1 : M, T2 : M, T3 : M> : Tuple.Ternary {
+        interface Specific<out T1 : M, out T2 : M, out T3 : M> : Tuple.Ternary {
             override val first: T1
             override val second: T2
             override val third: T3
@@ -142,7 +142,7 @@ sealed interface Tuple : M {
             override fun component3(): T3 = third
         }
 
-        interface Uniform<T : M> : Tuple.Uniform.Finitary<T>, Specific<T, T, T> {
+        interface Uniform<out T : M> : Tuple.Uniform.Finitary<T>, Specific<T, T, T> {
             override val first: T
             override val second: T
             override val third: T
@@ -155,10 +155,5 @@ sealed interface Tuple : M {
                 else if (index == 2) third
                 else throw TupleIndexOutOfBoundsException(index)
         }
-    }
-
-    interface Factory<T : Tuple> : CanClear {
-        fun create(vararg values: M): T
-        fun destroy(it: T)
     }
 }

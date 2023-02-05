@@ -1,11 +1,12 @@
 package ir.smmh.math.tuple
 
 import ir.smmh.nile.Change
+import ir.smmh.nile.verbs.CanClear
 import ir.smmh.math.MathematicalObject as M
 
 class GenericFinitaryTupleFactory(
     override val changesToSize: Change,
-) : Tuple.Factory<Tuple.Finitary> {
+) : CanClear {
 
     private var idCounter = 0
     override var size = 0
@@ -13,7 +14,7 @@ class GenericFinitaryTupleFactory(
 
     private val map: MutableMap<Any, Any> = HashMap()
 
-    override fun create(vararg values: M): Tuple.Finitary {
+    fun create(vararg values: M): Tuple.Finitary {
         changesToSize.beforeChange()
         size++
         val tuple = TupleImpl(idCounter++, values)
@@ -22,7 +23,7 @@ class GenericFinitaryTupleFactory(
         return tuple
     }
 
-    override fun destroy(it: Tuple.Finitary) {
+    fun destroy(it: Tuple.Finitary) {
         changesToSize.beforeChange()
         changesToSize.afterChange()
     }
