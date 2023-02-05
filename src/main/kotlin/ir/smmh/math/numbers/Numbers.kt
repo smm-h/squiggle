@@ -48,6 +48,7 @@ object Numbers {
         }
 
         companion object {
+            infix fun Int.pair(that: Int) = Natural.of(this) to Natural.of(that)
             fun of(value: Int): Natural = IntNatural(value)
             fun of(value: Long): Natural = LongNatural(value)
         }
@@ -123,6 +124,8 @@ object Numbers {
         }
 
         companion object {
+            infix fun Int.pair(that: Int) = Integer.of(this) to Integer.of(that)
+
             fun of(value: Int): Integer =
                 if (value >= 0) Natural.of(value)
                 else IntInteger(value)
@@ -216,6 +219,8 @@ object Numbers {
         }
 
         companion object {
+            infix fun Int.over(that: Int) = of(this, that)
+
             fun of(numerator: Int, denominator: Int): Rational =
                 if (denominator == 1) Integer.of(numerator)
                 else RationalImpl(Integer.of(numerator), Integer.of(denominator))
@@ -325,6 +330,8 @@ object Numbers {
         }
 
         companion object {
+            infix fun Double.pair(that: Double) = of(this) to of(that)
+
             fun of(value: Float): Real {
                 val i = value.toInt()
                 return if (i.toFloat() == value) Integer.of(i) else FloatReal(value)

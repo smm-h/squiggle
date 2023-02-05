@@ -3,7 +3,6 @@ package ir.smmh.math.tuple
 import ir.smmh.math.InfinitelyIterable
 import ir.smmh.math.logic.Knowable
 import ir.smmh.math.logic.Logical
-import ir.smmh.nile.verbs.CanClear
 import ir.smmh.math.MathematicalObject as M
 
 sealed interface Tuple : M {
@@ -12,7 +11,16 @@ sealed interface Tuple : M {
     val overParts: Iterable<M>
 
     override val debugText: String
-        get() = overParts.joinToString(", ", "(", ")", limit = if (this is Infinitary) 10 else -1) { it.debugText }
+        get() =
+            overParts.joinToString(", ", "(", ")", limit = if (this !is Finitary) 10 else -1) { it.debugText }
+
+    override val tex: String
+        get() =
+            overParts.joinToString(",", "{(", ")}", limit = if (this !is Finitary) 10 else -1) { it.tex }
+
+    override val type: String
+        get() =
+            overParts.joinToString(" ", "${super.type}[", "]", limit = if (this !is Finitary) 10 else -1) { it.type }
 
     interface Finitary : Tuple {
         val length: Int

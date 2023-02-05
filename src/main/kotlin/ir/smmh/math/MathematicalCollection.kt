@@ -11,9 +11,10 @@ import ir.smmh.math.tuple.SmallTuple
 import ir.smmh.math.tuple.Tuple
 import kotlin.random.Random
 import ir.smmh.math.MathematicalObject as M
+import ir.smmh.math.MathematicalObject
 
 /**
- * A [MathematicalCollection] is a collection of [M]s of type
+ * A [MathematicalCollection] is a collection of [MathematicalObject]s of type
  * [T].
  *
  * - The order of its elements do not matter unless [OrderMatters]
