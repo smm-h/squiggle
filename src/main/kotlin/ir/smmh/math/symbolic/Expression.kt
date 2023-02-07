@@ -1,96 +1,54 @@
 package ir.smmh.math.symbolic
 
-import ir.smmh.lingu.Token
-import ir.smmh.math.numbers.Complex
-import ir.smmh.math.numbers.Rational
-import ir.smmh.math.settheory.Set
-import ir.smmh.math.settheory.UniversalNumberSets
+import ir.smmh.math.MathematicalObject
+import ir.smmh.math.symbolic.Expression.*
+import ir.smmh.math.symbolic.conventions.Conventions
+import ir.smmh.math.MathematicalObject as M
 
-sealed interface Expression {
-    val arity: Int
-    operator fun get(index: Int): Expression
+/**
+ * An [Expression] is a hierarchy of symbols including [Variable]s, [Value]s,
+ * and their [Combination]s.
+ *
+ * - Semantically, an expression can be [evaluate]d to a [MathematicalObject]
+ * of a certain [type], when provided with a [Context].
+ * - Syntactically, it can [generateTeX] to produce a string that can be
+ * rendered with a TeX engine, when provided with certain [Conventions].
+ *
+ * [Wikipedia](https://en.wikipedia.org/wiki/Expression_(mathematics))
+ */
+sealed class Expression<out T : M> {
 
-    /**
-     * Value is unknown and depends on [Context]
-     */
-    class Variable(val name: String) : Expression {
-        override val arity get() = 0
-        override fun get(index: Int) =
-            throw IndexOutOfBoundsException(index)
+    abstract val debugText: String
+    abstract fun generateTeX(conventions: Conventions = Conventions.Defaults): String
+    abstract fun evaluate(context: Context = Context.empty): T
+
+    override fun toString() = debugText
+    override fun hashCode() = debugText.hashCode()
+
+    class Value<T : M>(val value: T) : Expression<T>() {
+        override fun equals(other: Any?) = other is Value<*> && value == other.value
+        override val debugText get() = value.debugText
+        override fun generateTeX(conventions: Conventions) = value.tex
+        override fun evaluate(context: Context): T = value
     }
 
-    /**
-     * Value is immutable and constant
-     */
-    class Constant(val set: Set, val value: Any) : Expression {
-        override val arity get() = 0
-        override fun get(index: Int) =
-            throw IndexOutOfBoundsException(index)
-    }
+    class UnexpectedVariableTypeException(name: String) :
+        EvaluationException("unexpected variable type: $name")
 
-    class Operation(val operator: String, val values: List<Expression>) : Expression {
-        constructor(operator: String, vararg values: Any): this(operator, values.map(Expression::of))
-        override val arity = values.size
-        override fun get(index: Int) = values[index]
-    }
-
-    companion object {
-
-        fun of(it: Any): Expression = when (it) {
-            is Expression -> it
-            is String -> Variable(it)
-            is Int -> of(it)
-            is Long -> of(it)
-            is Float -> of(it)
-            is Double -> of(it)
-            is Boolean -> of(it)
-            is Rational -> of(it)
-            is Complex -> of(it)
-            is Token.Structure -> of(it)
-            else -> throw Exception("unspecified type: $it")
+    class Variable<T : M>(val name: String) : Expression<T>() {
+        override fun equals(other: Any?) = other is Variable<*> && name == other.name
+        override fun generateTeX(conventions: Conventions) = name
+        override val debugText: String get() = "Variable($name)"
+        override fun evaluate(context: Context): T = try {
+            @Suppress("UNCHECKED_CAST")
+            context[name] as T
+        } catch (_: ClassCastException) {
+            throw UnexpectedVariableTypeException(name)
         }
+    }
 
-        fun of(it: Int): Constant =
-            Constant(UniversalNumberSets.IntIntegers, it)
-
-        fun of(it: Long): Constant =
-            Constant(UniversalNumberSets.LongIntegers, it)
-
-        fun of(it: Float): Constant =
-            Constant(UniversalNumberSets.FloatRealNumbers, it)
-
-        fun of(it: Double): Constant =
-            Constant(UniversalNumberSets.DoubleRealNumbers, it)
-
-        fun of(it: Boolean): Constant =
-            Constant(UniversalNumberSets.Booleans, it)
-
-        fun of(it: Rational): Constant =
-            Constant(UniversalNumberSets.RationalNumbers, it)
-
-        fun of(it: Complex): Constant =
-            Constant(UniversalNumberSets.ComplexNumbers, it)
-
-        fun of(structure: Token.Structure): Expression = when (structure) {
-            is Token.Structure.Node -> {
-                val list = structure.list
-//                val arity = list.size - 1
-                val operator = (list[0] as Token.Structure.Leaf).token.data
-                Expression.Operation(operator, *list.subList(1, list.size).toTypedArray())
-//                val operator = map[name]
-//                if (operator == null)
-//                    throw Exception("undefined operator: $name")
-//                else
-            }
-            is Token.Structure.Leaf -> {
-                val token = structure.token
-                when (token.type.name) {
-                    "id", "string" -> Expression.Variable(token.data)
-                    "digits" -> Expression.of(token.data.toInt())
-                    "digitsWithDot" -> Expression.of(token.data.toDouble())
-                    else -> throw Exception("invalid token: $token")
-                }
-            }
-        }
+    abstract class Combination<T : M>(val parts: List<Expression<*>>) : Expression<T>() {
+        // TODO arity
+        abstract class Closed<T : M>(val parts: List<Expression<T>>) : Expression<T>()
     }
 }

@@ -8,7 +8,7 @@ import ir.smmh.math.MathematicalObject as M
 /**
  * Sum of four [Real] numbers, three multiplied by [i], [j], and [k]
  */
-sealed interface Quaternion : M.WellDefined {
+sealed interface Quaternion : Number {
 
     val realPart: Real
     val coefficientOfI: Real
@@ -20,16 +20,18 @@ sealed interface Quaternion : M.WellDefined {
     operator fun component3(): Real = coefficientOfJ
     operator fun component4(): Real = coefficientOfK
 
-    operator fun unaryPlus(): Quaternion = this
-    operator fun minus(that: Quaternion): Quaternion = this + (-that)
-
-    operator fun unaryMinus(): Quaternion = Quaternion.of(
+    override fun unaryPlus(): Quaternion = this
+    override fun unaryMinus(): Quaternion = Quaternion.of(
         -realPart,
         -coefficientOfI,
         -coefficientOfJ,
         -coefficientOfK
     )
 
+    override fun minus(that: Number) = this - that.asQuaternion()!!
+    override fun plus(that: Number) = this + that.asQuaternion()!!
+
+    operator fun minus(that: Quaternion): Quaternion = this + (-that)
     operator fun plus(that: Quaternion) = Quaternion.of(
         this.component1() + that.component1(),
         this.component2() + that.component2(),
@@ -45,8 +47,8 @@ sealed interface Quaternion : M.WellDefined {
         else if (isComplex()) coefficientOfI
         else null
 
-    fun isQuaternion() = true
-    fun asQuaternion() = this
+    override fun isQuaternion() = true
+    override fun asQuaternion() = this
 
     val absoluteSquared: Real get() = realPart.squared + coefficientOfI.squared + coefficientOfJ.squared + coefficientOfK.squared
     val absolute: Real get() = absoluteSquared.squareRoot.asReal()!!

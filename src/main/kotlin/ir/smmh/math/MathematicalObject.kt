@@ -2,6 +2,7 @@ package ir.smmh.math
 
 import ir.smmh.math.logic.Knowable
 import ir.smmh.math.logic.Logical
+import ir.smmh.math.symbolic.Expression
 
 /**
  * The parent interface to everything in [ir.smmh.math]
@@ -13,7 +14,8 @@ interface MathematicalObject {
     val type: String get() = javaClass.simpleName
 
     // TODO val wikipediaLink: String
-    // TODO fun express() = Calculable.ContextIndependent(this)
+
+    fun express() = Expression.Value(this)
 
     infix fun isEqualTo(that: MathematicalObject): Knowable =
         if (this === that) Logical.True else isNonReferentiallyEqualTo(that)

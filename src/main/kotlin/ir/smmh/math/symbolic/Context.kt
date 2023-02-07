@@ -1,26 +1,25 @@
 package ir.smmh.math.symbolic
 
 import java.util.concurrent.atomic.AtomicReference
+import ir.smmh.math.MathematicalObject as M
 
-fun interface Context<T : Any> {
-    operator fun get(name: String): T
+fun interface Context {
+    operator fun get(name: String): M
 
-    fun <F : Any> convert(convert: (T) -> F) =
-        Context<F> { convert(this[it]) }
+    class UnknownVariableException(name: String) :
+        EvaluationException("unknown variable: $name")
 
     companion object {
 
-        fun unknownVariable(name: String): Nothing = throw Calculator.Exception("unknown variable $name")
+        val empty = Context { throw UnknownVariableException(it) }
 
-        fun <T : Any> empty() = Context<T>(::unknownVariable)
+//        fun of(variable: Expression.Variable, value: M, fallback: Context) =
+//            of(variable.name, value, fallback)
 
-        fun <T : Any> of(variable: Expression.Variable, value: T, fallback: Context<T>) =
-            of(variable.name, value, fallback)
-
-        fun <T : Any> of(name: String, value: T, fallback: Context<T>) =
+        fun of(name: String, value: M, fallback: Context) =
             Context { if (it == name) value else fallback[name] }
 
-        fun <T : Any> of(name: String, value: AtomicReference<T>, fallback: Context<T>) =
-            Context { if (it == name) value.get() else fallback[name] }
+        fun of(name: String, reference: AtomicReference<M>, fallback: Context) =
+            Context { if (it == name) reference.get() else fallback[name] }
     }
 }
