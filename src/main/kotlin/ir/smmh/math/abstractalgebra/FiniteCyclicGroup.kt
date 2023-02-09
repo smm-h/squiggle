@@ -6,7 +6,7 @@ import ir.smmh.math.settheory.FiniteNaturalsSet
 import ir.smmh.math.settheory.Set
 
 class FiniteCyclicGroup private constructor(val dInt: Int, val dNatural: Natural) :
-    GroupLikeStructure.AbelianGroup<Natural> {
+    AlgebraicStructure.Abstract<Natural>(), GroupLikeStructure.AbelianGroup<Natural> {
     constructor(degree: Int) : this(degree, Natural.of(degree))
     constructor(degree: Natural) : this(degree.approximateAsLong().toInt(), degree)
 

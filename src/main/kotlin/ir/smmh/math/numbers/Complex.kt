@@ -2,7 +2,6 @@ package ir.smmh.math.numbers
 
 import ir.smmh.math.InfinitelyIterable
 import ir.smmh.math.MathematicalCollection
-import ir.smmh.math.abstractalgebra.AbstractRingLikeStructure
 import ir.smmh.math.logic.Logical
 import ir.smmh.math.numbers.Complex.Companion.i
 import ir.smmh.math.numbers.Numbers.Integer
@@ -123,10 +122,5 @@ sealed interface Complex : Quaternion {
                 (Random.nextDouble() * 2 - 1) * pickerSize,
             )
         }
-    }
-
-    class Field(override val domain: Set) : AbstractRingLikeStructure<Complex>() {
-        override fun add(a: Complex, b: Complex): Complex = a + b
-        override fun multiply(a: Complex, b: Complex): Complex = a * b
     }
 }

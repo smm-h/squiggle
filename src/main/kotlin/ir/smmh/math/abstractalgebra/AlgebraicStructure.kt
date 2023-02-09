@@ -5,4 +5,6 @@ import ir.smmh.math.MathematicalObject as M
 
 interface AlgebraicStructure<T : M> {
     val domain: Set<T>
+
+    abstract class Abstract<T : M> : AlgebraicStructure<T>
 }
